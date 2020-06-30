@@ -46,35 +46,6 @@ export const getElevationData = (config: ISimulationConfig, zones: Zone[]): Prom
   );
 };
 
-export const getUnburntIslandsData = (config: ISimulationConfig, zones: Zone[]): Promise<number[] | undefined> => {
-  // Unburnt islands can be specified directly using unburntIslands property or they'll be generated automatically
-  // using zones terrain type.
-  let unburntIslands: number[][] | string | undefined = config.unburntIslands;
-  if (!unburntIslands) {
-    unburntIslands = zonesToImageDataFile(zones) + "-islands.png";
-  }
-  const islandActive: { [key: number]: number } = {};
-  return getInputData(unburntIslands, config.gridWidth, config.gridHeight, true,
-    (rgba: [number, number, number, number]) => {
-      // White areas are regular cells. Islands use gray scale colors, every island is supposed to have different
-      // shade. It's enough to look just at R value, as G and B will be equal.
-      const r = rgba[0];
-      if (r < 255) {
-        if (islandActive[r] === undefined) {
-          if (Math.random() < config.unburntIslandProbability) {
-            islandActive[r] = 1;
-          } else {
-            islandActive[r] = 0;
-          }
-        }
-        return islandActive[r]; // island activity, 0 or 1
-      } else {
-        return 0; // white color means we're dealing with regular cell, return 0 (inactive island)
-      }
-    }
-  );
-};
-
 export const getRiverData = (config: ISimulationConfig): Promise<number[] | undefined> => {
   if (!config.riverData) {
     return Promise.resolve(undefined);

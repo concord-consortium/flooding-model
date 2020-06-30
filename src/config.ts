@@ -78,7 +78,7 @@ export interface IUrlConfig extends ISimulationConfig {
 }
 
 export const getDefaultConfig: () => IUrlConfig = () => ({
-  preset: "defaultTwoZone",
+  preset: "iowa",
   // Most of the presets will use heightmap images that work the best with 120000x80000ft dimensions.
   modelWidth: 120000,
   modelHeight: 80000,

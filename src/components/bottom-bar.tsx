@@ -12,10 +12,6 @@ import ReloadIcon from "../assets/bottom-bar/reload.svg";
 import RestartIcon from "../assets/bottom-bar/restart.svg";
 import FireLineIcon from "../assets/bottom-bar/fire-line.svg";
 import FireLineHighlightIcon from "../assets/bottom-bar/fire-line_highlight.svg";
-import TerrainIcon from "../assets/bottom-bar/terrain-setup.svg";
-import TerrainHighlightIcon from "../assets/bottom-bar/terrain-setup_highlight.svg";
-import TerrainThreeIcon from "../assets/bottom-bar/terrain-three.svg";
-import TerrainThreeHighlightIcon from "../assets/bottom-bar/terrain-three_highlight.svg";
 
 import { IconButton } from "./icon-button";
 
@@ -52,11 +48,6 @@ export class BottomBar extends BaseComponent<IProps, IState> {
     return css.fullscreenIcon + (this.state.fullscreen ? ` ${css.fullscreen}` : "");
   }
 
-  get sparkBtnDisabled() {
-    const { simulation, ui } = this.stores;
-    return ui.interaction === Interaction.PlaceSpark || !simulation.canAddSpark || simulation.simulationStarted;
-  }
-
   get fireLineBtnDisabled() {
     const { simulation, ui } = this.stores;
     return ui.interaction === Interaction.DrawFireLine || !simulation.canAddFireLineMarker;
@@ -84,14 +75,6 @@ export class BottomBar extends BaseComponent<IProps, IState> {
           <CCLogoSmall className={css.logoSmall} />
         </div>
         <div className={css.mainContainer}>
-          <div className={`${css.widgetGroup} ${css.terrainButton}`}>
-            <IconButton
-              icon={ simulation.config.zonesCount < 3 ? <TerrainIcon /> : <TerrainThreeIcon /> }
-              highlightIcon={
-                simulation.config.zonesCount < 3 ? <TerrainHighlightIcon /> : <TerrainThreeHighlightIcon />}
-              disabled={uiDisabled} buttonText="Terrain Setup" dataTest="terrain-button" onClick={this.handleTerrain}
-            />
-          </div>
           <div className={`${css.widgetGroup} ${css.reloadRestart}`}>
             <Button
               className={css.playbackButton}
@@ -165,12 +148,10 @@ export class BottomBar extends BaseComponent<IProps, IState> {
   }
 
   public handleRestart = () => {
-    this.stores.chartStore.reset();
     this.stores.simulation.restart();
   }
 
   public handleReload = () => {
-    this.stores.chartStore.reset();
     this.stores.simulation.reload();
   }
 
@@ -184,10 +165,5 @@ export class BottomBar extends BaseComponent<IProps, IState> {
   public handleWaterLevelChange = (event: React.ChangeEvent, newValue: number) => {
     const { simulation } = this.stores;
     simulation.waterLevel = newValue;
-  }
-
-  public handleTerrain = () => {
-    const { ui } = this.stores;
-    ui.showTerrainUI = !ui.showTerrainUI;
   }
 }

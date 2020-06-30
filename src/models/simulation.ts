@@ -3,7 +3,7 @@ import { DroughtLevel, IWindProps, TerrainType, Vegetation } from "../types";
 import {  Cell, CellOptions } from "./cell";
 import { getDefaultConfig, ISimulationConfig, getUrlConfig } from "../config";
 import { Vector2 } from "three";
-import { getElevationData, getRiverData, getUnburntIslandsData, getZoneIndex } from "./utils/data-loaders";
+import { getElevationData, getRiverData, getZoneIndex } from "./utils/data-loaders";
 import { Zone } from "./zone";
 import { Town } from "../types";
 import { getGridIndexForLocation, forEachPointBetween, dist } from "./utils/grid-utils";
@@ -122,12 +122,11 @@ export class SimulationModel {
     this.minRiverElevation = Infinity;
     this.maxElevation = 0;
     this.dataReadyPromise = Promise.all([
-      getZoneIndex(config), getElevationData(config, zones), getRiverData(config), getUnburntIslandsData(config, zones)
+      getZoneIndex(config), getElevationData(config, zones), getRiverData(config)
     ]).then(values => {
       const zoneIndex = values[0];
       const elevation = values[1];
       const river = values[2];
-      const unburntIsland = values[3];
       const verticalTilt = this.config.elevationVerticalTilt;
 
       this.cells.length = 0;
@@ -156,7 +155,6 @@ export class SimulationModel {
             zoneIdx: zi,
             isRiver,
             isEdge,
-            isUnburntIsland: unburntIsland && unburntIsland[index] > 0 || isNonBurnable,
             baseElevation,
           };
           if (!this.totalCellCountByZone[zi]) {
