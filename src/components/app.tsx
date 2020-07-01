@@ -2,14 +2,11 @@ import React, { useEffect } from "react";
 import { observer } from "mobx-react";
 import { View3d } from "./view-3d/view-3d";
 import { BottomBar } from "./bottom-bar";
-import { useStores } from "../use-stores";
 import Shutterbug from "shutterbug";
 import { useCustomCursor } from "./use-custom-cursors";
 import css from "./app.scss";
 
 export const AppComponent = observer(function WrappedComponent() {
-  const { simulation } = useStores();
-
   useEffect(() => {
     Shutterbug.enable("." + css.app);
     return () => {

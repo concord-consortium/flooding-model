@@ -117,6 +117,7 @@ export class SimulationModel {
   }
 
   @action.bound public start() {
+    console.log("START", this.simulationRunning);
     if (!this.ready) {
       return;
     }

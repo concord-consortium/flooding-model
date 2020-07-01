@@ -4,7 +4,7 @@ import ReactDOM from "react-dom";
 import { AppComponent } from "./components/app";
 import { MuiThemeProvider } from "@material-ui/core/styles";
 import { createStores } from "./models/stores";
-import geohazardTheme from "./geohazard-theme";
+import geohazardTheme from "./geohazard-components/geohazard-mui-theme";
 
 const stores = createStores();
 
