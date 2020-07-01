@@ -40,7 +40,7 @@ module.exports = (env, argv) => {
               loader: 'css-loader',
               options: {
                 modules: {
-                  localIdentName: '[name]--[local]--__wildfire-v1__'
+                  localIdentName: '[name]--[local]--__flooding-v1__'
                 },
                 sourceMap: true,
                 importLoaders: 1

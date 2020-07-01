@@ -1,10 +1,10 @@
 {
-  "name": "wildfire-model",
+  "name": "flooding-model",
   "version": "0.0.1",
   "description": "Concord Consortium starter projects",
   "main": "index.js",
   "jest": {
-    "testURL": "https://wildfire-model.unexisting.url.com",
+    "testURL": "https://flooding-model.unexisting.url.com",
     "setupFilesAfterEnv": [
       "<rootDir>src/setupTests.js"
     ],
@@ -55,14 +55,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/concord-consortium/wildfire-model.git"
+    "url": "git+https://github.com/concord-consortium/flooding-model.git"
   },
   "author": "Concord Consortium",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/concord-consortium/wildfire-model/issues"
+    "url": "https://github.com/concord-consortium/flooding-model/issues"
   },
-  "homepage": "https://github.com/concord-consortium/wildfire-model#readme",
+  "homepage": "https://github.com/concord-consortium/flooding-model#readme",
   "devDependencies": {
     "@cypress/webpack-preprocessor": "^4.1.3",
     "@svgr/webpack": "^5.3.0",
