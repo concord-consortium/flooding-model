@@ -10,13 +10,7 @@ import PauseIcon from "../assets/bottom-bar/pause.svg";
 import StartIcon from "../assets/bottom-bar/start.svg";
 import ReloadIcon from "../assets/bottom-bar/reload.svg";
 import RestartIcon from "../assets/bottom-bar/restart.svg";
-import FireLineIcon from "../assets/bottom-bar/fire-line.svg";
-import FireLineHighlightIcon from "../assets/bottom-bar/fire-line_highlight.svg";
-
-import { IconButton } from "./icon-button";
-
 import css from "./bottom-bar.scss";
-import { Interaction } from "../models/ui";
 
 interface IProps extends IBaseProps {}
 interface IState {
@@ -48,11 +42,6 @@ export class BottomBar extends BaseComponent<IProps, IState> {
     return css.fullscreenIcon + (this.state.fullscreen ? ` ${css.fullscreen}` : "");
   }
 
-  get fireLineBtnDisabled() {
-    const { simulation, ui } = this.stores;
-    return ui.interaction === Interaction.DrawFireLine || !simulation.canAddFireLineMarker;
-  }
-
   public componentDidMount() {
     if (screenfull && screenfull.isEnabled) {
       document.addEventListener(screenfull.raw.fullscreenchange, this.fullscreenChange);
@@ -67,7 +56,6 @@ export class BottomBar extends BaseComponent<IProps, IState> {
 
   public render() {
     const { simulation } = this.stores;
-    const uiDisabled = simulation.simulationStarted;
     return (
       <div className={css.bottomBar}>
         <div className={css.leftContainer}>
@@ -105,12 +93,6 @@ export class BottomBar extends BaseComponent<IProps, IState> {
             </Button>
           </div>
           <div className={`${css.widgetGroup}`}>
-            <IconButton icon={<FireLineIcon />} highlightIcon={<FireLineHighlightIcon />}
-                        disabled={this.fireLineBtnDisabled} buttonText="Levee" dataTest="fireline-button"
-                        onClick={this.handleFireLine}
-            />
-          </div>
-          <div className={`${css.widgetGroup}`}>
             <div className={css.water}>
               Water level
               <Slider
@@ -138,11 +120,10 @@ export class BottomBar extends BaseComponent<IProps, IState> {
   }
 
   public handleStart = () => {
-    const { ui, simulation } = this.stores;
+    const { simulation } = this.stores;
     if (simulation.simulationRunning) {
       simulation.stop();
     } else {
-      ui.showTerrainUI = false;
       simulation.start();
     }
   }
@@ -153,13 +134,6 @@ export class BottomBar extends BaseComponent<IProps, IState> {
 
   public handleReload = () => {
     this.stores.simulation.reload();
-  }
-
-  public handleFireLine = () => {
-    const { ui, simulation } = this.stores;
-    ui.showTerrainUI = false;
-    simulation.stop();
-    ui.interaction = Interaction.DrawFireLine;
   }
 
   public handleWaterLevelChange = (event: React.ChangeEvent, newValue: number) => {

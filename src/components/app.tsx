@@ -4,12 +4,11 @@ import { View3d } from "./view-3d/view-3d";
 import { BottomBar } from "./bottom-bar";
 import { useStores } from "../use-stores";
 import Shutterbug from "shutterbug";
-
-import css from "./app.scss";
 import { useCustomCursor } from "./use-custom-cursors";
+import css from "./app.scss";
 
 export const AppComponent = observer(function WrappedComponent() {
-  const { simulation, ui } = useStores();
+  const { simulation } = useStores();
 
   useEffect(() => {
     Shutterbug.enable("." + css.app);
@@ -21,20 +20,9 @@ export const AppComponent = observer(function WrappedComponent() {
   // This will setup document cursor based on various states of UI store (interactions).
   useCustomCursor();
 
-  const config = simulation.config;
-  // Convert time from minutes to days.
-  const timeInDays = simulation.time / 1440;
-  const showModelScale = config.showModelDimensions;
   return (
     <div className={css.app}>
-      { showModelScale &&
-        <div className={css.modelInfo}>
-          <div>Model Dimensions: { config.modelWidth } ft x { config.modelHeight } ft</div>
-          <div>Highest Point Possible: {config.heightmapMaxElevation} ft</div>
-        </div>
-      }
-      <div className={css.timeDisplay}>{timeInDays.toFixed(1)} days</div>
-      <div className={`${css.mainContent} ${ui.showChart && css.shrink}`}>
+      <div className={`${css.mainContent}`}>
         <View3d />
       </div>
       <BottomBar />

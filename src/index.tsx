@@ -4,13 +4,13 @@ import ReactDOM from "react-dom";
 import { AppComponent } from "./components/app";
 import { MuiThemeProvider } from "@material-ui/core/styles";
 import { createStores } from "./models/stores";
-import hurricanesTheme from "./material-ui-theme";
+import geohazardTheme from "./geohazard-theme";
 
 const stores = createStores();
 
 ReactDOM.render(
   <Provider stores={stores}>
-    <MuiThemeProvider theme={hurricanesTheme}>
+    <MuiThemeProvider theme={geohazardTheme}>
       <AppComponent />
     </MuiThemeProvider>
   </Provider>,

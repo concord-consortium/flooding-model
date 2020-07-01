@@ -1,21 +1,12 @@
 import { action, computed, observable } from "mobx";
-import { DroughtLevel, IWindProps, TerrainType, Vegetation } from "../types";
-import {  Cell, CellOptions } from "./cell";
+import { Cell, CellOptions } from "./cell";
 import { getDefaultConfig, ISimulationConfig, getUrlConfig } from "../config";
-import { Vector2 } from "three";
-import { getElevationData, getRiverData, getZoneIndex } from "./utils/data-loaders";
-import { Zone } from "./zone";
-import { Town } from "../types";
-import { getGridIndexForLocation, forEachPointBetween, dist } from "./utils/grid-utils";
+import { getElevationData, getRiverData } from "./utils/data-loaders";
+import { getGridIndexForLocation } from "./utils/grid-utils";
 import { FloodingEngine } from "./engine/flooding-engine";
 
-interface ICoords {
-  x: number;
-  y: number;
-}
-
-// This class is responsible for data loading, adding sparks and fire lines and so on. It's more focused
-// on management and interactions handling. Core calculations are delegated to FireEngine.
+// This class is responsible for data loading and general setup. It's more focused
+// on management and interactions handling. Core calculations are delegated to FloodingEngine.
 // Also, all the observable properties should be here, so the view code can observe them.
 export class SimulationModel {
   public config: ISimulationConfig;
@@ -26,16 +17,8 @@ export class SimulationModel {
   public cells: Cell[] = [];
   @observable public time = 0;
   @observable public dataReady = false;
-  @observable public wind: IWindProps;
-  @observable public sparks: Vector2[] = [];
-  @observable public fireLineMarkers: Vector2[] = [];
-  @observable public townMarkers: Town[] = [];
-  @observable public zones: Zone[] = [];
   @observable public simulationStarted = false;
   @observable public simulationRunning = false;
-  @observable public lastFireLineTimestamp = -Infinity;
-  @observable public totalCellCountByZone: {[key: number]: number} = {};
-  @observable public burnedCellsInZone: {[key: number]: number} = {};
   @observable public minRiverElevation: number = 0;
   @observable public maxElevation: number = 0;
   @observable public waterLevel: number = 0;
@@ -71,38 +54,10 @@ export class SimulationModel {
     return Math.floor(this.time / 60);
   }
 
-  @computed public get canAddSpark() {
-    // There's an assumption that number of sparks should be smaller than number of zones.
-    return this.sparks.length < this.config.zonesCount;
-  }
-
-  @computed public get canAddFireLineMarker() {
-    return true;
-  }
-
-  public getZoneBurnPercentage(zoneIdx: number) {
-    const burnedCells = this.engine?.burnedCellsInZone[zoneIdx] || 0;
-    return burnedCells / this.totalCellCountByZone[zoneIdx];
-  }
-
   public cellAt(x: number, y: number) {
     const gridX = Math.floor(x / this.config.cellSize);
     const gridY = Math.floor(y / this.config.cellSize);
     return this.cells[getGridIndexForLocation(gridX, gridY, this.config.gridWidth)];
-  }
-
-  @action.bound public setInputParamsFromConfig() {
-    const config = this.config;
-    this.zones = config.zones.map(options => new Zone(options!));
-    this.zones.length = config.zonesCount;
-    this.wind = {
-      speed: config.windSpeed,
-      direction: config.windDirection
-    };
-    this.sparks.length = 0;
-    config.sparks.forEach(s => {
-      this.addSpark(s[0], s[1]);
-    });
   }
 
   @action.bound public load(presetConfig: Partial<ISimulationConfig>) {
@@ -110,23 +65,19 @@ export class SimulationModel {
     // Configuration are joined together. Default values can be replaced by preset, and preset values can be replaced
     // by URL parameters.
     this.config = Object.assign(getDefaultConfig(), presetConfig, getUrlConfig());
-    this.setInputParamsFromConfig();
     this.populateCellsData();
   }
 
   @action.bound public populateCellsData() {
     this.dataReady = false;
     const config = this.config;
-    const zones = this.zones;
-    this.totalCellCountByZone = {};
     this.minRiverElevation = Infinity;
     this.maxElevation = 0;
     this.dataReadyPromise = Promise.all([
-      getZoneIndex(config), getElevationData(config, zones), getRiverData(config)
+      getElevationData(config), getRiverData(config)
     ]).then(values => {
-      const zoneIndex = values[0];
-      const elevation = values[1];
-      const river = values[2];
+      const elevation = values[0];
+      const river = values[1];
       const verticalTilt = this.config.elevationVerticalTilt;
 
       this.cells.length = 0;
@@ -134,16 +85,10 @@ export class SimulationModel {
       for (let y = 0; y < this.gridHeight; y++) {
         for (let x = 0; x < this.gridWidth; x++) {
           const index = getGridIndexForLocation(x, y, this.gridWidth);
-          const zi = zoneIndex ? zoneIndex[index] : 0;
           const isRiver = river && river[index] > 0;
           // When fillTerrainEdge is set to true, edges are set to elevation 0.
           const isEdge = config.fillTerrainEdges &&
             (x === 0 || x === this.gridWidth - 1 || y === 0 || y === this.gridHeight - 1);
-          // Also, edges and their neighboring cells need to be marked as nonburnable to avoid fire spreading over
-          // the terrain edge. Note that in this case two cells need to be marked as nonburnable due to way how
-          // rendering code is calculating colors for mesh faces.
-          const isNonBurnable = config.fillTerrainEdges &&
-            x <= 1 || x >= this.gridWidth - 2 || y <= 1 || y >= this.gridHeight - 2;
           let baseElevation = isEdge ? 0 : elevation && elevation[index];
           if (verticalTilt && baseElevation !== undefined) {
             const vertProgress = y / this.gridHeight;
@@ -151,17 +96,10 @@ export class SimulationModel {
           }
           const cellOptions: CellOptions = {
             x, y,
-            zone: zones[zi],
-            zoneIdx: zi,
             isRiver,
             isEdge,
             baseElevation,
           };
-          if (!this.totalCellCountByZone[zi]) {
-            this.totalCellCountByZone[zi] = 1;
-          } else {
-            this.totalCellCountByZone[zi]++;
-          }
           if (isRiver && !isEdge && baseElevation && baseElevation < this.minRiverElevation) {
             this.minRiverElevation = baseElevation;
           }
@@ -174,7 +112,6 @@ export class SimulationModel {
       this.waterLevel = this.minRiverElevation;
       this.updateCellsElevationFlag();
       this.updateCellsStateFlag();
-      this.updateTownMarkers();
       this.dataReady = true;
     });
   }
@@ -187,10 +124,8 @@ export class SimulationModel {
       this.simulationStarted = true;
     }
     if (!this.engine) {
-      this.engine = new FloodingEngine(this.cells, this.wind, this.sparks, this.config);
+      this.engine = new FloodingEngine(this.cells, this.config);
     }
-
-    this.applyFireLineMarkers();
 
     this.simulationRunning = true;
     this.prevTickTime = null;
@@ -206,8 +141,6 @@ export class SimulationModel {
     this.simulationRunning = false;
     this.simulationStarted = false;
     this.cells.forEach(cell => cell.reset());
-    this.fireLineMarkers.length = 0;
-    this.lastFireLineTimestamp = -Infinity;
     this.updateCellsStateFlag();
     this.updateCellsElevationFlag();
     this.time = 0;
@@ -216,8 +149,6 @@ export class SimulationModel {
 
   @action.bound public reload() {
     this.restart();
-    // Reset user-controlled properties too.
-    this.setInputParamsFromConfig();
     this.populateCellsData();
   }
 
@@ -274,127 +205,5 @@ export class SimulationModel {
 
   @action.bound public updateCellsStateFlag() {
     this.cellsStateFlag += 1;
-  }
-
-  @action.bound public updateTownMarkers() {
-    this.townMarkers.length = 0;
-    this.config.towns.forEach(town => {
-      const x = town.x * this.config.modelWidth;
-      const y = town.y * this.config.modelHeight;
-      const cell = this.cellAt(x, y);
-      if (town.terrainType === undefined || town.terrainType === cell.zone.terrainType) {
-        this.townMarkers.push({ name: town.name, position: new Vector2(x, y) });
-      }
-    });
-  }
-
-  @action.bound public addSpark(x: number, y: number) {
-    if (this.canAddSpark) {
-      this.sparks.push(new Vector2(x, y));
-    }
-  }
-
-  // Coords are in model units (feet).
-  @action.bound public setSpark(idx: number, x: number, y: number) {
-    this.sparks[idx] = new Vector2(x, y);
-  }
-
-  @action.bound public addFireLineMarker(x: number, y: number) {
-    if (this.canAddFireLineMarker) {
-      this.fireLineMarkers.push(new Vector2(x, y));
-      const count = this.fireLineMarkers.length;
-      if (count % 2 === 0) {
-        this.markFireLineUnderConstruction(this.fireLineMarkers[count - 2], this.fireLineMarkers[count - 1], true);
-      }
-    }
-  }
-
-  @action.bound public setFireLineMarker(idx: number, x: number, y: number) {
-    if (idx % 2 === 1 && idx - 1 >= 0) {
-      // Erase old line.
-      this.markFireLineUnderConstruction(this.fireLineMarkers[idx - 1], this.fireLineMarkers[idx], false);
-      // Update point.
-      this.fireLineMarkers[idx] = new Vector2(x, y);
-      this.limitFireLineLength(this.fireLineMarkers[idx - 1], this.fireLineMarkers[idx]);
-      // Draw a new line.
-      this.markFireLineUnderConstruction(this.fireLineMarkers[idx - 1], this.fireLineMarkers[idx], true);
-    }
-    if (idx % 2 === 0 && idx + 1 < this.fireLineMarkers.length) {
-      this.markFireLineUnderConstruction(this.fireLineMarkers[idx], this.fireLineMarkers[idx + 1], false);
-      this.fireLineMarkers[idx] = new Vector2(x, y);
-      this.limitFireLineLength(this.fireLineMarkers[idx + 1], this.fireLineMarkers[idx]);
-      this.markFireLineUnderConstruction(this.fireLineMarkers[idx], this.fireLineMarkers[idx + 1], true);
-    }
-  }
-
-  @action.bound public markFireLineUnderConstruction(start: ICoords, end: ICoords, value: boolean) {
-    const startGridX = Math.floor(start.x / this.config.cellSize);
-    const startGridY = Math.floor(start.y / this.config.cellSize);
-    const endGridX = Math.floor(end.x / this.config.cellSize);
-    const endGridY = Math.floor(end.y / this.config.cellSize);
-    forEachPointBetween(startGridX, startGridY, endGridX, endGridY, (x: number, y: number, idx: number) => {
-      if (idx % 2 === 0) {
-        // idx % 2 === 0 to make dashed line.
-        this.cells[getGridIndexForLocation(x, y, this.gridWidth)].isFireLineUnderConstruction = value;
-      }
-    });
-    this.updateCellsStateFlag();
-  }
-
-  // Note that this function modifies "end" point coordinates.
-  @action.bound public limitFireLineLength(start: ICoords, end: ICoords) {
-    const dRatio = dist(start.x, start.y, end.x, end.y) / this.config.maxFireLineLength;
-    if (dRatio > 1) {
-      end.x = start.x + (end.x - start.x) / dRatio;
-      end.y = start.y + (end.y - start.y) / dRatio;
-    }
-  }
-
-  @action.bound public applyFireLineMarkers() {
-    if (this.fireLineMarkers.length === 0) {
-      return;
-    }
-    for (let i = 0; i < this.fireLineMarkers.length; i += 2) {
-      if (i + 1 < this.fireLineMarkers.length) {
-        this.markFireLineUnderConstruction(this.fireLineMarkers[i], this.fireLineMarkers[i + 1], false);
-        this.buildFireLine(this.fireLineMarkers[i], this.fireLineMarkers[i + 1]);
-      }
-    }
-    this.fireLineMarkers.length = 0;
-    this.updateCellsStateFlag();
-    this.updateCellsElevationFlag();
-  }
-
-  @action.bound public buildFireLine(start: ICoords, end: ICoords) {
-    const startGridX = Math.floor(start.x / this.config.cellSize);
-    const startGridY = Math.floor(start.y / this.config.cellSize);
-    const endGridX = Math.floor(end.x / this.config.cellSize);
-    const endGridY = Math.floor(end.y / this.config.cellSize);
-    forEachPointBetween(startGridX, startGridY, endGridX, endGridY, (x: number, y: number) => {
-      const cell = this.cells[getGridIndexForLocation(x, y, this.gridWidth)];
-      cell.isFireLine = true;
-      cell.ignitionTime = Infinity;
-    });
-    this.lastFireLineTimestamp = this.time;
-  }
-
-  @action.bound public setWindDirection(direction: number) {
-    this.wind.direction = direction;
-  }
-
-  @action.bound public setWindSpeed(speed: number) {
-    this.wind.speed = speed;
-  }
-
-  @action.bound public updateZoneTerrain(zoneIdx: number, updatedTerrainType: TerrainType) {
-    this.zones[zoneIdx].terrainType = updatedTerrainType;
-  }
-
-  @action.bound public updateZoneMoisture(zoneIdx: number, droughtLevel: DroughtLevel) {
-    this.zones[zoneIdx].droughtLevel = droughtLevel;
-  }
-
-  @action.bound public updateZoneVegetation(zoneIdx: number, vegetation: Vegetation) {
-    this.zones[zoneIdx].vegetation = vegetation;
   }
 }

@@ -1,10 +1,8 @@
 import { useStores } from "../use-stores";
-import fireLineCursorImg from "../assets/interactions/fire-line-cursor.png";
 import { Interaction } from "../models/ui";
 import { useEffect } from "react";
 
 const interactionCursors: {[key in Interaction]?: string} = {
-  [Interaction.DrawFireLine]: `url(${fireLineCursorImg}) 32 64, crosshair`,
   [Interaction.HoverOverDraggable]: "grab"
 };
 
