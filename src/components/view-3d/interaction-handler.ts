@@ -14,10 +14,13 @@ export enum InteractionAction {
   onPointerEnter = "onPointerEnter",
   onPointerLeave = "onPointerLeave",
   onPointerMove = "onPointerMove",
-  onWheel = "onWheel"
+  // There's one more action, onWheel:
+  // onWheel = "onWheel"
+  // But it requires different EventHandler type. So, it'd complicate the code and it doesn't seem to be worth it,
+  // as it's very unlikely we want to use desktop-specific event like that.
 }
 
-type EventHandler = (e: PointerEvent) => void;
+type EventHandler = (e: PointerEvent | WheelEvent) => void;
 
 export type InteractionHandler = {
   [action in InteractionAction]?: EventHandler;

@@ -8,7 +8,7 @@ import { SimulationModel } from "../../models/simulation";
 import { ftToViewUnit, PLANE_WIDTH, planeHeight } from "./helpers";
 import { observer } from "mobx-react";
 import { useStores } from "../../use-stores";
-import { useUpdate, useLoader } from "react-three-fiber";
+import { useUpdate } from "react-three-fiber";
 import { getEventHandlers, InteractionHandler } from "./interaction-handler";
 import { usePlaceSparkInteraction } from "./use-place-spark-interaction";
 import { useDrawFireLineInteraction } from "./use-draw-fire-line-interaction";
