@@ -11,7 +11,7 @@ export const BottomBar: React.FC = observer(function WrappedComponent() {
 
   const handleWaterLevelChange = (event: React.ChangeEvent, newValue: number) => {
     simulation.waterLevel = newValue;
-  }
+  };
 
   return (
     <BottomBarContainer>

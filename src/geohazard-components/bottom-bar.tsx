@@ -58,7 +58,7 @@ export const BottomBarContainer: React.FC<BottomBarContainerProps> = ({ children
       </div>
     </div>
   );
-}
+};
 
 interface BottomBarWidgetGroupProps {
   children?: React.ReactNode;

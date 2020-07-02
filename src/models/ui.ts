@@ -6,5 +6,5 @@ export enum Interaction {
 
 export class UIModel {
   @observable public interaction: Interaction | null = null;
-  @observable public dragging: boolean = false;
+  @observable public dragging = false;
 }

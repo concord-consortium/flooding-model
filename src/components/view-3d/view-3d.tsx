@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect } from "react";
 import { Canvas, useThree } from "react-three-fiber";
 import { useStores } from "../../use-stores";
 import { DEFAULT_UP, PLANE_WIDTH, planeHeight } from "./helpers";
@@ -9,13 +9,13 @@ import Shutterbug from "shutterbug";
 // This needs to be a separate component, as useThree depends on context provided by <Canvas> component.
 const ShutterbugSupport = () => {
   const { gl, scene, camera } = useThree();
-  const renderRef = useRef(() => {
-    gl.render(scene, camera);
-  });
   useEffect(() => {
-    Shutterbug.on("saycheese", renderRef.current);
-    return () => Shutterbug.off("saycheese", renderRef.current);
-  }, []);
+    const handler = () => {
+      gl.render(scene, camera);
+    };
+    Shutterbug.on("saycheese", handler);
+    return () => Shutterbug.off("saycheese", handler);
+  }, [gl, scene, camera]);
   return null;
 };
 

@@ -43,7 +43,7 @@ describe("getEventHandlers", () => {
     expect(handlers.onPointerUp).toBeUndefined();
     expect(handlers.onPointerDown).toBeDefined();
     const event = {} as PointerEvent;
-    handlers.onPointerDown!(event);
+    handlers.onPointerDown?.(event);
     expect(interaction2.onPointerDown).toHaveBeenCalledWith(event);
     expect(interaction3.onPointerDown).toHaveBeenCalledWith(event);
   });

@@ -9,11 +9,11 @@ export interface CellOptions {
 export class Cell {
   public x: number; // grid X coord
   public y: number; // grid Y coord
-  public baseElevation: number = 0;
-  public isRiver: boolean = false;
-  public isFlooded: boolean = false;
-  public isEdge: boolean = false;
-  public isWaterEdge: boolean = false;
+  public baseElevation = 0;
+  public isRiver = false;
+  public isFlooded = false;
+  public isEdge = false;
+  public isWaterEdge = false;
 
   constructor(props: CellOptions) {
     Object.assign(this, props);

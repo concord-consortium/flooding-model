@@ -19,9 +19,9 @@ export class SimulationModel {
   @observable public dataReady = false;
   @observable public simulationStarted = false;
   @observable public simulationRunning = false;
-  @observable public minRiverElevation: number = 0;
-  @observable public maxElevation: number = 0;
-  @observable public waterLevel: number = 0;
+  @observable public minRiverElevation = 0;
+  @observable public maxElevation = 0;
+  @observable public waterLevel = 0;
   // These flags can be used by view to trigger appropriate rendering. Theoretically, view could/should check
   // every single cell and re-render when it detects some changes. In practice, we perform these updates in very
   // specific moments and usually for all the cells, so this approach can be way more efficient.

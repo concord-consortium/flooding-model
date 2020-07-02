@@ -40,8 +40,8 @@ export const getDefaultConfig: () => IUrlConfig = () => ({
   elevation: "data/iowa-city-heightmap.png",
   riverData: "data/iowa-city-river.png",
   gridWidth: 400,
-  get cellSize() { return this.modelWidth / this.gridWidth },
-  get gridHeight() { return Math.ceil(this.modelHeight / this.cellSize) },
+  get cellSize() { return this.modelWidth / this.gridWidth; },
+  get gridHeight() { return Math.ceil(this.modelHeight / this.cellSize); },
   maxTimeStep: 180, // minutes
   modelDayInSeconds: 8, // one day in model should last X seconds in real world
   // This value works well with existing heightmap images.
@@ -97,7 +97,7 @@ export const getUrlConfig: () => IUrlConfig = () => {
       if (urlValue === "[]") {
         urlConfig[key] = [];
       } else {
-        urlConfig[key] = urlValue!.substring(1, urlValue!.length - 1).split(",");
+        urlConfig[key] = urlValue.substring(1, urlValue.length - 1).split(",");
       }
     } else if (urlValue !== null && !isNaN(urlValue)) {
       // !isNaN(string) means isNumber(string).

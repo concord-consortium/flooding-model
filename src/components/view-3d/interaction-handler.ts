@@ -45,7 +45,7 @@ export const getEventHandlers = (interactions: InteractionHandler[]) => {
           if (!handlers[eventName]) {
             handlers[eventName] = [];
           }
-          handlers[eventName]!.push(eventHandler);
+          handlers[eventName]?.push(eventHandler);
         }
       });
     }

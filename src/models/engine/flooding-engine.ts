@@ -1,4 +1,3 @@
-import { Vector2 } from "three";
 import { Cell } from "../cell";
 import { getGridIndexForLocation, directNeighbours } from "../utils/grid-utils";
 

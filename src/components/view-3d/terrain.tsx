@@ -23,7 +23,7 @@ const setVertexColor = (
   if (cell.isWater) {
     color = config.riverColor;
   } else {
-    color = WHITE
+    color = WHITE;
   }
   colArray[idx] = color[0];
   colArray[idx + 1] = color[1];
@@ -114,5 +114,5 @@ export const Terrain = observer(function WrappedComponent(props) {
           <meshLambertMaterial attach="material" vertexColors={true} />
       }
     </mesh>
-  )
+  );
 });

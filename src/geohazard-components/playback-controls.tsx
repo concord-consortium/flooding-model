@@ -70,4 +70,4 @@ export const PlaybackControls: React.FC<IProps> = ({ onReload, onRestart, onStar
       }
     </>
   );
-}
+};
