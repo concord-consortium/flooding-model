@@ -4,7 +4,6 @@ import { useStores } from "../../use-stores";
 import { DEFAULT_UP, PLANE_WIDTH, planeHeight } from "./helpers";
 import { CameraControls } from "./camera-controls";
 import { Terrain } from "./terrain";
-import * as THREE from "three";
 import Shutterbug from "shutterbug";
 
 // This needs to be a separate component, as useThree depends on context provided by <Canvas> component.

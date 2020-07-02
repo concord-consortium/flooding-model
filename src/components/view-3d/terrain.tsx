@@ -1,10 +1,10 @@
-import React, { forwardRef, useMemo } from "react";
+import React, { useMemo } from "react";
 import { Cell } from "../../models/cell";
 import { ISimulationConfig } from "../../config";
 import * as THREE from "three";
 import { BufferAttribute } from "three";
 import { SimulationModel } from "../../models/simulation";
-import { ftToViewUnit, PLANE_WIDTH, planeHeight } from "./helpers";
+import { mToViewUnit, PLANE_WIDTH, planeHeight } from "./helpers";
 import { observer } from "mobx-react-lite";
 import { useStores } from "../../use-stores";
 import { useUpdate } from "react-three-fiber";
@@ -41,7 +41,7 @@ const updateColors = (geometry: THREE.PlaneBufferGeometry, simulation: Simulatio
 
 const setupElevation = (geometry: THREE.PlaneBufferGeometry, simulation: SimulationModel) => {
   const posArray = geometry.attributes.position.array as number[];
-  const mult = ftToViewUnit(simulation);
+  const mult = mToViewUnit(simulation);
   // Apply height map to vertices of plane.
   simulation.cells.forEach(cell => {
     const zAttrIdx = vertexIdx(cell, simulation.gridWidth, simulation.gridHeight) * 3 + 2;

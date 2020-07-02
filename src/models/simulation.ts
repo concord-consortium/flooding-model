@@ -45,11 +45,6 @@ export class SimulationModel {
     return this.config.gridHeight;
   }
 
-  @computed public get simulationAreaAcres() {
-    // dimensions in feet, convert sqft to acres
-    return this.config.modelWidth * this.config.modelHeight / 43560;
-  }
-
   @computed public get timeInHours() {
     return Math.floor(this.time / 60);
   }

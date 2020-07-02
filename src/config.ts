@@ -1,13 +1,13 @@
 
 export interface ISimulationConfig {
-  modelWidth: number; // ft
-  modelHeight: number; // ft
+  modelWidth: number; // m
+  modelHeight: number; // m
   // Note that modelHeight % gridWidth should always be 0!
-  gridWidth: number; // ft
+  gridWidth: number; // m
   // It will be calculated automatically using model dimensions and grid width.
-  readonly gridHeight: number; // ft
+  readonly gridHeight: number; // m
   // It will be calculated automatically using model dimensions and grid width.
-  readonly cellSize: number; // ft
+  readonly cellSize: number; // m
   // If `elevation` height map is provided, it will be loaded during model initialization and terrain setup dialog
   // won't let users change terrain type. Otherwise, height map URL will be derived from zones `terrainType` properties.
   elevation: number[][] | string;
@@ -15,7 +15,7 @@ export interface ISimulationConfig {
   // One day in model should last X seconds in real world.
   modelDayInSeconds: number;
   // Max elevation of 100% white points in heightmap (image used for elevation data).
-  heightmapMaxElevation: number; // ft
+  heightmapMaxElevation: number; // m
   // Visually fills edges of the terrain by setting elevation to 0.
   fillTerrainEdges: boolean;
   riverData: string | null;
