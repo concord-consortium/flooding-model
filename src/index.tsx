@@ -1,18 +1,14 @@
-import { Provider } from "mobx-react";
 import React from "react";
 import ReactDOM from "react-dom";
 import { AppComponent } from "./components/app";
 import { MuiThemeProvider } from "@material-ui/core/styles";
-import { createStores } from "./models/stores";
 import geohazardTheme from "./geohazard-components/geohazard-mui-theme";
-
-const stores = createStores();
+// See: https://github.com/mobxjs/mobx-react-lite#observer-batching
+import "mobx-react-lite/batchingForReactDom";
 
 ReactDOM.render(
-  <Provider stores={stores}>
-    <MuiThemeProvider theme={geohazardTheme}>
-      <AppComponent />
-    </MuiThemeProvider>
-  </Provider>,
+  <MuiThemeProvider theme={geohazardTheme}>
+    <AppComponent />
+  </MuiThemeProvider>,
   document.getElementById("app")
 );

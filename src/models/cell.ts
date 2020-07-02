@@ -10,7 +10,6 @@ export class Cell {
   public x: number; // grid X coord
   public y: number; // grid Y coord
   public baseElevation: number = 0;
-  public ignitionTime: number = Infinity;
   public isRiver: boolean = false;
   public isFlooded: boolean = false;
   public isEdge: boolean = false;

@@ -5,7 +5,7 @@ import * as THREE from "three";
 import { BufferAttribute } from "three";
 import { SimulationModel } from "../../models/simulation";
 import { ftToViewUnit, PLANE_WIDTH, planeHeight } from "./helpers";
-import { observer } from "mobx-react";
+import { observer } from "mobx-react-lite";
 import { useStores } from "../../use-stores";
 import { useUpdate } from "react-three-fiber";
 import { getEventHandlers, InteractionHandler } from "./interaction-handler";
@@ -69,7 +69,7 @@ const getTexture = (imgSrcOrCanvas: string | HTMLCanvasElement) => {
   return texture;
 };
 
-export const Terrain = observer(forwardRef<THREE.Mesh>(function WrappedComponent(props, ref) {
+export const Terrain = observer(function WrappedComponent(props) {
   const { simulation } = useStores();
   const height = planeHeight(simulation);
 
@@ -101,11 +101,7 @@ export const Terrain = observer(forwardRef<THREE.Mesh>(function WrappedComponent
   const texture = useMemo(() => getTexture(textureSrc), [textureSrc]);
 
   return (
-    <mesh
-      ref={ref}
-      position={[PLANE_WIDTH * 0.5, height * 0.5, 0]}
-      {...eventHandlers}
-    >
+    <mesh position={[PLANE_WIDTH * 0.5, height * 0.5, 0]} {...eventHandlers}>
       <planeBufferGeometry
         attach="geometry"
         ref={geometryRef}
@@ -119,4 +115,4 @@ export const Terrain = observer(forwardRef<THREE.Mesh>(function WrappedComponent
       }
     </mesh>
   )
-}));
+});

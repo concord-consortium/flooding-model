@@ -1,4 +1,4 @@
-import { observer } from "mobx-react";
+import { observer } from "mobx-react-lite";
 import { useStores } from "../../use-stores";
 import { extend, useFrame, useThree } from "react-three-fiber";
 import React, { useRef } from "react";

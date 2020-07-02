@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { observer } from "mobx-react";
+import { observer } from "mobx-react-lite";
 import { View3d } from "./view-3d/view-3d";
 import { BottomBar } from "./bottom-bar";
 import Shutterbug from "shutterbug";

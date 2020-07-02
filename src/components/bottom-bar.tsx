@@ -2,7 +2,7 @@ import React from "react";
 import { BottomBarContainer, BottomBarWidgetGroup } from "../geohazard-components/bottom-bar";
 import { PlaybackControls } from "../geohazard-components/playback-controls";
 import Slider from "@material-ui/core/Slider";
-import { observer } from "mobx-react";
+import { observer } from "mobx-react-lite";
 import { useStores } from "../use-stores";
 import css from "./bottom-bar.scss";
 
