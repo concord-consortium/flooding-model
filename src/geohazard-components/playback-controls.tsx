@@ -1,5 +1,5 @@
 import React from "react";
-import { BottomBarWidgetGroup } from "./bottom-bar";
+import { BottomBarWidgetGroup } from "./bottom-bar-container";
 import Button from "@material-ui/core/Button";
 import ReloadIcon from "./assets/reload.svg";
 import RestartIcon from "./assets/restart.svg";

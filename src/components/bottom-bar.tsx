@@ -1,5 +1,5 @@
 import React from "react";
-import { BottomBarContainer, BottomBarWidgetGroup } from "../geohazard-components/bottom-bar";
+import { BottomBarContainer, BottomBarWidgetGroup } from "../geohazard-components/bottom-bar-container";
 import { PlaybackControls } from "../geohazard-components/playback-controls";
 import Slider from "@material-ui/core/Slider";
 import { observer } from "mobx-react-lite";
