@@ -28,8 +28,9 @@ export const BottomBar: React.FC = observer(function WrappedComponent() {
           Water level
           <Slider
             value={simulation.waterLevel}
-            min={simulation.minRiverElevation - 1}
+            min={simulation.minRiverElevation}
             max={simulation.maxElevation}
+            step={(simulation.maxElevation - simulation.minRiverElevation) / 100}
             onChange={handleWaterLevelChange}
           />
         </div>
