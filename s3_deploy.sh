@@ -1,6 +1,5 @@
 #!/bin/bash
 SRC_DIR='dist'
-DISTRIBUTION_ID='EVLOWHHQF22OS'
 # name of branch to deploy to root of site
 PRODUCTION_BRANCH='production'
 
@@ -53,7 +52,3 @@ mv $SRC_DIR $DEPLOY_DEST
 
 # deploy the site contents
 s3_website push --site _site
-
-# explicit CloudFront invalidation to workaround s3_website gem invalidation bug
-# with origin path (https://github.com/laurilehmijoki/s3_website/issues/207).
-aws cloudfront create-invalidation --distribution-id $DISTRIBUTION_ID --paths $INVAL_PATH

@@ -1,0 +1,165 @@
+$bottomBarHeight: 65px;
+$bottomBarBorderWidth: 1px;
+$bottomBarBorderStyle: $bottomBarBorderWidth solid #797979;
+$bottomBarTopPadding: 7px;
+$bottomBarBorderRadius: 9px;
+$bottomBarWidgetGroupSpacing: 10px;
+$overflowHeight: 11px;
+$textColor: #434343;
+$hoverColor: #dfdfdf;
+
+// Covers part of the border, just below the rounded corner.
+%borderCover {
+  content: '';
+  display: block;
+  position: absolute;
+  height: $bottomBarHeight + $bottomBarBorderWidth;
+  width: $bottomBarBorderWidth;
+  bottom: 0;
+  background: #fff;
+}
+
+.bottomBar {
+  width: 100%;
+  background: #fff;
+  color: $textColor;
+  height: $bottomBarHeight;
+  display: flex;
+  justify-content: space-between;
+  border-top: $bottomBarBorderStyle;
+  z-index: 1;
+
+  .leftContainer {
+    position: relative;
+    vertical-align: top;
+    padding: 14px 10px 0 10px;
+    .logo, .logoSmall {
+      height: 38px;
+    }
+  }
+
+  .mainContainer {
+    display: flex;
+  }
+
+  // Base styles that ensure that given container sticks out from the bottom bar, has a nice, round corners and its border
+  // matches rest of the bottom bar correctly.
+  .widgetGroup {
+    height: $bottomBarHeight + $overflowHeight;
+    margin-top: -$overflowHeight;
+    z-index: 1000;
+    background: #fff;
+    border-radius: 0;
+    border-top: $bottomBarBorderStyle;
+    border-top-left-radius: $bottomBarBorderRadius;
+    border-top-right-radius: $bottomBarBorderRadius;
+    position: relative;
+    // Left border is necessary so the rounded corner looks good (otherwise, border would end in the middle of curve).
+    border-left: $bottomBarBorderStyle;
+    // However, it needs to be mostly covered.
+    &:before {
+      @extend %borderCover;
+      left: -$bottomBarBorderWidth;
+    }
+    // Right border is necessary so the rounded corner looks good (otherwise, border would end in the middle of curve).
+    border-right: $bottomBarBorderStyle;
+    // However, it needs to be mostly covered.
+    &:after {
+      @extend %borderCover;
+      right: -$bottomBarBorderWidth;
+    }
+    margin-left: -$bottomBarBorderWidth;
+    margin-right: $bottomBarWidgetGroupSpacing;
+  }
+
+  .water {
+    width: 400px;
+    padding: 5px 20px;
+  }
+
+  // Why global .hoverable?
+  // It's being used by some child components to turn on initial hover effect.
+  :global(.hoverable):hover {
+    background: $hoverColor;
+  }
+
+  .precipitation{
+    width: 85px;
+
+    .precipitationSlider{
+      width: 40px;
+    }
+  }
+
+  .placeSpark {
+    margin-right: 0;
+  }
+
+  .reloadRestart {
+    white-space: nowrap;
+  }
+
+  .startStop {
+    margin-left: -$bottomBarWidgetGroupSpacing;
+  }
+
+  .fullscreenIcon {
+    margin-right: 5px;
+    margin-top: 5px;
+    height: 50px;
+    width: 50px;
+    background-size: 100%;
+    cursor: pointer;
+    background-image: url("./assets/fullscreen.svg");
+    &:hover {
+      background-image: url("./assets/fullscreen-dark.svg");
+    }
+    &.fullscreen {
+      background-image: url("./assets/fullscreen-exit.svg");
+      &:hover {
+        background-image: url("./assets/fullscreen-exit-dark.svg");
+      }
+    }
+  }
+}
+
+@media (max-width: 960px) {
+  .logo {
+    display: none;
+  }
+}
+@media (min-width: 960px) {
+  .logoSmall {
+    display: none;
+  }
+}
+
+.slider {
+  margin: 10px auto;
+  text-align: center;
+  font-size: 12px;
+
+  .disabled {
+    opacity: 0.25;
+
+    .thumb {
+      width: 20px;
+      height: 20px;
+      margin-left: -8.5px;
+      margin-top: -8.5px;
+    }
+  }
+  .thumb {
+    width: 20px;
+    height: 20px;
+    margin-left: -8.5px;
+    margin-top: -8.5px;
+    &:hover, &:active {
+      box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.5)
+    }
+  }
+  span{
+    margin-top: 2px;
+    font-size: 9px;
+  }
+}

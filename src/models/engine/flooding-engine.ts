@@ -1,14 +1,10 @@
-import { Vector2 } from "three";
 import { Cell } from "../cell";
-import { IWindProps } from "../../types";
 import { getGridIndexForLocation, directNeighbours } from "../utils/grid-utils";
 
 export interface IFireEngineConfig {
   gridWidth: number;
   gridHeight: number;
   cellSize: number;
-  minCellBurnTime: number;
-  neighborsDist: number;
 }
 
 // Lightweight helper that is responsible only for math calculations. It's not bound to MobX or any UI state
@@ -16,17 +12,14 @@ export interface IFireEngineConfig {
 // which config options are responsible for simulation progress.
 export class FloodingEngine {
   public cells: Cell[];
-  public wind: IWindProps;
   public gridWidth: number;
   public gridHeight: number;
   public cellSize: number;
-  public burnedCellsInZone: {[key: number]: number} = {};
   public waterEdge: Set<Cell>;
   public simulationDidStop = false;
 
-  constructor(cells: Cell[], wind: IWindProps, sparks: Vector2[], config: IFireEngineConfig) {
+  constructor(cells: Cell[], config: IFireEngineConfig) {
     this.cells = cells;
-    this.wind = wind;
     this.gridWidth = config.gridWidth;
     this.gridHeight = config.gridHeight;
     this.cellSize = config.cellSize;

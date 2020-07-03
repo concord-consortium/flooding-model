@@ -1,12 +1,8 @@
 import { useStores } from "../use-stores";
-import sparkCursorImg from "../assets/interactions/spark-cursor.png";
-import fireLineCursorImg from "../assets/interactions/fire-line-cursor.png";
 import { Interaction } from "../models/ui";
 import { useEffect } from "react";
 
 const interactionCursors: {[key in Interaction]?: string} = {
-  [Interaction.PlaceSpark]: `url(${sparkCursorImg}) 32 64, crosshair`,
-  [Interaction.DrawFireLine]: `url(${fireLineCursorImg}) 32 64, crosshair`,
   [Interaction.HoverOverDraggable]: "grab"
 };
 
@@ -19,7 +15,7 @@ export const useCustomCursor = () => {
       return;
     }
     if (ui.interaction && interactionCursors[ui.interaction]) {
-      document.body.style.cursor = interactionCursors[ui.interaction]!;
+      document.body.style.cursor = interactionCursors[ui.interaction] || "default";
       return;
     }
     document.body.style.cursor = "default";

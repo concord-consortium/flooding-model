@@ -1,63 +1,29 @@
-import React, { forwardRef, useMemo } from "react";
-import { DroughtLevel } from "../../types";
-import { BurnIndex, Cell } from "../../models/cell";
+import React, { useMemo } from "react";
+import { Cell } from "../../models/cell";
 import { ISimulationConfig } from "../../config";
 import * as THREE from "three";
 import { BufferAttribute } from "three";
 import { SimulationModel } from "../../models/simulation";
-import { ftToViewUnit, PLANE_WIDTH, planeHeight } from "./helpers";
-import { observer } from "mobx-react";
+import { mToViewUnit, PLANE_WIDTH, planeHeight } from "./helpers";
+import { observer } from "mobx-react-lite";
 import { useStores } from "../../use-stores";
-import { useUpdate, useLoader } from "react-three-fiber";
+import { useUpdate } from "react-three-fiber";
 import { getEventHandlers, InteractionHandler } from "./interaction-handler";
-import { usePlaceSparkInteraction } from "./use-place-spark-interaction";
-import { useDrawFireLineInteraction } from "./use-draw-fire-line-interaction";
 import { useShowCoordsInteraction } from "./use-show-coords-interaction";
-
 
 const vertexIdx = (cell: Cell, gridWidth: number, gridHeight: number) => (gridHeight - 1 - cell.y) * gridWidth + cell.x;
 
-const getTerrainColor = (droughtLevel: number) => {
-  switch (droughtLevel) {
-    case DroughtLevel.NoDrought:
-      return [0.008, 0.831, 0.039, 1];
-    case DroughtLevel.MildDrought:
-      return [0.573, 0.839, 0.216, 1];
-    case DroughtLevel.MediumDrought:
-      return [0.757, 0.886, 0.271, 1];
-    default:
-      return [0.784, 0.631, 0.271, 1];
-  }
-};
-
-const BURN_INDEX_LOW = [1, 0.7, 0, 1];
-const BURN_INDEX_MEDIUM = [1, 0.35, 0, 1];
-const BURN_INDEX_HIGH = [1, 0, 0, 1];
-const FIRE_LINE_UNDER_CONSTRUCTION_COLOR = [0.5, 0.5, 0, 1];
-
 const WHITE = [1, 1, 1, 1];
-
-const burnIndexColor = (burnIndex: BurnIndex) => {
-  if (burnIndex === BurnIndex.Low) {
-    return BURN_INDEX_LOW;
-  }
-  if (burnIndex === BurnIndex.Medium) {
-    return BURN_INDEX_MEDIUM;
-  }
-  return BURN_INDEX_HIGH;
-};
 
 const setVertexColor = (
   colArray: number[], cell: Cell, gridWidth: number, gridHeight: number, config: ISimulationConfig
 ) => {
   const idx = vertexIdx(cell, gridWidth, gridHeight) * 4;
   let color;
-  if (cell.isFireLineUnderConstruction) {
-    color = FIRE_LINE_UNDER_CONSTRUCTION_COLOR;
-  } else if (cell.isWater) {
+  if (cell.isWater) {
     color = config.riverColor;
   } else {
-    color = config.texture ? WHITE : getTerrainColor(cell.droughtLevel);
+    color = WHITE;
   }
   colArray[idx] = color[0];
   colArray[idx + 1] = color[1];
@@ -75,7 +41,7 @@ const updateColors = (geometry: THREE.PlaneBufferGeometry, simulation: Simulatio
 
 const setupElevation = (geometry: THREE.PlaneBufferGeometry, simulation: SimulationModel) => {
   const posArray = geometry.attributes.position.array as number[];
-  const mult = ftToViewUnit(simulation);
+  const mult = mToViewUnit(simulation);
   // Apply height map to vertices of plane.
   simulation.cells.forEach(cell => {
     const zAttrIdx = vertexIdx(cell, simulation.gridWidth, simulation.gridHeight) * 3 + 2;
@@ -103,7 +69,7 @@ const getTexture = (imgSrcOrCanvas: string | HTMLCanvasElement) => {
   return texture;
 };
 
-export const Terrain = observer(forwardRef<THREE.Mesh>(function WrappedComponent(props, ref) {
+export const Terrain = observer(function WrappedComponent(props) {
   const { simulation } = useStores();
   const height = planeHeight(simulation);
 
@@ -122,8 +88,6 @@ export const Terrain = observer(forwardRef<THREE.Mesh>(function WrappedComponent
   }, [simulation.cellsStateFlag], geometryRef);
 
   const interactions: InteractionHandler[] = [
-    usePlaceSparkInteraction(),
-    useDrawFireLineInteraction(),
     useShowCoordsInteraction()
   ];
 
@@ -137,11 +101,7 @@ export const Terrain = observer(forwardRef<THREE.Mesh>(function WrappedComponent
   const texture = useMemo(() => getTexture(textureSrc), [textureSrc]);
 
   return (
-    <mesh
-      ref={ref}
-      position={[PLANE_WIDTH * 0.5, height * 0.5, 0]}
-      {...eventHandlers}
-    >
+    <mesh position={[PLANE_WIDTH * 0.5, height * 0.5, 0]} {...eventHandlers}>
       <planeBufferGeometry
         attach="geometry"
         ref={geometryRef}
@@ -154,6 +114,5 @@ export const Terrain = observer(forwardRef<THREE.Mesh>(function WrappedComponent
           <meshLambertMaterial attach="material" vertexColors={true} />
       }
     </mesh>
-  )
-}));
-
+  );
+});
