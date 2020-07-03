@@ -22,7 +22,9 @@ export const AppComponent = observer(function WrappedComponent() {
       <div className={`${css.mainContent}`}>
         <View3d />
       </div>
-      <BottomBar />
+      <div className={`${css.bottomBar}`}>
+        <BottomBar />
+      </div>
     </div>
   );
 });
