@@ -20,8 +20,8 @@ export const getRiverData = (config: ISimulationConfig): Promise<number[] | unde
   }
   return getInputData(config.riverData, config.gridWidth, config.gridHeight, true,
     (rgba: [number, number, number, number]) => {
-      // River texture is mostly transparent, so look for non-transparent cells to define shape
-      return rgba[3] > 0 ? 1 : 0;
+      // River texture is black & white, river is black.
+      return rgba[0] < 128 ? 1 : 0;
     }
   );
 };
