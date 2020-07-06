@@ -1,17 +1,11 @@
 import React from "react";
-import { BottomBarContainer, BottomBarWidgetGroup } from "../geohazard-components/bottom-bar-container";
+import { BottomBarContainer } from "../geohazard-components/bottom-bar-container";
 import { PlaybackControls } from "../geohazard-components/playback-controls";
-import Slider from "@material-ui/core/Slider";
 import { observer } from "mobx-react-lite";
 import { useStores } from "../use-stores";
-import css from "./bottom-bar.scss";
 
 export const BottomBar: React.FC = observer(function WrappedComponent() {
   const { simulation } = useStores();
-
-  const handleWaterLevelChange = (event: React.ChangeEvent, newValue: number) => {
-    simulation.waterLevel = newValue;
-  };
 
   return (
     <BottomBarContainer>
@@ -23,18 +17,6 @@ export const BottomBar: React.FC = observer(function WrappedComponent() {
         playing={simulation.simulationRunning}
         startStopDisabled={!simulation.ready}
       />
-      <BottomBarWidgetGroup>
-        <div className={css.water}>
-          Water level
-          <Slider
-            value={simulation.waterLevel}
-            min={simulation.minRiverElevation}
-            max={simulation.maxElevation}
-            step={(simulation.maxElevation - simulation.minRiverElevation) / 100}
-            onChange={handleWaterLevelChange}
-          />
-        </div>
-      </BottomBarWidgetGroup>
     </BottomBarContainer>
   );
 });
