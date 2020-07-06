@@ -73,7 +73,7 @@ export class SimulationModel {
     ]).then(values => {
       const elevation = values[0];
       const river = values[1];
-      const verticalTilt = this.config.elevationVerticalTilt;
+      const verticalTilt = (this.config.elevationVerticalTilt / 100) * this.config.heightmapMaxElevation;
 
       this.cells.length = 0;
 

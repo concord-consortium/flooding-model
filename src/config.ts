@@ -23,9 +23,10 @@ export interface ISimulationConfig {
   showCoordsOnClick: boolean;
   riverColor: [number, number, number, number];
   renderWaterLevel: boolean;
-  // Post processing of elevation data. Tilts elevation data in one axis. Useful for flooding experiment,
-  // to compensate the fact that upstream river part is usually placed higher than downstream part.
+  // Post processing of elevation data. Tilts elevation data in one axis. Value in %, usually between -100 and 100.
+  // Useful to compensate the fact that upstream river part is usually placed higher than downstream part.
   elevationVerticalTilt: number;
+  // Visual layer.
   texture: string;
 }
 
@@ -34,24 +35,23 @@ export interface IUrlConfig extends ISimulationConfig {
 }
 
 export const getDefaultConfig: () => IUrlConfig = () => ({
-  preset: "iowa",
-  modelWidth: 66308,
-  modelHeight: 42650,
-  elevation: "data/iowa-city-heightmap.png",
-  riverData: "data/iowa-city-river.png",
+  preset: "RiverCity",
+  modelWidth: 8000,
+  modelHeight: 8000,
+  elevation: "data/model2_heightmap_hi.png",
+  riverData: "data/model2_map_riverdata.png",
+  texture: "data/model2_map_topo.png",
   gridWidth: 400,
   get cellSize() { return this.modelWidth / this.gridWidth; },
   get gridHeight() { return Math.ceil(this.modelHeight / this.cellSize); },
   maxTimeStep: 180, // minutes
   modelDayInSeconds: 8, // one day in model should last X seconds in real world
-  // This value works well with existing heightmap images.
-  heightmapMaxElevation: 20000,
+  heightmapMaxElevation: 45,
   fillTerrainEdges: true,
   showCoordsOnClick: false,
-  riverColor: [0.067, 0.529, 0.882, 1],
+  riverColor: [0.314, 0.675, 1, 1],
   renderWaterLevel: false,
-  elevationVerticalTilt: 0,
-  texture: ""
+  elevationVerticalTilt: 0
 });
 
 const getURLParam = (name: string) => {

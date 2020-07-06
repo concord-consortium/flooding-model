@@ -22,7 +22,8 @@ const ShutterbugSupport = () => {
 export const View3d = () => {
   const stores = useStores();
   const simulation = stores.simulation;
-  const cameraPos: [number, number, number] = [PLANE_WIDTH * 0.5, planeHeight(simulation) * -1.5, PLANE_WIDTH * 1.5];
+  // 0.4999 is used, as 0.5 causes a weird rotation of the camera due to constraints enforced by OrbitControls config.
+  const cameraPos: [number, number, number] = [PLANE_WIDTH * 0.5, planeHeight(simulation) * 0.4999, PLANE_WIDTH * 2];
 
   // If pixelRatio is 2 or more, use a bit reduced value. It seems to be a good compromise between
   // rendering quality and performance (PJ: on my 2017 MacBook Pro 15", pixelRatio = 2 was causing visible FPS drop).
