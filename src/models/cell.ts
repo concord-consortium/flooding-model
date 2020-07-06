@@ -13,13 +13,16 @@ export class Cell {
   public isEdge = false;
   public isRiver = false;
   public baseElevation = 0;
-  public waterDepth = 0;
   public initialWaterDepth = 0;
-  public velocity = 0;
+  public waterDepth = 0;
+  public fluxL = 0; // left
+  public fluxR = 0; // right
+  public fluxT = 0; // top
+  public fluxB = 0; // bottom
 
   constructor(props: CellOptions, riverDepth: number) {
     Object.assign(this, props);
-    if (props.isRiver) {
+    if (props.isRiver && !props.isEdge) {
       this.waterDepth = riverDepth;
       this.initialWaterDepth = riverDepth;
     }
@@ -33,8 +36,15 @@ export class Cell {
     return this.waterDepth > 0;
   }
 
+  public get fluxOut() {
+    return this.fluxL + this.fluxR + this.fluxB + this.fluxT;
+  }
+
   public reset() {
     this.waterDepth = this.initialWaterDepth;
-    this.velocity = 0;
+    this.fluxL = 0;
+    this.fluxR = 0;
+    this.fluxT = 0;
+    this.fluxB = 0;
   }
 }

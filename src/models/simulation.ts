@@ -10,7 +10,6 @@ import { FloodingEngine } from "./engine/flooding-engine";
 // Also, all the observable properties should be here, so the view code can observe them.
 export class SimulationModel {
   public config: ISimulationConfig;
-  public prevTickTime: number | null;
   public dataReadyPromise: Promise<void>;
   public engine: FloodingEngine | null = null;
   // Cells are not directly observable. Changes are broadcasted using cellsStateFlag and cellsElevationFlag.
@@ -19,9 +18,6 @@ export class SimulationModel {
   @observable public dataReady = false;
   @observable public simulationStarted = false;
   @observable public simulationRunning = false;
-  @observable public minRiverElevation = 0;
-  @observable public maxElevation = 0;
-  @observable public waterLevel = 0;
   // These flags can be used by view to trigger appropriate rendering. Theoretically, view could/should check
   // every single cell and re-render when it detects some changes. In practice, we perform these updates in very
   // specific moments and usually for all the cells, so this approach can be way more efficient.
@@ -66,8 +62,6 @@ export class SimulationModel {
   @action.bound public populateCellsData() {
     this.dataReady = false;
     const config = this.config;
-    this.minRiverElevation = Infinity;
-    this.maxElevation = 0;
     this.dataReadyPromise = Promise.all([
       getElevationData(config), getRiverData(config)
     ]).then(values => {
@@ -95,16 +89,9 @@ export class SimulationModel {
             isRiver,
             baseElevation,
           };
-          if (isRiver && !isEdge && baseElevation && baseElevation < this.minRiverElevation) {
-            this.minRiverElevation = baseElevation;
-          }
-          if (baseElevation && baseElevation > this.maxElevation) {
-            this.maxElevation = baseElevation;
-          }
           this.cells.push(new Cell(cellOptions, this.config.riverDepth));
         }
       }
-      this.waterLevel = this.minRiverElevation;
       this.updateCellsElevationFlag();
       this.updateCellsStateFlag();
       this.dataReady = true;
@@ -123,7 +110,6 @@ export class SimulationModel {
     }
 
     this.simulationRunning = true;
-    this.prevTickTime = null;
 
     requestAnimationFrame(this.rafCallback);
   }
@@ -147,42 +133,15 @@ export class SimulationModel {
     this.populateCellsData();
   }
 
-  @action.bound public rafCallback(time: number) {
+  @action.bound public rafCallback() {
     if (!this.simulationRunning) {
       return;
     }
     requestAnimationFrame(this.rafCallback);
 
-    let realTimeDiffInMinutes = null;
-    if (!this.prevTickTime) {
-      this.prevTickTime = time;
-    } else {
-      realTimeDiffInMinutes = (time - this.prevTickTime) / 60000;
-      this.prevTickTime = time;
-    }
-    let timeStep;
-    if (realTimeDiffInMinutes) {
-      // One day in model time (86400 seconds) should last X seconds in real time.
-      const ratio = 86400 / this.config.modelDayInSeconds;
-      // Optimal time step assumes we have stable 60 FPS:
-      // realTime = 1000ms / 60 = 16.666ms
-      // timeStepInMs = ratio * realTime
-      // timeStepInMinutes = timeStepInMs / 1000 / 60
-      // Below, these calculations are just simplified (1000 / 60 / 1000 / 60 = 0.000277):
-      const optimalTimeStep = ratio * 0.000277;
-      // Final time step should be limited by:
-      // - maxTimeStep that model can handle
-      // - reasonable multiplication of the "optimal time step" so user doesn't see significant jumps in the simulation
-      //   when one tick takes much longer time (e.g. when cell properties are recalculated after adding fire line)
-      timeStep = Math.min(this.config.maxTimeStep, optimalTimeStep * 4, ratio * realTimeDiffInMinutes);
-    } else {
-      // We don't know performance yet, so simply increase time by some safe value and wait for the next tick.
-      timeStep = 1;
-    }
-
     if (this.engine) {
-      this.time += timeStep;
-      this.engine.update();
+      this.time += this.config.timeStep;
+      this.engine.update(this.config.timeStep);
       if (this.engine.simulationDidStop) {
         this.simulationRunning = false;
       }

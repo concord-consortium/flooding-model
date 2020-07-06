@@ -1,5 +1,6 @@
 
 export interface ISimulationConfig {
+  timeStep: number; // model time
   modelWidth: number; // m
   modelHeight: number; // m
   // Note that modelHeight % gridWidth should always be 0!
@@ -11,9 +12,6 @@ export interface ISimulationConfig {
   // If `elevation` height map is provided, it will be loaded during model initialization and terrain setup dialog
   // won't let users change terrain type. Otherwise, height map URL will be derived from zones `terrainType` properties.
   elevation: number[][] | string;
-  maxTimeStep: number; // minutes
-  // One day in model should last X seconds in real world.
-  modelDayInSeconds: number;
   // Max elevation of 100% white points in heightmap (image used for elevation data).
   heightmapMaxElevation: number; // m
   // Visually fills edges of the terrain by setting elevation to 0.
@@ -38,6 +36,7 @@ export interface IUrlConfig extends ISimulationConfig {
 
 export const getDefaultConfig: () => IUrlConfig = () => ({
   preset: "RiverCity",
+  timeStep: 1,
   modelWidth: 8000,
   modelHeight: 8000,
   elevation: "data/model2_heightmap_hi.png",
@@ -46,8 +45,6 @@ export const getDefaultConfig: () => IUrlConfig = () => ({
   gridWidth: 300,
   get cellSize() { return this.modelWidth / this.gridWidth; },
   get gridHeight() { return Math.ceil(this.modelHeight / this.cellSize); },
-  maxTimeStep: 180, // minutes
-  modelDayInSeconds: 8, // one day in model should last X seconds in real world
   heightmapMaxElevation: 45,
   fillTerrainEdges: true,
   showCoordsOnClick: false,
