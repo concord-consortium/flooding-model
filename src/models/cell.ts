@@ -1,33 +1,40 @@
 export interface CellOptions {
   x: number;
   y: number;
-  baseElevation?: number;
-  isRiver?: boolean;
   isEdge?: boolean;
+  isRiver?: boolean;
+  baseElevation?: number;
+  waterDepth?: number;
 }
 
 export class Cell {
   public x: number; // grid X coord
   public y: number; // grid Y coord
-  public baseElevation = 0;
-  public isRiver = false;
-  public isFlooded = false;
   public isEdge = false;
-  public isWaterEdge = false;
+  public isRiver = false;
+  public baseElevation = 0;
+  public waterDepth = 0;
+  public initialWaterDepth = 0;
+  public velocity = 0;
 
-  constructor(props: CellOptions) {
+  constructor(props: CellOptions, riverDepth: number) {
     Object.assign(this, props);
+    if (props.isRiver) {
+      this.waterDepth = riverDepth;
+      this.initialWaterDepth = riverDepth;
+    }
   }
 
   public get elevation() {
-    return this.baseElevation;
+    return this.baseElevation + this.waterDepth;
   }
 
   public get isWater() {
-    return this.isRiver || this.isFlooded;
+    return this.waterDepth > 0;
   }
 
   public reset() {
-    this.isFlooded = false;
+    this.waterDepth = this.initialWaterDepth;
+    this.velocity = 0;
   }
 }

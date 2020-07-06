@@ -26,6 +26,8 @@ export interface ISimulationConfig {
   // Post processing of elevation data. Tilts elevation data in one axis. Value in %, usually between -100 and 100.
   // Useful to compensate the fact that upstream river part is usually placed higher than downstream part.
   elevationVerticalTilt: number;
+  // Initial river depth in meters.
+  riverDepth: number;
   // Visual layer.
   texture: string;
 }
@@ -41,7 +43,7 @@ export const getDefaultConfig: () => IUrlConfig = () => ({
   elevation: "data/model2_heightmap_hi.png",
   riverData: "data/model2_map_riverdata.png",
   texture: "data/model2_map_topo.png",
-  gridWidth: 400,
+  gridWidth: 300,
   get cellSize() { return this.modelWidth / this.gridWidth; },
   get gridHeight() { return Math.ceil(this.modelHeight / this.cellSize); },
   maxTimeStep: 180, // minutes
@@ -50,8 +52,9 @@ export const getDefaultConfig: () => IUrlConfig = () => ({
   fillTerrainEdges: true,
   showCoordsOnClick: false,
   riverColor: [0.314, 0.675, 1, 1],
-  renderWaterLevel: false,
-  elevationVerticalTilt: 0
+  renderWaterLevel: true,
+  elevationVerticalTilt: 0,
+  riverDepth: 5 // m
 });
 
 const getURLParam = (name: string) => {

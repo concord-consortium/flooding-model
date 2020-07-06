@@ -91,8 +91,8 @@ export class SimulationModel {
           }
           const cellOptions: CellOptions = {
             x, y,
-            isRiver,
             isEdge,
+            isRiver,
             baseElevation,
           };
           if (isRiver && !isEdge && baseElevation && baseElevation < this.minRiverElevation) {
@@ -101,7 +101,7 @@ export class SimulationModel {
           if (baseElevation && baseElevation > this.maxElevation) {
             this.maxElevation = baseElevation;
           }
-          this.cells.push(new Cell(cellOptions));
+          this.cells.push(new Cell(cellOptions, this.config.riverDepth));
         }
       }
       this.waterLevel = this.minRiverElevation;
@@ -182,7 +182,7 @@ export class SimulationModel {
 
     if (this.engine) {
       this.time += timeStep;
-      this.engine.update(this.waterLevel);
+      this.engine.update();
       if (this.engine.simulationDidStop) {
         this.simulationRunning = false;
       }
