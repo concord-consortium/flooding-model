@@ -45,7 +45,8 @@ const setupElevation = (geometry: THREE.PlaneBufferGeometry, simulation: Simulat
   // Apply height map to vertices of plane.
   simulation.cells.forEach(cell => {
     const zAttrIdx = vertexIdx(cell, simulation.gridWidth, simulation.gridHeight) * 3 + 2;
-    posArray[zAttrIdx] = (simulation.config.renderWaterLevel && cell.isWater ? simulation.waterLevel : cell.elevation) * mult;
+    // .baseElevation doesn't include water depth.
+    posArray[zAttrIdx] = (simulation.config.renderWaterLevel ? cell.elevation : cell.baseElevation) * mult;
   });
   geometry.computeVertexNormals();
   (geometry.attributes.position as BufferAttribute).needsUpdate = true;
