@@ -15,12 +15,14 @@ const vertexIdx = (cell: Cell, gridWidth: number, gridHeight: number) => (gridHe
 
 const WHITE = [1, 1, 1, 1];
 
+const MIN_WATER_DEPTH = 0.01;
+
 const setVertexColor = (
   colArray: number[], cell: Cell, gridWidth: number, gridHeight: number, config: ISimulationConfig
 ) => {
   const idx = vertexIdx(cell, gridWidth, gridHeight) * 4;
   let color;
-  if (cell.isWater) {
+  if (cell.isWater && cell.waterDepth > MIN_WATER_DEPTH) {
     color = config.riverColor;
   } else {
     color = WHITE;
