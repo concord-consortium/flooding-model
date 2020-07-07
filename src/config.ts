@@ -28,6 +28,8 @@ export interface ISimulationConfig {
   elevationVerticalTilt: number;
   // Visual layer.
   texture: string;
+  waterIncrement: number;
+  waterDecrement: number;
 }
 
 export interface IUrlConfig extends ISimulationConfig {
@@ -51,7 +53,9 @@ export const getDefaultConfig: () => IUrlConfig = () => ({
   fillTerrainEdges: true,
   showCoordsOnClick: false,
   riverColor: [0.314, 0.675, 1, 1],
-  elevationVerticalTilt: 0
+  elevationVerticalTilt: 0,
+  waterIncrement: 0.1,
+  waterDecrement: 0
 });
 
 const getURLParam = (name: string) => {

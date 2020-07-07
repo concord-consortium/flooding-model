@@ -11,10 +11,12 @@
 import { Cell } from "../cell";
 import { getGridIndexForLocation } from "../utils/grid-utils";
 
-export interface IFireEngineConfig {
+export interface IFloodingEngineConfig {
   gridWidth: number;
   gridHeight: number;
   cellSize: number;
+  waterIncrement: number;
+  waterDecrement: number;
 }
 
 const GRAVITY = 9.81;
@@ -42,11 +44,13 @@ export class FloodingEngine {
   public waterIncrement = 0;
   public waterDecrement = 0;
 
-  constructor(cells: Cell[], config: IFireEngineConfig) {
+  constructor(cells: Cell[], config: IFloodingEngineConfig) {
     this.cells = cells;
     this.gridWidth = config.gridWidth;
     this.gridHeight = config.gridHeight;
     this.cellSize = config.cellSize;
+    this.waterIncrement = config.waterIncrement;
+    this.waterDecrement = config.waterDecrement;
   }
 
   public update(dt: number) {
