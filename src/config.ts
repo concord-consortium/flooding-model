@@ -11,10 +11,12 @@ export interface ISimulationConfig {
   // It will be calculated automatically using model dimensions and grid width.
   readonly cellSize: number; // m
   // If `elevation` height map is provided, it will be loaded during model initialization and terrain setup dialog
-  // won't let users change terrain type. Otherwise, height map URL will be derived from zones `terrainType` properties.
+  // won't let users change terrain type.
   elevation: number[][] | string;
-  // Max elevation of 100% white points in heightmap (image used for elevation data).
-  heightmapMaxElevation: number; // m
+  // Elevation of 100% black points in heightmap (image used for elevation data).
+  minElevation: number; // m
+  // Elevation of 100% white points in heightmap (image used for elevation data).
+  maxElevation: number; // m
   // Visually fills edges of the terrain by setting elevation to 0.
   fillTerrainEdges: boolean;
   riverData: string | null;
@@ -38,13 +40,14 @@ export const getDefaultConfig: () => IUrlConfig = () => ({
   speedMult: 3,
   modelWidth: 8000,
   modelHeight: 8000,
+  get cellSize() { return this.modelWidth / this.gridWidth; },
+  get gridHeight() { return Math.ceil(this.modelHeight / this.cellSize); },
   elevation: "data/model2_heightmap_hi.png",
+  minElevation: 162,
+  maxElevation: 238,
   riverData: "data/model2_map_riverdata.png",
   texture: "data/model2_map_topo.png",
   gridWidth: 300,
-  get cellSize() { return this.modelWidth / this.gridWidth; },
-  get gridHeight() { return Math.ceil(this.modelHeight / this.cellSize); },
-  heightmapMaxElevation: 45,
   fillTerrainEdges: true,
   showCoordsOnClick: false,
   riverColor: [0.314, 0.675, 1, 1],
