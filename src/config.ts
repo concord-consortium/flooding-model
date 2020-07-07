@@ -24,8 +24,6 @@ export interface ISimulationConfig {
   // Post processing of elevation data. Tilts elevation data in one axis. Value in %, usually between -100 and 100.
   // Useful to compensate the fact that upstream river part is usually placed higher than downstream part.
   elevationVerticalTilt: number;
-  // Initial river depth in meters.
-  riverDepth: number;
   // Visual layer.
   texture: string;
 }
@@ -50,8 +48,7 @@ export const getDefaultConfig: () => IUrlConfig = () => ({
   fillTerrainEdges: true,
   showCoordsOnClick: false,
   riverColor: [0.314, 0.675, 1, 1],
-  elevationVerticalTilt: 0,
-  riverDepth: 0 // m
+  elevationVerticalTilt: 0
 });
 
 const getURLParam = (name: string) => {

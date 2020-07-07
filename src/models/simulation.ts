@@ -88,7 +88,7 @@ export class SimulationModel {
             isRiver,
             baseElevation,
           };
-          this.cells.push(new Cell(cellOptions, this.config.riverDepth));
+          this.cells.push(new Cell(cellOptions));
         }
       }
       this.updateCellsBaseElevationFlag();
