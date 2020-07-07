@@ -20,7 +20,6 @@ export interface ISimulationConfig {
   // Displays alert with current coordinates on mouse click. Useful for authoring.
   showCoordsOnClick: boolean;
   riverColor: [number, number, number, number];
-  renderWaterLevel: boolean;
   // Post processing of elevation data. Tilts elevation data in one axis. Value in %, usually between -100 and 100.
   // Useful to compensate the fact that upstream river part is usually placed higher than downstream part.
   elevationVerticalTilt: number;
@@ -49,7 +48,6 @@ export const getDefaultConfig: () => IUrlConfig = () => ({
   fillTerrainEdges: true,
   showCoordsOnClick: false,
   riverColor: [0.314, 0.675, 1, 1],
-  renderWaterLevel: true,
   elevationVerticalTilt: 0,
   riverDepth: 5 // m
 });

@@ -12,7 +12,7 @@ export class SimulationModel {
   public config: ISimulationConfig;
   public dataReadyPromise: Promise<void>;
   public engine: FloodingEngine | null = null;
-  // Cells are not directly observable. Changes are broadcasted using cellsStateFlag and cellsElevationFlag.
+  // Cells are not directly observable. Changes are broadcasted using cellsStateFlag and cellsBaseElevationFlag.
   public cells: Cell[] = [];
   @observable public time = 0;
   @observable public dataReady = false;
@@ -22,11 +22,10 @@ export class SimulationModel {
   // every single cell and re-render when it detects some changes. In practice, we perform these updates in very
   // specific moments and usually for all the cells, so this approach can be way more efficient.
   @observable public cellsStateFlag = 0;
-  @observable public cellsElevationFlag = 0;
+  @observable public cellsBaseElevationFlag = 0;
 
   constructor(presetConfig: Partial<ISimulationConfig>) {
     this.load(presetConfig);
-    // this.dataReadyPromise.then(() => { this.start(); })
   }
 
   @computed public get ready() {
@@ -92,7 +91,7 @@ export class SimulationModel {
           this.cells.push(new Cell(cellOptions, this.config.riverDepth));
         }
       }
-      this.updateCellsElevationFlag();
+      this.updateCellsBaseElevationFlag();
       this.updateCellsStateFlag();
       this.dataReady = true;
     });
@@ -123,7 +122,6 @@ export class SimulationModel {
     this.simulationStarted = false;
     this.cells.forEach(cell => cell.reset());
     this.updateCellsStateFlag();
-    this.updateCellsElevationFlag();
     this.time = 0;
     this.engine = null;
   }
@@ -148,13 +146,10 @@ export class SimulationModel {
     }
 
     this.updateCellsStateFlag();
-    if (this.config.renderWaterLevel) {
-      this.updateCellsElevationFlag();
-    }
   }
 
-  @action.bound public updateCellsElevationFlag() {
-    this.cellsElevationFlag += 1;
+  @action.bound public updateCellsBaseElevationFlag() {
+    this.cellsBaseElevationFlag += 1;
   }
 
   @action.bound public updateCellsStateFlag() {
