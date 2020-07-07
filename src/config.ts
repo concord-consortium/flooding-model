@@ -1,6 +1,7 @@
 
 export interface ISimulationConfig {
   timeStep: number; // model time
+  speedMult: number; // simulation speed multiplier, should be integer
   modelWidth: number; // m
   modelHeight: number; // m
   // Note that modelHeight % gridWidth should always be 0!
@@ -36,6 +37,7 @@ export interface IUrlConfig extends ISimulationConfig {
 export const getDefaultConfig: () => IUrlConfig = () => ({
   preset: "RiverCity",
   timeStep: 1,
+  speedMult: 3,
   modelWidth: 8000,
   modelHeight: 8000,
   elevation: "data/model2_heightmap_hi.png",
@@ -49,7 +51,7 @@ export const getDefaultConfig: () => IUrlConfig = () => ({
   showCoordsOnClick: false,
   riverColor: [0.314, 0.675, 1, 1],
   elevationVerticalTilt: 0,
-  riverDepth: 5 // m
+  riverDepth: 0 // m
 });
 
 const getURLParam = (name: string) => {

@@ -138,8 +138,10 @@ export class SimulationModel {
     requestAnimationFrame(this.rafCallback);
 
     if (this.engine) {
-      this.time += this.config.timeStep;
-      this.engine.update(this.config.timeStep);
+      for (let i = 0; i < this.config.speedMult; i += 1) {
+        this.time += this.config.timeStep;
+        this.engine.update(this.config.timeStep);
+      }
       if (this.engine.simulationDidStop) {
         this.simulationRunning = false;
       }
