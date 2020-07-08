@@ -16,11 +16,13 @@ const setupElevation = (geometry: THREE.PlaneBufferGeometry, simulation: Simulat
   const posArray = geometry.attributes.position.array as number[];
   const mult = mToViewUnit(simulation);
   // Apply height map to vertices of plane.
-  simulation.cells.forEach(cell => {
+  for (const cell of simulation.cells) {
     const zAttrIdx = vertexIdx(cell, simulation.gridWidth, simulation.gridHeight) * 3 + 2;
     // .baseElevation doesn't include water depth.
     posArray[zAttrIdx] = cell.waterDepth > MIN_WATER_DEPTH ? cell.elevation * mult : 0;
-  });
+  }
+  // This is needed only in 3D view for realistic shading. When view is locked to 2D, it should be disabled,
+  // as it's pretty expensive (around 25ms for 300x300 grid on MBP 15" 2017).
   geometry.computeVertexNormals();
   (geometry.attributes.position as BufferAttribute).needsUpdate = true;
 };

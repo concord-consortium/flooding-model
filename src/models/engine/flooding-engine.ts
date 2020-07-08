@@ -53,6 +53,10 @@ export class FloodingEngine {
     this.waterDecrement = config.waterDecrement;
   }
 
+  public getIdx(x: number, y: number) {
+    return getGridIndexForLocation(x, y, this.gridWidth);
+  }
+
   public update(dt: number) {
     this.addWaterInRiver(dt);
     this.updateFlux(dt);
@@ -61,31 +65,33 @@ export class FloodingEngine {
   }
 
   public addWaterInRiver(dt: number) {
-    this.cells.forEach(cell => {
+    for (const cell of this.cells) {
+
       if (!cell.isRiver || cell.isEdge) {
-        return;
+        continue;
       }
       cell.waterDepth += this.waterIncrement * dt;
-    });
+    }
   }
 
   public removeWater(dt: number) {
-    this.cells.forEach(cell => {
+    for (const cell of this.cells) {
+
       if (cell.isEdge || cell.waterDepth === 0) {
-        return;
+        continue;
       }
       cell.waterDepth -= this.waterDecrement * dt;
       cell.waterDepth = Math.max(0, cell.waterDepth);
-    });
+    }
   }
 
   public updateFlux(dt: number) {
     let nFluxL: number, nFluxR: number, nFluxB: number, nFluxT: number;
     const cellArea = this.cellSize * this.cellSize;
 
-    this.cells.forEach(cell => {
+    for (const cell of this.cells) {
       if (cell.isEdge) {
-        return;
+        continue;
       }
 
       const x = cell.x;
@@ -93,16 +99,16 @@ export class FloodingEngine {
       let nCell;
 
       // fluxL
-      nCell = this.cells[getGridIndexForLocation(x - 1, y, this.gridWidth)];
+      nCell = this.cells[this.getIdx(x - 1, y)];
       nFluxL = !nCell.isEdge ? getNewFlux(dt, cell.fluxL, cell.elevation - nCell.elevation, this.cellSize) : 0;
       // fluxR
-      nCell = this.cells[getGridIndexForLocation(x + 1, y, this.gridWidth)];
+      nCell = this.cells[this.getIdx(x + 1, y)];
       nFluxR = !nCell.isEdge ? getNewFlux(dt, cell.fluxR, cell.elevation - nCell.elevation, this.cellSize) : 0;
       // fluxB
-      nCell = this.cells[getGridIndexForLocation(x, y - 1, this.gridWidth)];
+      nCell = this.cells[this.getIdx(x, y - 1)];
       nFluxB = !nCell.isEdge ? getNewFlux(dt, cell.fluxB, cell.elevation - nCell.elevation, this.cellSize) : 0;
       // fluxT
-      nCell = this.cells[getGridIndexForLocation(x, y + 1, this.gridWidth)];
+      nCell = this.cells[this.getIdx(x, y + 1)];
       nFluxT = !nCell.isEdge ? getNewFlux(dt, cell.fluxT, cell.elevation - nCell.elevation, this.cellSize) : 0;
 
       // Scaling factor. Scale down outflow if it is more than available volume in the column.
@@ -114,24 +120,24 @@ export class FloodingEngine {
       cell.fluxR = k * nFluxR;
       cell.fluxT = k * nFluxT;
       cell.fluxB = k * nFluxB;
-    });
+    }
   }
 
   public updateWaterDepth(dt: number) {
     const cellArea = this.cellSize * this.cellSize;
     this.waterSum = 0;
 
-    this.cells.forEach(cell => {
+    for (const cell of this.cells) {
       if (cell.isEdge) {
-        return;
+        continue;
       }
       const x = cell.x;
       const y = cell.y;
 
-      const fluxInLeft = this.cells[getGridIndexForLocation(x - 1, y, this.gridWidth)].fluxR;
-      const fluxInRight = this.cells[getGridIndexForLocation(x + 1, y, this.gridWidth)].fluxL;
-      const fluxInBottom = this.cells[getGridIndexForLocation(x, y - 1, this.gridWidth)].fluxT;
-      const fluxInTop = this.cells[getGridIndexForLocation(x, y + 1, this.gridWidth)].fluxB;
+      const fluxInLeft = this.cells[this.getIdx(x - 1, y)].fluxR;
+      const fluxInRight = this.cells[this.getIdx(x + 1, y)].fluxL;
+      const fluxInBottom = this.cells[this.getIdx(x, y - 1)].fluxT;
+      const fluxInTop = this.cells[this.getIdx(x, y + 1)].fluxB;
 
       const fluxIn = fluxInLeft + fluxInRight + fluxInTop + fluxInBottom;
 
@@ -141,6 +147,6 @@ export class FloodingEngine {
       cell.waterDepth = nWaterDepth;
 
       this.waterSum += nWaterDepth;
-    });
+    }
   }
 }
