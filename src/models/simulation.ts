@@ -1,7 +1,7 @@
 import { action, computed, observable } from "mobx";
 import { Cell, CellOptions } from "./cell";
 import { getDefaultConfig, ISimulationConfig, getUrlConfig } from "../config";
-import { getElevationData, getRiverData } from "./utils/data-loaders";
+import { getElevationData, getRiverData, getWaterDepthData } from "./utils/data-loaders";
 import { getGridIndexForLocation } from "./utils/grid-utils";
 import { FloodingEngine } from "./engine/flooding-engine";
 
@@ -62,10 +62,11 @@ export class SimulationModel {
     this.dataReady = false;
     const config = this.config;
     this.dataReadyPromise = Promise.all([
-      getElevationData(config), getRiverData(config)
+      getElevationData(config), getRiverData(config), getWaterDepthData(config)
     ]).then(values => {
       const elevation = values[0];
       const river = values[1];
+      const waterDepth = values[2];
       const elevationDiff = this.config.maxElevation - this.config.minElevation;
       const verticalTilt = (this.config.elevationVerticalTilt / 100) * elevationDiff;
 
@@ -91,6 +92,7 @@ export class SimulationModel {
             isEdge,
             isRiver,
             baseElevation,
+            waterDepth: waterDepth && waterDepth[index] || 0
           };
           this.cells.push(new Cell(cellOptions));
         }
