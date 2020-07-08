@@ -1,6 +1,5 @@
 import React, { useMemo } from "react";
 import { Cell } from "../../models/cell";
-import { ISimulationConfig } from "../../config";
 import * as THREE from "three";
 import { BufferAttribute } from "three";
 import { SimulationModel } from "../../models/simulation";
@@ -13,40 +12,15 @@ import { useShowCoordsInteraction } from "./use-show-coords-interaction";
 
 const vertexIdx = (cell: Cell, gridWidth: number, gridHeight: number) => (gridHeight - 1 - cell.y) * gridWidth + cell.x;
 
-const WHITE = [1, 1, 1, 1];
-
-const setVertexColor = (
-  colArray: number[], cell: Cell, gridWidth: number, gridHeight: number, config: ISimulationConfig
-) => {
-  const idx = vertexIdx(cell, gridWidth, gridHeight) * 4;
-  let color;
-  if (cell.isWater) {
-    color = config.riverColor;
-  } else {
-    color = WHITE;
-  }
-  colArray[idx] = color[0];
-  colArray[idx + 1] = color[1];
-  colArray[idx + 2] = color[2];
-  colArray[idx + 3] = color[3];
-};
-
-const updateColors = (geometry: THREE.PlaneBufferGeometry, simulation: SimulationModel) => {
-  const colArray = geometry.attributes.color.array as number[];
-  simulation.cells.forEach(cell => {
-    setVertexColor(colArray, cell, simulation.gridWidth, simulation.gridHeight, simulation.config);
-  });
-  (geometry.attributes.color as BufferAttribute).needsUpdate = true;
-};
-
 const setupElevation = (geometry: THREE.PlaneBufferGeometry, simulation: SimulationModel) => {
   const posArray = geometry.attributes.position.array as number[];
   const mult = mToViewUnit(simulation);
   // Apply height map to vertices of plane.
-  simulation.cells.forEach(cell => {
+  for (const cell of simulation.cells) {
     const zAttrIdx = vertexIdx(cell, simulation.gridWidth, simulation.gridHeight) * 3 + 2;
-    posArray[zAttrIdx] = (simulation.config.renderWaterLevel && cell.isWater ? simulation.waterLevel : cell.elevation) * mult;
-  });
+    // .baseElevation doesn't include water depth.
+    posArray[zAttrIdx] = cell.baseElevation * mult;
+  }
   geometry.computeVertexNormals();
   (geometry.attributes.position as BufferAttribute).needsUpdate = true;
 };
@@ -69,23 +43,13 @@ const getTexture = (imgSrcOrCanvas: string | HTMLCanvasElement) => {
   return texture;
 };
 
-export const Terrain = observer(function WrappedComponent(props) {
+export const Terrain = observer(function WrappedComponent() {
   const { simulation } = useStores();
   const height = planeHeight(simulation);
 
   const geometryRef = useUpdate<THREE.PlaneBufferGeometry>(geometry => {
-    geometry.setAttribute("color",
-      new THREE.Float32BufferAttribute(new Array((simulation.gridWidth) * (simulation.gridHeight) * 4), 4)
-    );
-  }, [simulation.gridWidth, simulation.gridHeight]);
-
-  useUpdate<THREE.PlaneBufferGeometry>(geometry => {
     setupElevation(geometry, simulation);
-  }, [simulation.cellsElevationFlag], geometryRef);
-
-  useUpdate<THREE.PlaneBufferGeometry>(geometry => {
-    updateColors(geometry, simulation);
-  }, [simulation.cellsStateFlag], geometryRef);
+  }, [simulation.cellsBaseElevationFlag]);
 
   const interactions: InteractionHandler[] = [
     useShowCoordsInteraction()
@@ -110,8 +74,8 @@ export const Terrain = observer(function WrappedComponent(props) {
       />
       {
         texture ?
-          <meshLambertMaterial attach="material" map={texture} vertexColors={true} /> :
-          <meshLambertMaterial attach="material" vertexColors={true} />
+          <meshLambertMaterial attach="material" map={texture} /> :
+          <meshLambertMaterial attach="material" />
       }
     </mesh>
   );

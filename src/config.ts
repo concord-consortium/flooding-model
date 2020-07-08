@@ -1,5 +1,7 @@
 
 export interface ISimulationConfig {
+  timeStep: number; // model time
+  speedMult: number; // simulation speed multiplier, should be integer
   modelWidth: number; // m
   modelHeight: number; // m
   // Note that modelHeight % gridWidth should always be 0!
@@ -9,25 +11,25 @@ export interface ISimulationConfig {
   // It will be calculated automatically using model dimensions and grid width.
   readonly cellSize: number; // m
   // If `elevation` height map is provided, it will be loaded during model initialization and terrain setup dialog
-  // won't let users change terrain type. Otherwise, height map URL will be derived from zones `terrainType` properties.
+  // won't let users change terrain type.
   elevation: number[][] | string;
-  maxTimeStep: number; // minutes
-  // One day in model should last X seconds in real world.
-  modelDayInSeconds: number;
-  // Max elevation of 100% white points in heightmap (image used for elevation data).
-  heightmapMaxElevation: number; // m
+  // Elevation of 100% black points in heightmap (image used for elevation data).
+  minElevation: number; // m
+  // Elevation of 100% white points in heightmap (image used for elevation data).
+  maxElevation: number; // m
   // Visually fills edges of the terrain by setting elevation to 0.
   fillTerrainEdges: boolean;
-  riverData: string | null;
+  riverData:  number[][] | string | null;
   // Displays alert with current coordinates on mouse click. Useful for authoring.
   showCoordsOnClick: boolean;
   riverColor: [number, number, number, number];
-  renderWaterLevel: boolean;
   // Post processing of elevation data. Tilts elevation data in one axis. Value in %, usually between -100 and 100.
   // Useful to compensate the fact that upstream river part is usually placed higher than downstream part.
   elevationVerticalTilt: number;
   // Visual layer.
   texture: string;
+  waterIncrement: number;
+  waterDecrement: number;
 }
 
 export interface IUrlConfig extends ISimulationConfig {
@@ -36,22 +38,24 @@ export interface IUrlConfig extends ISimulationConfig {
 
 export const getDefaultConfig: () => IUrlConfig = () => ({
   preset: "RiverCity",
+  timeStep: 1,
+  speedMult: 3,
   modelWidth: 8000,
   modelHeight: 8000,
-  elevation: "data/model2_heightmap_hi.png",
-  riverData: "data/model2_map_riverdata.png",
-  texture: "data/model2_map_topo.png",
-  gridWidth: 400,
   get cellSize() { return this.modelWidth / this.gridWidth; },
   get gridHeight() { return Math.ceil(this.modelHeight / this.cellSize); },
-  maxTimeStep: 180, // minutes
-  modelDayInSeconds: 8, // one day in model should last X seconds in real world
-  heightmapMaxElevation: 45,
+  elevation: "data/model2_heightmap_hi.png",
+  minElevation: 162,
+  maxElevation: 238,
+  riverData: "data/model2_map_riverdata.png",
+  texture: "data/model2_map_topo.png",
+  gridWidth: 300,
   fillTerrainEdges: true,
   showCoordsOnClick: false,
   riverColor: [0.314, 0.675, 1, 1],
-  renderWaterLevel: false,
-  elevationVerticalTilt: 0
+  elevationVerticalTilt: 0,
+  waterIncrement: 0.1,
+  waterDecrement: 0
 });
 
 const getURLParam = (name: string) => {

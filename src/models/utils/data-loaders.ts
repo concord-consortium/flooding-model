@@ -5,11 +5,12 @@ export const getElevationData = (config: ISimulationConfig): Promise<number[] | 
   if (!config.elevation) {
     return Promise.resolve(undefined);
   }
+  const elevationDiff = config.maxElevation - config.minElevation;
   return getInputData(config.elevation, config.gridWidth, config.gridHeight, true,
     (rgba: [number, number, number, number]) => {
       // Elevation data is supposed to black & white image, where black is the lowest point and
       // white is the highest.
-      return rgba[0] / 255 * config.heightmapMaxElevation;
+      return rgba[0] / 255 * elevationDiff + config.minElevation;
     }
   );
 };

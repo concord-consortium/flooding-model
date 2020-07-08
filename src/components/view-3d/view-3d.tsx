@@ -4,6 +4,7 @@ import { useStores } from "../../use-stores";
 import { DEFAULT_UP, PLANE_WIDTH, planeHeight } from "./helpers";
 import { CameraControls } from "./camera-controls";
 import { Terrain } from "./terrain";
+import { Water } from "./water";
 import Shutterbug from "shutterbug";
 
 // This needs to be a separate component, as useThree depends on context provided by <Canvas> component.
@@ -34,6 +35,7 @@ export const View3d = () => {
         <hemisphereLight args={[0xC6C2B6, 0x3A403B, 1.2]} up={DEFAULT_UP} intensity={1.0}/>
         <pointLight position={[0.5, 0.5, 3]} intensity={0.3}/>
         <Terrain />
+        <Water />
         <ShutterbugSupport/>
     </Canvas>
   );
