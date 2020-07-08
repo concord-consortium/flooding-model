@@ -5,7 +5,7 @@ describe("FloodingEngine", () => {
   it("organizes Cells into arrays when initialized", () => {
     const cells = [
       new Cell({ x: 0, y: 0, isRiver: true }),
-      new Cell({ x: 0, y: 0, isEdge: true }),
+      new Cell({ x: 0, y: 0, isEdge: true, isRiver: true }),
       new Cell({ x: 0, y: 0 }),
       new Cell({ x: 0, y: 0 })
     ];
@@ -16,7 +16,7 @@ describe("FloodingEngine", () => {
     });
 
     expect(engine.cells).toEqual(cells);
-    expect(engine.riverCells.length).toEqual(1);
+    expect(engine.riverCells.length).toEqual(1); // edges shouldn't be counted as rivers
     expect(engine.activeCells.length).toEqual(3);
   });
 

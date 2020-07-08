@@ -60,7 +60,7 @@ export class FloodingEngine {
     this.cells = cells;
     // "Edge" cells exist only to make rendering a bit simpler. Skip them entirely in the simulation.
     this.activeCells = cells.filter(c => !c.isEdge);
-    this.riverCells = cells.filter(c => c.isRiver);
+    this.riverCells = cells.filter(c => c.isRiver && !c.isEdge);
   }
 
   public getCellAt(x: number, y: number) {
