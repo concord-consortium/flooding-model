@@ -29,7 +29,8 @@ describe("FloodingEngine", () => {
     const engine = new FloodingEngine(cells, {
       gridWidth: 2,
       gridHeight: 2,
-      cellSize: 1
+      cellSize: 1,
+      dampingFactor: 0.97 // to stabilize fluid faster
     });
 
     // Why 300 steps and 0.1 timestep? It's been adjusted based on experiments for this particular setup.

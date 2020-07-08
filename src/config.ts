@@ -6,6 +6,9 @@ export interface ISimulationConfig {
   modelHeight: number; // m
   // Note that modelHeight % gridWidth should always be 0!
   gridWidth: number; // m
+  // Lower damping factor increase viscosity of the fluid, so it'll feel more like oil, but also stabilize faster.
+  // Waves will disappear faster. Keep value closer to 1 to have fluid more similar to water.
+  dampingFactor: number;
   // It will be calculated automatically using model dimensions and grid width.
   readonly gridHeight: number; // m
   // It will be calculated automatically using model dimensions and grid width.
@@ -45,6 +48,7 @@ export const getDefaultConfig: () => IUrlConfig = () => ({
   speedMult: 3,
   modelWidth: 8000,
   modelHeight: 8000,
+  dampingFactor: 0.99,
   get cellSize() { return this.modelWidth / this.gridWidth; },
   get gridHeight() { return Math.ceil(this.modelHeight / this.cellSize); },
   elevation: [[ 0 ]],
