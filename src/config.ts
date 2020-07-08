@@ -19,7 +19,7 @@ export interface ISimulationConfig {
   maxElevation: number; // m
   // Visually fills edges of the terrain by setting elevation to 0.
   fillTerrainEdges: boolean;
-  riverData: string | null;
+  riverData:  number[][] | string | null;
   // Displays alert with current coordinates on mouse click. Useful for authoring.
   showCoordsOnClick: boolean;
   riverColor: [number, number, number, number];

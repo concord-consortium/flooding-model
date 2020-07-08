@@ -44,18 +44,18 @@ export class SimulationModel {
     return Math.floor(this.time / 60);
   }
 
-  public cellAt(x: number, y: number) {
-    const gridX = Math.floor(x / this.config.cellSize);
-    const gridY = Math.floor(y / this.config.cellSize);
+  public cellAt(xInM: number, yInM: number) {
+    const gridX = Math.floor(xInM / this.config.cellSize);
+    const gridY = Math.floor(yInM / this.config.cellSize);
     return this.cells[getGridIndexForLocation(gridX, gridY, this.config.gridWidth)];
   }
 
   @action.bound public load(presetConfig: Partial<ISimulationConfig>) {
-    this.restart();
     // Configuration are joined together. Default values can be replaced by preset, and preset values can be replaced
     // by URL parameters.
     this.config = Object.assign(getDefaultConfig(), presetConfig, getUrlConfig());
     this.populateCellsData();
+    this.restart();
   }
 
   @action.bound public populateCellsData() {
@@ -78,10 +78,13 @@ export class SimulationModel {
           // When fillTerrainEdge is set to true, edges are set to elevation 0.
           const isEdge = config.fillTerrainEdges &&
             (x === 0 || x === this.gridWidth - 1 || y === 0 || y === this.gridHeight - 1);
-          let baseElevation = isEdge ? 0 : elevation && elevation[index];
+          let baseElevation = elevation && elevation[index];
           if (verticalTilt && baseElevation !== undefined) {
             const vertProgress = y / this.gridHeight;
             baseElevation += Math.abs(verticalTilt) * (verticalTilt > 0 ? vertProgress : 1 - vertProgress);
+          }
+          if (isEdge) {
+            baseElevation = 0;
           }
           const cellOptions: CellOptions = {
             x, y,
@@ -95,6 +98,8 @@ export class SimulationModel {
       this.updateCellsBaseElevationFlag();
       this.updateCellsStateFlag();
       this.dataReady = true;
+
+      this.engine = new FloodingEngine(this.cells, this.config);
     });
   }
 
@@ -104,9 +109,6 @@ export class SimulationModel {
     }
     if (!this.simulationStarted) {
       this.simulationStarted = true;
-    }
-    if (!this.engine) {
-      this.engine = new FloodingEngine(this.cells, this.config);
     }
 
     this.simulationRunning = true;
@@ -124,12 +126,12 @@ export class SimulationModel {
     this.cells.forEach(cell => cell.reset());
     this.updateCellsStateFlag();
     this.time = 0;
-    this.engine = null;
+    this.engine = new FloodingEngine(this.cells, this.config);
   }
 
   @action.bound public reload() {
+    // No difference between restart for now.
     this.restart();
-    this.populateCellsData();
   }
 
   @action.bound public rafCallback() {
