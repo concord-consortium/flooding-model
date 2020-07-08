@@ -20,10 +20,13 @@ export interface IFloodingEngineConfig {
 }
 
 const GRAVITY = 9.81;
-// DAMPING_FACTOR will reduce bouncing of waves.
-const DAMPING_FACTOR = 0.99;
+// DAMPING_FACTOR will reduce bouncing of waves and stabilize model faster.
+const DAMPING_FACTOR = 0.97;
 // PIPE_FACTOR can help with instabilities. Might need to be adjusted for different grid sizes and timesteps.
 const PIPE_FACTOR = 0.5;
+
+const EDGE_CELL = new Cell({ x: -1, y: -1, isEdge: true });
+EDGE_CELL.fluxL = EDGE_CELL.fluxR = EDGE_CELL.fluxT = EDGE_CELL.fluxB = 0;
 
 const getNewFlux = (dt: number, oldFlux: number, heightDiff: number, cellSize: number) => {
   // Original equation: oldFlux + dt * pipeArea * GRAVITY * heightDiff / pipeLength;
@@ -55,11 +58,16 @@ export class FloodingEngine {
     this.waterDecrement = config.waterDecrement || 0;
 
     this.cells = cells;
+    // "Edge" cells exist only to make rendering a bit simpler. Skip them entirely in the simulation.
     this.activeCells = cells.filter(c => !c.isEdge);
     this.riverCells = cells.filter(c => c.isRiver);
   }
 
   public getCellAt(x: number, y: number) {
+    // This condition is useful if model is not using edge cells. It makes tests easier.
+    if (x < 0 || x >= this.gridWidth || y < 0 || y >= this.gridHeight) {
+      return EDGE_CELL;
+    }
     return this.cells[getGridIndexForLocation(x, y, this.gridWidth)];
   }
 
@@ -124,7 +132,7 @@ export class FloodingEngine {
     const cellArea = this.cellSize * this.cellSize;
     this.waterSum = 0;
 
-    for (const cell of this.cells) {
+    for (const cell of this.activeCells) {
       if (cell.isEdge) {
         continue;
       }
