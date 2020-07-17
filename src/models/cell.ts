@@ -14,6 +14,7 @@ export class Cell {
   public isRiver = false;
   public baseElevation = 0;
   public waterDepth = 0;
+  public initialWaterDepth = 0;
   public fluxL = 0; // left
   public fluxR = 0; // right
   public fluxT = 0; // top
@@ -21,6 +22,7 @@ export class Cell {
 
   constructor(props: CellOptions) {
     Object.assign(this, props);
+    this.initialWaterDepth = props.waterDepth || 0;
   }
 
   public get elevation() {
@@ -32,7 +34,7 @@ export class Cell {
   }
 
   public reset() {
-    this.waterDepth = 0;
+    this.waterDepth = this.initialWaterDepth;
     this.fluxL = 0;
     this.fluxR = 0;
     this.fluxT = 0;

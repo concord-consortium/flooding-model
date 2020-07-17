@@ -10,7 +10,7 @@ import { useUpdate } from "react-three-fiber";
 
 const vertexIdx = (cell: Cell, gridWidth: number, gridHeight: number) => (gridHeight - 1 - cell.y) * gridWidth + cell.x;
 
-const MIN_WATER_DEPTH = 0.05;
+const MIN_WATER_DEPTH = 1e-4;
 
 const setupElevation = (geometry: THREE.PlaneBufferGeometry, simulation: SimulationModel) => {
   const posArray = geometry.attributes.position.array as number[];
@@ -19,7 +19,7 @@ const setupElevation = (geometry: THREE.PlaneBufferGeometry, simulation: Simulat
   for (const cell of simulation.cells) {
     const zAttrIdx = vertexIdx(cell, simulation.gridWidth, simulation.gridHeight) * 3 + 2;
     // .baseElevation doesn't include water depth.
-    posArray[zAttrIdx] = cell.waterDepth > MIN_WATER_DEPTH ? cell.elevation * mult : 0;
+    posArray[zAttrIdx] = cell.waterDepth > MIN_WATER_DEPTH ? cell.elevation * mult : -1e-4;
   }
   // This is needed only in 3D view for realistic shading. When view is locked to 2D, it should be disabled,
   // as it's pretty expensive (around 25ms for 300x300 grid on MBP 15" 2017).

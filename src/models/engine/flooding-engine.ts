@@ -15,26 +15,20 @@ export interface IFloodingEngineConfig {
   gridWidth: number;
   gridHeight: number;
   cellSize: number;
+  dampingFactor?: number;
   waterIncrement?: number;
   waterDecrement?: number;
 }
 
 const GRAVITY = 9.81;
-// DAMPING_FACTOR will reduce bouncing of waves and stabilize model faster.
-const DAMPING_FACTOR = 0.97;
 // PIPE_FACTOR can help with instabilities. Might need to be adjusted for different grid sizes and timesteps.
-const PIPE_FACTOR = 0.5;
+const PIPE_FACTOR = 0.025;
 
 const EDGE_CELL = new Cell({ x: -1, y: -1, isEdge: true });
 EDGE_CELL.fluxL = EDGE_CELL.fluxR = EDGE_CELL.fluxT = EDGE_CELL.fluxB = 0;
 
-const getNewFlux = (dt: number, oldFlux: number, heightDiff: number, cellSize: number) => {
-  // Original equation: oldFlux + dt * pipeArea * GRAVITY * heightDiff / pipeLength;
-  // It can be simplified if cross-sectional area of the pipe and pipe length is included in PIPE_FACTOR constant.
-  let newFlux = oldFlux + PIPE_FACTOR * cellSize * dt * GRAVITY * heightDiff;
-  newFlux = Math.max(0, newFlux);
-
-  return newFlux * DAMPING_FACTOR;
+const getNewFlux = (dt: number, oldFlux: number, heightDiff: number, cellArea: number) => {
+  return Math.max(0, oldFlux + GRAVITY * PIPE_FACTOR * cellArea * dt * heightDiff);
 };
 
 export class FloodingEngine {
@@ -45,6 +39,7 @@ export class FloodingEngine {
   public gridWidth: number;
   public gridHeight: number;
   public cellSize: number;
+  public dampingFactor: number;
   public simulationDidStop = false;
   public waterSum = 0;
   public waterIncrement = 0;
@@ -54,6 +49,7 @@ export class FloodingEngine {
     this.gridWidth = config.gridWidth;
     this.gridHeight = config.gridHeight;
     this.cellSize = config.cellSize;
+    this.dampingFactor = config.dampingFactor || 0.99;
     this.waterIncrement = config.waterIncrement || 0;
     this.waterDecrement = config.waterDecrement || 0;
 
@@ -105,16 +101,16 @@ export class FloodingEngine {
 
       // fluxL
       nCell = this.getCellAt(x - 1, y);
-      nFluxL = !nCell.isEdge ? getNewFlux(dt, cell.fluxL, cell.elevation - nCell.elevation, this.cellSize) : 0;
+      nFluxL = !nCell.isEdge ? getNewFlux(dt, cell.fluxL, cell.elevation - nCell.elevation, cellArea) * this.dampingFactor : 0;
       // fluxR
       nCell = this.getCellAt(x + 1, y);
-      nFluxR = !nCell.isEdge ? getNewFlux(dt, cell.fluxR, cell.elevation - nCell.elevation, this.cellSize) : 0;
+      nFluxR = !nCell.isEdge ? getNewFlux(dt, cell.fluxR, cell.elevation - nCell.elevation, cellArea) * this.dampingFactor : 0;
       // fluxB
       nCell = this.getCellAt(x, y - 1);
-      nFluxB = !nCell.isEdge ? getNewFlux(dt, cell.fluxB, cell.elevation - nCell.elevation, this.cellSize) : 0;
+      nFluxB = !nCell.isEdge ? getNewFlux(dt, cell.fluxB, cell.elevation - nCell.elevation, cellArea) * this.dampingFactor : 0;
       // fluxT
       nCell = this.getCellAt(x, y + 1);
-      nFluxT = !nCell.isEdge ? getNewFlux(dt, cell.fluxT, cell.elevation - nCell.elevation, this.cellSize) : 0;
+      nFluxT = !nCell.isEdge ? getNewFlux(dt, cell.fluxT, cell.elevation - nCell.elevation, cellArea) * this.dampingFactor : 0;
 
       // Scaling factor. Scale down outflow if it is more than available volume in the column.
       const currentVolume = cell.waterDepth * cellArea;

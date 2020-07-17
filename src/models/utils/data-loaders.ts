@@ -26,3 +26,16 @@ export const getRiverData = (config: ISimulationConfig): Promise<number[] | unde
     }
   );
 };
+
+export const getWaterDepthData = (config: ISimulationConfig): Promise<number[] | undefined> => {
+  if (!config.waterDepth) {
+    return Promise.resolve(undefined);
+  }
+  return getInputData(config.waterDepth, config.gridWidth, config.gridHeight, true,
+    (rgba: [number, number, number, number]) => {
+      // Water depth data is supposed to black & white image, where black is the lowest point and
+      // white is the highest.
+      return rgba[0] / 255 * config.waterHeightmapMaxDepth;
+    }
+  );
+};

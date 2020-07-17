@@ -6,28 +6,34 @@ export interface ISimulationConfig {
   modelHeight: number; // m
   // Note that modelHeight % gridWidth should always be 0!
   gridWidth: number; // m
+  // Lower damping factor increase viscosity of the fluid, so it'll feel more like oil, but also stabilize faster.
+  // Waves will disappear faster. Keep value closer to 1 to have fluid more similar to water.
+  dampingFactor: number;
   // It will be calculated automatically using model dimensions and grid width.
   readonly gridHeight: number; // m
   // It will be calculated automatically using model dimensions and grid width.
   readonly cellSize: number; // m
-  // If `elevation` height map is provided, it will be loaded during model initialization and terrain setup dialog
-  // won't let users change terrain type.
+  // Heightmap or 2d array with elevation.
   elevation: number[][] | string;
-  // Elevation of 100% black points in heightmap (image used for elevation data).
+  // Black & white image with river or 2d array with 0 (regular cell) and 1 (river cell).
+  riverData:  number[][] | string | null;
+  // Heightmap with inital water depth or 2d array with water depth.
+  waterDepth: number[][] | string | null;
+  // Elevation of 100% black points in elevation heightmap.
   minElevation: number; // m
-  // Elevation of 100% white points in heightmap (image used for elevation data).
+  // Elevation of 100% white points in elevation heightmap.
   maxElevation: number; // m
+  // Elevation of 100% white points in water depth heightmap.
+  waterHeightmapMaxDepth: number; // m
   // Visually fills edges of the terrain by setting elevation to 0.
   fillTerrainEdges: boolean;
-  riverData:  number[][] | string | null;
   // Displays alert with current coordinates on mouse click. Useful for authoring.
   showCoordsOnClick: boolean;
-  riverColor: [number, number, number, number];
   // Post processing of elevation data. Tilts elevation data in one axis. Value in %, usually between -100 and 100.
   // Useful to compensate the fact that upstream river part is usually placed higher than downstream part.
   elevationVerticalTilt: number;
   // Visual layer.
-  texture: string;
+  texture: string | null;
   waterIncrement: number;
   waterDecrement: number;
 }
@@ -42,19 +48,21 @@ export const getDefaultConfig: () => IUrlConfig = () => ({
   speedMult: 3,
   modelWidth: 8000,
   modelHeight: 8000,
+  dampingFactor: 0.99,
   get cellSize() { return this.modelWidth / this.gridWidth; },
   get gridHeight() { return Math.ceil(this.modelHeight / this.cellSize); },
-  elevation: "data/model2_heightmap_hi.png",
-  minElevation: 162,
-  maxElevation: 238,
-  riverData: "data/model2_map_riverdata.png",
-  texture: "data/model2_map_topo.png",
+  elevation: [[ 0 ]],
+  minElevation: 0,
+  maxElevation: 100,
+  riverData: null,
+  waterDepth: null,
+  waterHeightmapMaxDepth: 10,
+  texture: null,
   gridWidth: 300,
   fillTerrainEdges: true,
   showCoordsOnClick: false,
-  riverColor: [0.314, 0.675, 1, 1],
   elevationVerticalTilt: 0,
-  waterIncrement: 0.1,
+  waterIncrement: 0,
   waterDecrement: 0
 });
 

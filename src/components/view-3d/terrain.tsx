@@ -62,7 +62,7 @@ export const Terrain = observer(function WrappedComponent() {
   const eventHandlers = getEventHandlers(interactions);
 
   const textureSrc = simulation.config.texture;
-  const texture = useMemo(() => getTexture(textureSrc), [textureSrc]);
+  const texture = useMemo(() => textureSrc && getTexture(textureSrc), [textureSrc]);
 
   return (
     <mesh position={[PLANE_WIDTH * 0.5, height * 0.5, 0]} {...eventHandlers}>
