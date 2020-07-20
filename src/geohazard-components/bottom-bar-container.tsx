@@ -62,9 +62,23 @@ export const BottomBarContainer: React.FC<BottomBarContainerProps> = ({ children
 
 interface BottomBarWidgetGroupProps {
   children?: React.ReactNode;
+  title?: string | string[];
   className?: string;
+  hoverable?: boolean;
 }
 // This component is meat to be used as direct children of BottomBar.
-export const BottomBarWidgetGroup: React.FC<BottomBarWidgetGroupProps> = ({ children, className }) => (
-  <div className={css.widgetGroup + (className ? ` ${className}` : "")}>{ children }</div>
-);
+export const BottomBarWidgetGroup: React.FC<BottomBarWidgetGroupProps> = ({ children, hoverable, title, className }) => {
+  const titleLines = typeof title === "string" ? [ title ] : title;
+  return (
+    <div className={css.widgetGroup + (className ? ` ${className}` : "") + (hoverable ? " hoverable" : "")}>
+      {
+        titleLines &&
+        <div className={css.title}>
+          { titleLines.map(line => <div key={line}>{ line }</div>) }
+        </div>
+      }
+      { children }
+    </div>
+  );
+};
+

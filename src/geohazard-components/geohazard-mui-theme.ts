@@ -65,42 +65,31 @@ export default createMuiTheme({
     },
     MuiSlider: {
       thumb: {
-        "width": 20,
-        "height": 20,
-        "margin-left": -8.5,
-        "margin-top": -8.5,
-        "$disabled &": {
-          opacity: 0.5,
-          width: 20,
-          height: 20,
-          marginLeft: -8.5,
-          marginTop: -8.5
-        },
-        "$vertical &": {
-          width: 18,
-          height: 18,
-          marginLeft: -8,
+        height: 20,
+        width: 20,
+        backgroundColor: "#fff",
+        marginTop: -9,
+        marginLeft: -10,
+        "&:hover, &$active": {
+          boxShadow: "0 0 0 4px rgba(255,255,255,0.5)"
         }
       },
+      active: {},
       mark: {
-        "$vertical &": {
-          width: 4,
-          height: 4,
-          borderRadius: 3,
-          marginLeft: -3,
-          marginTop: 4,
-          backgroundColor: "#d8d8d8",
-          border: "1px solid #797979"
-        }
+        width: 4,
+        height: 4,
+        borderRadius: 3,
+        marginTop: -2,
+        backgroundColor: "#d8d8d8",
+        border: "1px solid #797979"
+      },
+      rail: {
+        height: 2,
+        backgroundColor: "#000"
       },
       markLabel: {
-        "font-size": 10,
-        "$vertical &": {
-          width: 32,
-          minHeight: 20,
-          whiteSpace: "normal",
-          lineHeight: "normal"
-        }
+        fontFamily: "Roboto Condensed",
+        fontSize: "10px"
       }
     }
   }
