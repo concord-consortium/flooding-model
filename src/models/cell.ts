@@ -5,6 +5,7 @@ export interface CellOptions {
   isRiver?: boolean;
   baseElevation?: number;
   waterDepth?: number;
+  permeability?: number;
 }
 
 export class Cell {
@@ -13,6 +14,7 @@ export class Cell {
   public isEdge = false;
   public isRiver = false;
   public baseElevation = 0;
+  public permeability = 0;
   public waterDepth = 0;
   public initialWaterDepth = 0;
   public fluxL = 0; // left
