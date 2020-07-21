@@ -6,14 +6,17 @@ import { observer } from "mobx-react-lite";
 import { useStores } from "../use-stores";
 import MoreIcon from "../geohazard-components/assets/more.svg";
 import LessIcon from "../geohazard-components/assets/less.svg";
+import {
+  EXTREME_RAIN_INTENSITY, HEAVY_RAIN_INTENSITY, LIGHT_RAIN_INTENSITY, MEDIUM_RAIN_INTENSITY
+} from "../models/simulation";
 
 import css from "./bottom-bar.scss";
 
 const rainIntensityMarks = [
-  { value: 0.0, label: "Light" },
-  { value: 1/3, label: "Med" },
-  { value: 2/3, label: "Heavy" },
-  { value: 1.0, label: "Ext" },
+  { value: LIGHT_RAIN_INTENSITY, label: "Light" },
+  { value: MEDIUM_RAIN_INTENSITY, label: "Med" },
+  { value: HEAVY_RAIN_INTENSITY, label: "Heavy" },
+  { value: EXTREME_RAIN_INTENSITY, label: "Ext" },
 ];
 
 const startingWaterLevelMarks = [
@@ -47,8 +50,8 @@ export const BottomBar: React.FC = observer(function WrappedComponent() {
       <BottomBarWidgetGroup title="Amount of Rain" hoverable={true} className={css.amountOfRain}>
         <Slider
           value={simulation.rainIntensity}
-          min={0}
-          max={1}
+          min={LIGHT_RAIN_INTENSITY}
+          max={EXTREME_RAIN_INTENSITY}
           step={null} // restrict values to marks values
           marks={rainIntensityMarks}
           onChange={handleRainIntensityChange}

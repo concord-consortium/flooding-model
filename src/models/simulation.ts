@@ -8,6 +8,11 @@ import { FloodingEngine } from "./engine/flooding-engine";
 const MIN_RAIN_DURATION_IN_DAYS = 1;
 const MAX_RAIN_DURATION_IN_DAYS = 4;
 
+export const LIGHT_RAIN_INTENSITY = 0.25;
+export const MEDIUM_RAIN_INTENSITY = 0.50;
+export const HEAVY_RAIN_INTENSITY = 0.75;
+export const EXTREME_RAIN_INTENSITY = 1;
+
 // This class is responsible for data loading and general setup. It's more focused
 // on management and interactions handling. Core calculations are delegated to FloodingEngine.
 // Also, all the observable properties should be here, so the view code can observe them.
@@ -23,7 +28,7 @@ export class SimulationModel {
   @observable public simulationRunning = false;
 
   // Simulation parameters.
-  @observable public rainIntensity = 1/3; // [0, 1]
+  @observable public rainIntensity = MEDIUM_RAIN_INTENSITY; // [0, 1]
   @observable public rainDurationInDays = 2;
   @observable public initialWaterLevel = 0.5; // [0, 1]
 
@@ -50,7 +55,30 @@ export class SimulationModel {
   }
 
   @computed public get timeInHours() {
-    return Math.floor(this.time / 60);
+    return Math.floor(this.time * this.config.modelTimeToHours);
+  }
+
+  @computed public get timeInDays() {
+    return Math.floor(this.time * this.config.modelTimeToHours) / 24;
+  }
+
+  @computed public get weather() {
+    if (this.timeInDays < this.rainDurationInDays) {
+      if (this.rainIntensity <= LIGHT_RAIN_INTENSITY) {
+        return "lightRain";
+      }
+      if (this.rainIntensity <= MEDIUM_RAIN_INTENSITY) {
+        return "mediumRain";
+      }
+      if (this.rainIntensity <= HEAVY_RAIN_INTENSITY) {
+        return "heavyRain";
+      }
+      return "extremeRain";
+    }
+    if (this.timeInDays < this.rainDurationInDays + 2) {
+      return "partlyCloudy";
+    }
+    return "sunny";
   }
 
   public cellAt(xInM: number, yInM: number) {

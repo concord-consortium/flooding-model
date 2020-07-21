@@ -1,0 +1,35 @@
+.timeDisplay {
+  width: 62px;
+  height: 80px;
+  border-radius: 4px;
+  border: solid 1px #797979;
+
+  background-color: #fff;
+
+  &.sunny {
+    background-image: url("../assets/weather01_sunny.svg");
+  }
+  &.partlyCloudy {
+    background-image: url("../assets/weather02_partly_cloudy.svg");
+  }
+  &.lightRain {
+    background-image: url("../assets/weather03_light_rain.svg");
+  }
+  &.mediumRain {
+    background-image: url("../assets/weather04_medium_rain.svg");
+  }
+  &.heavyRain {
+    background-image: url("../assets/weather05_heavy_rain.svg");
+  }
+  &.extremeRain {
+    background-image: url("../assets/weather06_extreme_rain.svg");
+  }
+
+  .text {
+    padding: 7px;
+    font-size: 12px;
+    text-align: center;
+  }
+}
+
+
