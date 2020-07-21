@@ -15,8 +15,8 @@ export interface IFloodingEngineConfig {
   gridWidth: number;
   gridHeight: number;
   cellSize: number;
+  floodPermeabilityMult?: number;
   dampingFactor?: number;
-  riverWaterIncrement?: number;
 }
 
 const GRAVITY = 9.81;
@@ -39,6 +39,8 @@ export class FloodingEngine {
   public gridHeight: number;
   public cellSize: number;
   public dampingFactor: number;
+  public floodPermeabilityMult: number;
+
   public simulationDidStop = false;
   public waterSum = 0;
   public riverWaterIncrement = 0;
@@ -47,8 +49,8 @@ export class FloodingEngine {
     this.gridWidth = config.gridWidth;
     this.gridHeight = config.gridHeight;
     this.cellSize = config.cellSize;
-    this.dampingFactor = config.dampingFactor || 0.99;
-    this.riverWaterIncrement = config.riverWaterIncrement || 0;
+    this.dampingFactor = config.dampingFactor !== undefined ? config.dampingFactor : 0.99;
+    this.floodPermeabilityMult = config.floodPermeabilityMult !== undefined ? config.floodPermeabilityMult : 1;
 
     this.cells = cells;
     // "Edge" cells exist only to make rendering a bit simpler. Skip them entirely in the simulation.
@@ -82,7 +84,9 @@ export class FloodingEngine {
       if (cell.waterDepth === 0) {
         continue;
       }
-      cell.waterDepth -= cell.permeability * dt;
+      // During the flood event ground permeability is much lower than typically, as the water table is very high.
+      const flood = this.riverWaterIncrement > 0;
+      cell.waterDepth -= cell.permeability * dt * (flood ? this.floodPermeabilityMult : 1);
       cell.waterDepth = Math.max(0, cell.waterDepth);
     }
   }

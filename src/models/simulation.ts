@@ -8,10 +8,14 @@ import { FloodingEngine } from "./engine/flooding-engine";
 const MIN_RAIN_DURATION_IN_DAYS = 1;
 const MAX_RAIN_DURATION_IN_DAYS = 4;
 
-export const LIGHT_RAIN_INTENSITY = 0.25;
-export const MEDIUM_RAIN_INTENSITY = 0.50;
-export const HEAVY_RAIN_INTENSITY = 0.75;
-export const EXTREME_RAIN_INTENSITY = 1;
+export enum RainIntensity {
+  Light,
+  Medium,
+  Heavy,
+  Extreme
+}
+
+export type Weather = "sunny" | "partlyCloudy" | "lightRain" | "mediumRain" | "heavyRain" | "extremeRain";
 
 // This class is responsible for data loading and general setup. It's more focused
 // on management and interactions handling. Core calculations are delegated to FloodingEngine.
@@ -28,9 +32,12 @@ export class SimulationModel {
   @observable public simulationRunning = false;
 
   // Simulation parameters.
-  @observable public rainIntensity = MEDIUM_RAIN_INTENSITY; // [0, 1]
-  @observable public rainDurationInDays = 2;
-  @observable public initialWaterLevel = 0.5; // [0, 1]
+  @observable public rainIntensity: RainIntensity;
+  @observable public rainDurationInDays: number;
+  @observable public initialWaterLevel: number; // [0, 1]
+
+  // Simulation outputs.
+  @observable private _riverStage: number;
 
   // These flags can be used by view to trigger appropriate rendering. Theoretically, view could/should check
   // every single cell and re-render when it detects some changes. In practice, we perform these updates in very
@@ -40,6 +47,7 @@ export class SimulationModel {
 
   constructor(presetConfig: Partial<ISimulationConfig>) {
     this.load(presetConfig);
+    this.resetInputs();
   }
 
   @computed public get ready() {
@@ -62,15 +70,19 @@ export class SimulationModel {
     return Math.floor(this.time * this.config.modelTimeToHours) / 24;
   }
 
-  @computed public get weather() {
+  @computed public get riverStage() {
+    return this._riverStage;
+  }
+
+  @computed public get weather(): Weather {
     if (this.timeInDays < this.rainDurationInDays) {
-      if (this.rainIntensity <= LIGHT_RAIN_INTENSITY) {
+      if (this.rainIntensity === RainIntensity.Light) {
         return "lightRain";
       }
-      if (this.rainIntensity <= MEDIUM_RAIN_INTENSITY) {
+      if (this.rainIntensity === RainIntensity.Medium) {
         return "mediumRain";
       }
-      if (this.rainIntensity <= HEAVY_RAIN_INTENSITY) {
+      if (this.rainIntensity === RainIntensity.Heavy) {
         return "heavyRain";
       }
       return "extremeRain";
@@ -79,6 +91,23 @@ export class SimulationModel {
       return "partlyCloudy";
     }
     return "sunny";
+  }
+
+  public get currentRiverWaterIncrement() {
+    const weather = this.weather;
+    if (weather === "lightRain") {
+      return this.config.rainStrength[0];
+    }
+    if (weather === "mediumRain") {
+      return this.config.rainStrength[1];
+    }
+    if (weather === "heavyRain") {
+      return this.config.rainStrength[2];
+    }
+    if (weather === "extremeRain") {
+      return this.config.rainStrength[3];
+    }
+    return 0;
   }
 
   public cellAt(xInM: number, yInM: number) {
@@ -97,6 +126,7 @@ export class SimulationModel {
 
   @action.bound public setInitialWaterLevel(value: number) {
     this.initialWaterLevel = value;
+    this._riverStage = value;
   }
 
   @action.bound public load(presetConfig: Partial<ISimulationConfig>) {
@@ -173,17 +203,25 @@ export class SimulationModel {
     this.simulationRunning = false;
   }
 
+  @action.bound public resetInputs() {
+    this.rainIntensity = RainIntensity.Medium;
+    this.rainDurationInDays = 2;
+    this.initialWaterLevel = 0.5;
+    this._riverStage = this.initialWaterLevel;
+  }
+
   @action.bound public restart() {
     this.simulationRunning = false;
     this.simulationStarted = false;
     this.cells.forEach(cell => cell.reset());
     this.updateCellsStateFlag();
     this.time = 0;
+    this._riverStage = this.initialWaterLevel;
     this.engine = new FloodingEngine(this.cells, this.config);
   }
 
   @action.bound public reload() {
-    // No difference between restart for now.
+    this.resetInputs();
     this.restart();
   }
 
@@ -196,6 +234,19 @@ export class SimulationModel {
     if (this.engine) {
       for (let i = 0; i < this.config.speedMult; i += 1) {
         this.time += this.config.timeStep;
+
+        if (this._riverStage < 1) {
+          // At the beginning of simulation there should be no flood until riverStage value reaches value 1.
+          // riverStage value will be used in the future by the cross-section view and river gauge readings.
+          this._riverStage += this.currentRiverWaterIncrement * this.config.riverStageIncreaseSpeed;
+          this.engine.riverWaterIncrement = 0;
+        } else {
+          this.engine.riverWaterIncrement = this.currentRiverWaterIncrement;
+        }
+
+        // Why do we run simulation engine even when its riverWaterIncrement == 0 and waste CPU cycles?
+        // To ensure that the initial part of the simulation, which updates riverStage only, doesn't run much faster
+        // than the following part which actually uses computationally expensive FloodingEngine.
         this.engine.update(this.config.timeStep);
       }
       if (this.engine.simulationDidStop) {

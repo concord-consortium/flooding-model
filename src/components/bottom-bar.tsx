@@ -6,23 +6,21 @@ import { observer } from "mobx-react-lite";
 import { useStores } from "../use-stores";
 import MoreIcon from "../geohazard-components/assets/more.svg";
 import LessIcon from "../geohazard-components/assets/less.svg";
-import {
-  EXTREME_RAIN_INTENSITY, HEAVY_RAIN_INTENSITY, LIGHT_RAIN_INTENSITY, MEDIUM_RAIN_INTENSITY
-} from "../models/simulation";
+import { RainIntensity } from "../models/simulation";
 
 import css from "./bottom-bar.scss";
 
 const rainIntensityMarks = [
-  { value: LIGHT_RAIN_INTENSITY, label: "Light" },
-  { value: MEDIUM_RAIN_INTENSITY, label: "Med" },
-  { value: HEAVY_RAIN_INTENSITY, label: "Heavy" },
-  { value: EXTREME_RAIN_INTENSITY, label: "Ext" },
+  { value: RainIntensity.Light, label: "Light" },
+  { value: RainIntensity.Medium, label: "Med" },
+  { value: RainIntensity.Heavy, label: "Heavy" },
+  { value: RainIntensity.Extreme, label: "Ext" },
 ];
 
 const startingWaterLevelMarks = [
-  { value: 0.0, label: "Low" },
-  { value: 1/2, label: "Med" },
-  { value: 1.0, label: "High" },
+  { value: 0.25, label: "Low" },
+  { value: 0.50, label: "Med" },
+  { value: 0.75, label: "High" },
 ];
 
 export const BottomBar: React.FC = observer(function WrappedComponent() {
@@ -50,8 +48,8 @@ export const BottomBar: React.FC = observer(function WrappedComponent() {
       <BottomBarWidgetGroup title="Amount of Rain" hoverable={true} className={css.amountOfRain}>
         <Slider
           value={simulation.rainIntensity}
-          min={LIGHT_RAIN_INTENSITY}
-          max={EXTREME_RAIN_INTENSITY}
+          min={RainIntensity.Light}
+          max={RainIntensity.Extreme}
           step={null} // restrict values to marks values
           marks={rainIntensityMarks}
           onChange={handleRainIntensityChange}
@@ -69,8 +67,8 @@ export const BottomBar: React.FC = observer(function WrappedComponent() {
       <BottomBarWidgetGroup title={["Starting", "Water Level"]} hoverable={true} className={css.startingWaterLevel}>
         <Slider
           value={simulation.initialWaterLevel}
-          min={0}
-          max={1}
+          min={0.25}
+          max={0.75}
           step={null} // restrict values to marks values
           marks={startingWaterLevelMarks}
           onChange={handleStartingWaterLevel}
@@ -84,6 +82,9 @@ export const BottomBar: React.FC = observer(function WrappedComponent() {
         playing={simulation.simulationRunning}
         startStopDisabled={!simulation.ready}
       />
+      <BottomBarWidgetGroup title="River Stage">
+        { simulation.riverStage.toFixed(2) } (0 low, 1 flood)
+      </BottomBarWidgetGroup>
     </BottomBarContainer>
   );
 });
