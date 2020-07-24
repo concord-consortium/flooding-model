@@ -15,6 +15,11 @@ export interface ISimulationConfig {
   readonly cellSize: number; // m
   // Heightmap or 2d array with elevation.
   elevation: number[][] | string;
+  // Permeability zone number. Each number or color is mapped to value in permeabilityValues in the simulation engine.
+  // If image is used, expected colors are: red (index 0), green (index 1), blue (index 2).
+  permeability: number[][] | string;
+  // Permeability value for each permeability zone.
+  permeabilityValues: number[];
   // Black & white image with river or 2d array with 0 (regular cell) and 1 (river cell).
   riverData:  number[][] | string | null;
   // Heightmap with inital water depth or 2d array with water depth.
@@ -34,8 +39,7 @@ export interface ISimulationConfig {
   elevationVerticalTilt: number;
   // Visual layer.
   texture: string | null;
-  waterIncrement: number;
-  waterDecrement: number;
+  riverWaterIncrement: number;
 }
 
 export interface IUrlConfig extends ISimulationConfig {
@@ -52,6 +56,8 @@ export const getDefaultConfig: () => IUrlConfig = () => ({
   get cellSize() { return this.modelWidth / this.gridWidth; },
   get gridHeight() { return Math.ceil(this.modelHeight / this.cellSize); },
   elevation: [[ 0 ]],
+  permeability: [[ 0 ]],
+  permeabilityValues: [ 0 ],
   minElevation: 0,
   maxElevation: 100,
   riverData: null,
@@ -62,8 +68,7 @@ export const getDefaultConfig: () => IUrlConfig = () => ({
   fillTerrainEdges: true,
   showCoordsOnClick: false,
   elevationVerticalTilt: 0,
-  waterIncrement: 0,
-  waterDecrement: 0
+  riverWaterIncrement: 0
 });
 
 const getURLParam = (name: string) => {

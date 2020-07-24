@@ -141,4 +141,22 @@ describe("FloodingEngine", () => {
       expect(c4.waterDepth).toEqual(0);
     });
   });
+
+  describe("removeWater", () => {
+    it("should remove water each step using permeability", () => {
+      const c1 = new Cell({ x: 0, y: 0, waterDepth: 1, permeability: 0.1 });
+      const c2 = new Cell({ x: 1, y: 0, waterDepth: 2, permeability: 0.5 });
+      const cells = [c1, c2];
+      const engine = new FloodingEngine(cells, {
+        gridWidth: 2,
+        gridHeight: 1,
+        cellSize: 1
+      });
+
+      engine.removeWater(2);
+
+      expect(c1.waterDepth).toEqual(0.8);
+      expect(c2.waterDepth).toEqual(1);
+    });
+  });
 });

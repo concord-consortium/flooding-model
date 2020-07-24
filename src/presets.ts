@@ -2,10 +2,12 @@ import { ISimulationConfig } from "./config";
 
 const presets: {[key: string]: Partial<ISimulationConfig>} = {
   RiverCity: {
-    elevation: "data/model2_heightmap_hi.png",
+    elevation: "data/model2_map_07_heightmap.png",
     riverData: "data/model2_map_riverdata.png",
-    texture: "data/model2_map_topo.png",
-    waterIncrement: 0.1,
+    permeability: "data/model2_permeability_map.png",
+    permeabilityValues: [0.05, 0.025, 0.007],
+    texture: "data/model2_map_06b_topographic.png",
+    riverWaterIncrement: 0.1,
     minElevation: 170, // m
     maxElevation: 250, // m
     modelHeight: 8000, // m
@@ -13,10 +15,12 @@ const presets: {[key: string]: Partial<ISimulationConfig>} = {
   },
   // Test preset. It should behave exactly the same as RiverCity.
   RiverCityScaled: {
-    elevation: "data/model2_heightmap_hi.png",
+    elevation: "data/model2_map_07_heightmap.png",
     riverData: "data/model2_map_riverdata.png",
-    texture: "data/model2_map_topo.png",
-    waterIncrement: 0.01,
+    permeability: "data/model2_permeability_map.png",
+    permeabilityValues: [0.005, 0.0025, 0.0007],
+    texture: "data/model2_map_06b_topographic.png",
+    riverWaterIncrement: 0.01,
     minElevation: 17, // m
     maxElevation: 25, // m
     modelHeight: 800, // m

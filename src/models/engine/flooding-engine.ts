@@ -16,8 +16,7 @@ export interface IFloodingEngineConfig {
   gridHeight: number;
   cellSize: number;
   dampingFactor?: number;
-  waterIncrement?: number;
-  waterDecrement?: number;
+  riverWaterIncrement?: number;
 }
 
 const GRAVITY = 9.81;
@@ -42,16 +41,14 @@ export class FloodingEngine {
   public dampingFactor: number;
   public simulationDidStop = false;
   public waterSum = 0;
-  public waterIncrement = 0;
-  public waterDecrement = 0;
+  public riverWaterIncrement = 0;
 
   constructor(cells: Cell[], config: IFloodingEngineConfig) {
     this.gridWidth = config.gridWidth;
     this.gridHeight = config.gridHeight;
     this.cellSize = config.cellSize;
     this.dampingFactor = config.dampingFactor || 0.99;
-    this.waterIncrement = config.waterIncrement || 0;
-    this.waterDecrement = config.waterDecrement || 0;
+    this.riverWaterIncrement = config.riverWaterIncrement || 0;
 
     this.cells = cells;
     // "Edge" cells exist only to make rendering a bit simpler. Skip them entirely in the simulation.
@@ -76,7 +73,7 @@ export class FloodingEngine {
 
   public addWaterInRiver(dt: number) {
     for (const cell of this.riverCells) {
-      cell.waterDepth += this.waterIncrement * dt;
+      cell.waterDepth += this.riverWaterIncrement * dt;
     }
   }
 
@@ -85,7 +82,7 @@ export class FloodingEngine {
       if (cell.waterDepth === 0) {
         continue;
       }
-      cell.waterDepth -= this.waterDecrement * dt;
+      cell.waterDepth -= cell.permeability * dt;
       cell.waterDepth = Math.max(0, cell.waterDepth);
     }
   }

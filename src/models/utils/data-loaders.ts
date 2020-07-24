@@ -39,3 +39,21 @@ export const getWaterDepthData = (config: ISimulationConfig): Promise<number[] |
     }
   );
 };
+
+export const getPermeabilityData = (config: ISimulationConfig): Promise<number[] | undefined> => {
+  if (!config.permeability) {
+    return Promise.resolve(undefined);
+  }
+  return getInputData(config.permeability, config.gridWidth, config.gridHeight, true,
+    (rgba: [number, number, number, number]) => {
+      // Permeability image will usually have three colors: red, green, blue.
+      if (rgba[0] > 128) { // red
+        return config.permeabilityValues[0] || 0;
+      } else if (rgba[1] > 128) { // green
+        return config.permeabilityValues[1] || 0;
+      } else { // blue
+        return config.permeabilityValues[2] || 0;
+      }
+    }
+  );
+};
