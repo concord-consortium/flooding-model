@@ -5,6 +5,14 @@ import { getElevationData, getPermeabilityData, getRiverData, getWaterDepthData 
 import { getGridIndexForLocation } from "./utils/grid-utils";
 import { FloodingEngine } from "./engine/flooding-engine";
 
+const MIN_RAIN_DURATION_IN_DAYS = 1;
+const MAX_RAIN_DURATION_IN_DAYS = 4;
+
+export const LIGHT_RAIN_INTENSITY = 0.25;
+export const MEDIUM_RAIN_INTENSITY = 0.50;
+export const HEAVY_RAIN_INTENSITY = 0.75;
+export const EXTREME_RAIN_INTENSITY = 1;
+
 // This class is responsible for data loading and general setup. It's more focused
 // on management and interactions handling. Core calculations are delegated to FloodingEngine.
 // Also, all the observable properties should be here, so the view code can observe them.
@@ -18,6 +26,12 @@ export class SimulationModel {
   @observable public dataReady = false;
   @observable public simulationStarted = false;
   @observable public simulationRunning = false;
+
+  // Simulation parameters.
+  @observable public rainIntensity = MEDIUM_RAIN_INTENSITY; // [0, 1]
+  @observable public rainDurationInDays = 2;
+  @observable public initialWaterLevel = 0.5; // [0, 1]
+
   // These flags can be used by view to trigger appropriate rendering. Theoretically, view could/should check
   // every single cell and re-render when it detects some changes. In practice, we perform these updates in very
   // specific moments and usually for all the cells, so this approach can be way more efficient.
@@ -41,13 +55,48 @@ export class SimulationModel {
   }
 
   @computed public get timeInHours() {
-    return Math.floor(this.time / 60);
+    return Math.floor(this.time * this.config.modelTimeToHours);
+  }
+
+  @computed public get timeInDays() {
+    return Math.floor(this.time * this.config.modelTimeToHours) / 24;
+  }
+
+  @computed public get weather() {
+    if (this.timeInDays < this.rainDurationInDays) {
+      if (this.rainIntensity <= LIGHT_RAIN_INTENSITY) {
+        return "lightRain";
+      }
+      if (this.rainIntensity <= MEDIUM_RAIN_INTENSITY) {
+        return "mediumRain";
+      }
+      if (this.rainIntensity <= HEAVY_RAIN_INTENSITY) {
+        return "heavyRain";
+      }
+      return "extremeRain";
+    }
+    if (this.timeInDays < this.rainDurationInDays + 2) {
+      return "partlyCloudy";
+    }
+    return "sunny";
   }
 
   public cellAt(xInM: number, yInM: number) {
     const gridX = Math.floor(xInM / this.config.cellSize);
     const gridY = Math.floor(yInM / this.config.cellSize);
     return this.cells[getGridIndexForLocation(gridX, gridY, this.config.gridWidth)];
+  }
+
+  @action.bound public setRainIntensity(value: number) {
+    this.rainIntensity = value;
+  }
+
+  @action.bound public setRainDurationInDays(value: number) {
+    this.rainDurationInDays = Math.max(MIN_RAIN_DURATION_IN_DAYS, Math.min(MAX_RAIN_DURATION_IN_DAYS, value));
+  }
+
+  @action.bound public setInitialWaterLevel(value: number) {
+    this.initialWaterLevel = value;
   }
 
   @action.bound public load(presetConfig: Partial<ISimulationConfig>) {

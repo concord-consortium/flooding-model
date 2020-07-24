@@ -1,0 +1,37 @@
+.amountOfRain {
+  width: 120px;
+}
+
+.rainDuration {
+  width: 70px;
+
+  .rainDurationValue {
+    font-family: Roboto Condensed, Arial, sans-serif;
+    font-size: 11px;
+    text-align: center;
+    margin-top: 4px;
+  }
+
+  .rainDurationButtons {
+    text-align: center;
+    svg {
+      width: 20px;
+      height: 20px;
+      margin-top: 2px;
+      margin-right: 3px;
+      margin-left: 3px;
+      border-radius: 10px;
+      &:hover {
+        box-shadow: 0 0 0 4px rgba(255,255,255,0.5);
+      }
+      &:active {
+        box-shadow: 0 0 0 4px rgba(255,255,255,1);
+      }
+    }
+  }
+}
+
+.startingWaterLevel {
+  width: 100px;
+}
+

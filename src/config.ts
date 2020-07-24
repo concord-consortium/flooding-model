@@ -40,6 +40,10 @@ export interface ISimulationConfig {
   // Visual layer.
   texture: string | null;
   riverWaterIncrement: number;
+  // Arbitrary value that transforms model time to hours when the time needs to be presented to user.
+  // We're trying to make sure that 24 hours take around 8 seconds of real world time.
+  // But this will greatly depend on performance of the user machine at this point.
+  modelTimeToHours: number;
 }
 
 export interface IUrlConfig extends ISimulationConfig {
@@ -68,7 +72,8 @@ export const getDefaultConfig: () => IUrlConfig = () => ({
   fillTerrainEdges: true,
   showCoordsOnClick: false,
   elevationVerticalTilt: 0,
-  riverWaterIncrement: 0
+  riverWaterIncrement: 0,
+  modelTimeToHours: 0.066
 });
 
 const getURLParam = (name: string) => {

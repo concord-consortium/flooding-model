@@ -70,29 +70,27 @@ $hoverColor: #dfdfdf;
     }
     margin-left: -$bottomBarBorderWidth;
     margin-right: $bottomBarWidgetGroupSpacing;
-  }
 
-  .water {
-    width: 400px;
-    padding: 5px 20px;
+    .title {
+      font-weight: bold;
+      font-size: 12px;
+      height: 24px;
+      display: flex;
+      flex-flow: column;
+      align-items: center;
+      justify-content: center;
+      padding: 4px 10px 2px 10px;
+    }
+
+    &.hoverable:hover {
+      background: rgba(223, 223, 223, 1);
+    }
   }
 
   // Why global .hoverable?
   // It's being used by some child components to turn on initial hover effect.
   :global(.hoverable):hover {
     background: $hoverColor;
-  }
-
-  .precipitation{
-    width: 85px;
-
-    .precipitationSlider{
-      width: 40px;
-    }
-  }
-
-  .placeSpark {
-    margin-right: 0;
   }
 
   .reloadRestart {
@@ -131,35 +129,5 @@ $hoverColor: #dfdfdf;
 @media (min-width: 960px) {
   .logoSmall {
     display: none;
-  }
-}
-
-.slider {
-  margin: 10px auto;
-  text-align: center;
-  font-size: 12px;
-
-  .disabled {
-    opacity: 0.25;
-
-    .thumb {
-      width: 20px;
-      height: 20px;
-      margin-left: -8.5px;
-      margin-top: -8.5px;
-    }
-  }
-  .thumb {
-    width: 20px;
-    height: 20px;
-    margin-left: -8.5px;
-    margin-top: -8.5px;
-    &:hover, &:active {
-      box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.5)
-    }
-  }
-  span{
-    margin-top: 2px;
-    font-size: 9px;
   }
 }

@@ -4,6 +4,8 @@ import { View3d } from "./view-3d/view-3d";
 import { BottomBar } from "./bottom-bar";
 import Shutterbug from "shutterbug";
 import { useCustomCursor } from "./use-custom-cursors";
+import { TimeDisplay } from "./time-display";
+
 import css from "./app.scss";
 
 export const AppComponent = observer(function WrappedComponent() {
@@ -24,6 +26,9 @@ export const AppComponent = observer(function WrappedComponent() {
       </div>
       <div className={`${css.bottomBar}`}>
         <BottomBar />
+      </div>
+      <div className={`${css.timeDisplay}`}>
+        <TimeDisplay />
       </div>
     </div>
   );
