@@ -1,4 +1,4 @@
-import { SimulationModel } from "./simulation";
+import { RainIntensity, SimulationModel } from "./simulation";
 import { FloodingEngine } from "./engine/flooding-engine";
 
 const rafMock = jest.fn();
@@ -92,7 +92,7 @@ describe("SimulationModel", () => {
   });
 
   describe("restart", () => {
-    it("resets various model properties", async () => {
+    it("resets various model properties, but doesn't affect user settings", async () => {
       const s = await getSimpleSimulation();
 
       s.start();
@@ -101,12 +101,43 @@ describe("SimulationModel", () => {
 
       jest.spyOn(s.cells[0], "reset");
       s.time = 123;
+      s.rainDurationInDays = 123;
+      s.rainIntensity = 123;
+      s.initialWaterLevel = 123;
 
       s.restart();
       expect(s.simulationRunning).toEqual(false);
       expect(s.simulationStarted).toEqual(false);
       expect(s.cells[0].reset).toHaveBeenCalled();
       expect(s.time).toEqual(0);
+      expect(s.rainDurationInDays).toEqual(123);
+      expect(s.rainIntensity).toEqual(123);
+      expect(s.initialWaterLevel).toEqual(123);
+    });
+  });
+
+  describe("reload", () => {
+    it("resets various model properties and user settings", async () => {
+      const s = await getSimpleSimulation();
+
+      s.start();
+      expect(s.simulationRunning).toEqual(true);
+      expect(s.simulationStarted).toEqual(true);
+
+      jest.spyOn(s.cells[0], "reset");
+      s.time = 123;
+      s.rainDurationInDays = 123;
+      s.rainIntensity = 123;
+      s.initialWaterLevel = 123;
+
+      s.reload();
+      expect(s.simulationRunning).toEqual(false);
+      expect(s.simulationStarted).toEqual(false);
+      expect(s.cells[0].reset).toHaveBeenCalled();
+      expect(s.time).toEqual(0);
+      expect(s.rainDurationInDays).toEqual(2);
+      expect(s.rainIntensity).toEqual(RainIntensity.Medium);
+      expect(s.initialWaterLevel).toEqual(0.5);
     });
   });
 
@@ -135,6 +166,26 @@ describe("SimulationModel", () => {
       expect(rafMock).toHaveBeenCalled();
       expect(floodingEngineUpdateMock).toHaveBeenCalledTimes(speedMult);
       expect(s.cellsStateFlag).toEqual(oldCellStateFlag + 1);
+    });
+
+    it("updates river stage and engine.riverWaterIncrement based on river stage value", async () => {
+      const s = new SimulationModel({
+        elevation: [[0]],
+        riverData: null,
+        gridWidth: 1
+      });
+      await s.dataReadyPromise;
+
+      s.simulationRunning = true;
+      const oldRiverStage = s.riverStage;
+      s.rafCallback();
+      expect(s.riverStage).toBeGreaterThan(oldRiverStage);
+      expect(s.riverStage).toBeLessThan(1);
+      expect(s.engine?.riverWaterIncrement).toEqual(0);
+
+      (s as any)._riverStage = 1;
+      s.rafCallback();
+      expect(s.engine?.riverWaterIncrement).toBeGreaterThan(0);
     });
   });
 
