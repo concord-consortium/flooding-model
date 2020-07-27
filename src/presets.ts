@@ -2,7 +2,7 @@ import { ISimulationConfig } from "./config";
 
 const presets: {[key: string]: Partial<ISimulationConfig>} = {
   RiverCity: {
-    elevation: "data/model2_map_07_heightmap.png",
+    elevation: "data/model2_map_07_heightmap_v2.png",
     riverData: "data/model2_map_riverdata.png",
     permeability: "data/model2_permeability_map.png",
     texture: "data/model2_map_06b_topographic.png",
@@ -13,7 +13,7 @@ const presets: {[key: string]: Partial<ISimulationConfig>} = {
   },
   // Test preset. It should behave exactly the same as RiverCity.
   RiverCityScaled: {
-    elevation: "data/model2_map_07_heightmap.png",
+    elevation: "data/model2_map_07_heightmap_v2.png",
     riverData: "data/model2_map_riverdata.png",
     permeability: "data/model2_permeability_map.png",
     texture: "data/model2_map_06b_topographic.png",
