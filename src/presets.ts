@@ -18,7 +18,7 @@ const presets: {[key: string]: Partial<ISimulationConfig>} = {
     permeability: "data/model2_permeability_map.png",
     texture: "data/model2_map_06b_topographic.png",
     permeabilityValues: [0.002 / 10, 0.001 / 10, 0.0007 / 10],
-    rainStrength: [0.0025 / 10, 0.005 / 10, 0.0075 / 10, 0.01 / 10],
+    rainStrength: [0.0025 / 10, 0.005 / 10, 0.0075 / 10, 0.02 / 10],
     riverStageIncreaseSpeed: 0.125 * 10,
     minElevation: 170 / 10, // m
     maxElevation: 250 / 10, // m

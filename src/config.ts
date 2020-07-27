@@ -80,7 +80,7 @@ export const getDefaultConfig: () => IUrlConfig = () => ({
   elevationVerticalTilt: 0,
   floodPermeabilityMult: 0.1,
   riverStageIncreaseSpeed: 0.125,
-  rainStrength: [0.0025, 0.005, 0.0075, 0.01],
+  rainStrength: [0.0025, 0.005, 0.0075, 0.02],
   modelTimeToHours: 0.066
 });
 
