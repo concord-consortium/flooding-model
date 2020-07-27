@@ -60,8 +60,8 @@ export const BottomBar: React.FC = observer(function WrappedComponent() {
           { simulation.rainDurationInDays + (simulation.rainDurationInDays === 1 ? " day" : " days") }
         </div>
         <div className={css.rainDurationButtons}>
-          <MoreIcon onClick={handleIncreaseRainDuration}/>
           <LessIcon onClick={handleDecreaseRainDuration}/>
+          <MoreIcon onClick={handleIncreaseRainDuration}/>
         </div>
       </BottomBarWidgetGroup>
       <BottomBarWidgetGroup title={["Starting", "Water Level"]} hoverable={true} className={css.startingWaterLevel}>
