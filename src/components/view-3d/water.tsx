@@ -7,7 +7,7 @@ import { mToViewUnit, PLANE_WIDTH, planeHeight } from "./helpers";
 import { observer } from "mobx-react-lite";
 import { useStores } from "../../use-stores";
 import { useUpdate } from "react-three-fiber";
-// Very simple shaders. They won't work great in 3D view, as there's no lightning there. But 3D view is used only
+// Very simple shaders. They won't work great in 3D view, as there's no lighting there. But 3D view is used only
 // for tests models at the moment. If 3D view ever gets more useful, these shaders should be updated to include
 // some light calculations / reflections.
 import waterVertexShader from "./water-vertex.glsl";
