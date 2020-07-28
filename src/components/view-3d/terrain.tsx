@@ -48,8 +48,10 @@ export const Terrain = observer(function WrappedComponent() {
   const height = planeHeight(simulation);
 
   const geometryRef = useUpdate<THREE.PlaneBufferGeometry>(geometry => {
-    setupElevation(geometry, simulation);
-  }, [simulation.cellsBaseElevationFlag]);
+    if (simulation.config.view3d) {
+      setupElevation(geometry, simulation);
+    }
+  }, [simulation.config.view3d, simulation.cellsBaseElevationFlag]);
 
   const interactions: InteractionHandler[] = [
     useShowCoordsInteraction()
@@ -73,9 +75,9 @@ export const Terrain = observer(function WrappedComponent() {
         args={[PLANE_WIDTH, height, simulation.gridWidth - 1, simulation.gridHeight - 1]}
       />
       {
-        texture ?
-          <meshLambertMaterial attach="material" map={texture} /> :
-          <meshLambertMaterial attach="material" />
+        simulation.config.view3d ?
+          <meshStandardMaterial attach="material" map={texture || null} color="#aaa" /> :
+          <meshBasicMaterial attach="material" map={texture || null} /> // this material doesn't require any light
       }
     </mesh>
   );

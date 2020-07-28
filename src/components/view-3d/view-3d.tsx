@@ -32,8 +32,13 @@ export const View3d = () => {
   return (
     <Canvas camera={{ fov: 33, up: DEFAULT_UP, position: cameraPos }} pixelRatio={pixelRatio} >
         <CameraControls/>
-        <hemisphereLight args={[0xC6C2B6, 0x3A403B, 1.2]} up={DEFAULT_UP} intensity={1.0}/>
-        <pointLight position={[0.5, 0.5, 3]} intensity={0.3}/>
+        {
+          simulation.config.view3d &&
+          <>
+            <hemisphereLight args={[0xC6C2B6, 0x3A403B, 1.2]} up={DEFAULT_UP} intensity={1.0}/>
+            <pointLight position={[0.5, 0.5, 3]} intensity={0.3}/>
+          </>
+        }
         <Terrain />
         <Water />
         <ShutterbugSupport/>
