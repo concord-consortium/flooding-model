@@ -57,11 +57,11 @@ export const Water = observer(function WrappedComponent() {
     if (simulation.config.view3d) {
       setupElevation(geometry, simulation);
     }
-  }, [simulation.config.view3d, simulation.cellsStateFlag], geometryRef);
+  }, [simulation.config.view3d, simulation.cellsStateFlag], geometryRef.current ? geometryRef : undefined);
 
   useUpdate<THREE.PlaneBufferGeometry>(geometry => {
     setupAlpha(geometry, simulation);
-  }, [simulation.cellsStateFlag], geometryRef);
+  }, [simulation.cellsStateFlag], geometryRef.current ? geometryRef : undefined);
 
   const uniforms = {
     color: {value: WATER_COL}
