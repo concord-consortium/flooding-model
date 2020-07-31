@@ -15,6 +15,13 @@ export enum RainIntensity {
   Extreme
 }
 
+export enum RiverStage {
+  Low = 0.25,
+  Medium = 0.50,
+  High = 0.75,
+  Crest = 1.0
+}
+
 export type Weather = "sunny" | "partlyCloudy" | "lightRain" | "mediumRain" | "heavyRain" | "extremeRain";
 
 // This class is responsible for data loading and general setup. It's more focused

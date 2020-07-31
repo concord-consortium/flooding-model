@@ -65,6 +65,7 @@
   "devDependencies": {
     "@cypress/webpack-preprocessor": "^5.4.1",
     "@svgr/webpack": "^5.4.0",
+    "@types/d3-interpolate-path": "^2.0.0",
     "@types/enzyme": "^3.10.5",
     "@types/enzyme-adapter-react-16": "^1.0.6",
     "@types/jest": "^26.0.3",
@@ -113,9 +114,11 @@
   },
   "dependencies": {
     "@material-ui/core": "^4.11.0",
+    "d3-interpolate-path": "^2.2.1",
     "jquery": "^3.5.1",
     "mobx": "^5.15.4",
     "mobx-react-lite": "^2.0.7",
+    "polymorph-js": "^1.0.2",
     "query-string": "^6.13.1",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
