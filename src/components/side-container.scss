@@ -1,0 +1,91 @@
+// General styling of tabs. If it ever gets extracted, these styles should go to common component.
+$outlineColor: #797979;
+$outlineWithoutBottom: 0 -1px 0 $outlineColor, -1px 0 0 $outlineColor, 1px 0 0 $outlineColor;
+
+.tabs {
+  height: 100%;
+  margin-left: 1px;
+}
+
+.tabList {
+  padding-top: 8px;
+  padding-left: 8px;
+  border-bottom: none;
+  margin: 0;
+}
+
+.tab {
+  cursor: pointer;
+  display: inline-block;
+  position: relative;
+  list-style: none;
+  margin-bottom: -1px;
+
+  border-style: solid;
+  border-top-left-radius: 9px;
+  border-top-right-radius: 9px;
+  border-width: 4px;
+  border-bottom: none;
+  background: white;
+  margin-right: 6px;
+  //box-shadow: 0 0 0 1px #797979;
+  vertical-align: bottom;
+  color: #434343;
+  padding: 0;
+  font-size: 14px;
+  box-shadow: $outlineWithoutBottom;
+
+  &:focus {
+    outline: none;
+  }
+}
+
+.tabSelected {
+  .tabInsideContainer {
+    padding-bottom: 11px;
+    box-shadow: 0 4px 0 white; // "break" of the border of the tab panel
+  }
+  margin-bottom: -2px; // to match gray outline
+}
+
+.tabInsideContainer {
+  padding: 6px 12px;
+}
+
+.tabPanel {
+  height: 100%;
+  background: white;
+  border-top-left-radius: 9px;
+  border-top-right-radius: 9px;
+  border-style: solid;
+  border-width: 4px;
+  margin-top: 2px;
+  box-shadow: $outlineWithoutBottom;
+}
+
+// Styles specific to Flood project.
+
+.gauge1Background {
+  background: #ffcc7f;
+}
+
+.gauge2Background {
+  background: #d793ff;
+}
+
+.gauge3Background {
+  background: #ff8d7f;
+}
+
+.gauge1Border {
+  border-color: #ff9900;
+}
+
+.gauge2Border {
+  border-color: #af27ff;
+}
+
+.gauge3Border {
+  border-color: #ff1b00;
+}
+

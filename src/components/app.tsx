@@ -5,6 +5,7 @@ import { BottomBar } from "./bottom-bar";
 import Shutterbug from "shutterbug";
 import { useCustomCursor } from "./use-custom-cursors";
 import { TimeDisplay } from "./time-display";
+import { SideContainer } from "./side-container";
 
 import css from "./app.scss";
 
@@ -22,7 +23,12 @@ export const AppComponent = observer(function WrappedComponent() {
   return (
     <div className={css.app}>
       <div className={`${css.mainContent}`}>
-        <View3d />
+        <div className={`${css.topView}`}>
+          <View3d />
+        </div>
+        <div className={`${css.sideContainer}`}>
+          <SideContainer />
+        </div>
       </div>
       <div className={`${css.bottomBar}`}>
         <BottomBar />

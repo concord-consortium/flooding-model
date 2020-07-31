@@ -77,7 +77,12 @@ module.exports = (env, argv) => {
               loader: '@svgr/webpack'
             }
           ]
-        }
+        },
+        {
+          // GLSL shaders should be loaded as strings.
+          test: /\.(glsl|txt)$/,
+          loader: 'raw-loader'
+        },
       ]
     },
     resolve: {

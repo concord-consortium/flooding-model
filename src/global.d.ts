@@ -1,6 +1,7 @@
 // So we can import CSS modules.
 declare module "*.sass";
 declare module "*.scss";
+declare module "*.glsl";
 declare module "*.svg" {
   const content: any;
   export default content;
@@ -10,3 +11,4 @@ declare module "*.png" {
   export = value;
 }
 declare module "shutterbug";
+
