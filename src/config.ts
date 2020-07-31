@@ -50,6 +50,7 @@ export interface ISimulationConfig {
   // We're trying to make sure that 24 hours take around 8 seconds of real world time.
   // But this will greatly depend on performance of the user machine at this point and might require more work later.
   modelTimeToHours: number;
+  view3d: boolean;
 }
 
 export interface IUrlConfig extends ISimulationConfig {
@@ -81,7 +82,8 @@ export const getDefaultConfig: () => IUrlConfig = () => ({
   floodPermeabilityMult: 0.1,
   riverStageIncreaseSpeed: 0.125,
   rainStrength: [0.0025, 0.005, 0.0075, 0.02],
-  modelTimeToHours: 0.066
+  modelTimeToHours: 0.066,
+  view3d: false
 });
 
 const getURLParam = (name: string) => {
