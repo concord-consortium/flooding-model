@@ -39,10 +39,16 @@ export interface ISimulationConfig {
   elevationVerticalTilt: number;
   // Visual layer.
   texture: string | null;
-  riverWaterIncrement: number;
+  // During the flood event ground permeability is lower than typically, as the water table is very high.
+  // This parameter lets you set exact value.
+  floodPermeabilityMult: number;
+  // Parameter that decides how fast river stage will increase during rain event.
+  riverStageIncreaseSpeed: number;
+  // [light rain strength, medium rain strength, heavy rain strength, extreme rain strength]
+  rainStrength: [number, number, number, number];
   // Arbitrary value that transforms model time to hours when the time needs to be presented to user.
   // We're trying to make sure that 24 hours take around 8 seconds of real world time.
-  // But this will greatly depend on performance of the user machine at this point.
+  // But this will greatly depend on performance of the user machine at this point and might require more work later.
   modelTimeToHours: number;
 }
 
@@ -61,7 +67,7 @@ export const getDefaultConfig: () => IUrlConfig = () => ({
   get gridHeight() { return Math.ceil(this.modelHeight / this.cellSize); },
   elevation: [[ 0 ]],
   permeability: [[ 0 ]],
-  permeabilityValues: [ 0 ],
+  permeabilityValues: [0.002, 0.001, 0.0007],
   minElevation: 0,
   maxElevation: 100,
   riverData: null,
@@ -72,7 +78,9 @@ export const getDefaultConfig: () => IUrlConfig = () => ({
   fillTerrainEdges: true,
   showCoordsOnClick: false,
   elevationVerticalTilt: 0,
-  riverWaterIncrement: 0,
+  floodPermeabilityMult: 0.1,
+  riverStageIncreaseSpeed: 0.125,
+  rainStrength: [0.0025, 0.005, 0.0075, 0.02],
   modelTimeToHours: 0.066
 });
 

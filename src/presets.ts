@@ -2,12 +2,10 @@ import { ISimulationConfig } from "./config";
 
 const presets: {[key: string]: Partial<ISimulationConfig>} = {
   RiverCity: {
-    elevation: "data/model2_map_07_heightmap.png",
+    elevation: "data/model2_map_07_heightmap_v2.png",
     riverData: "data/model2_map_riverdata.png",
     permeability: "data/model2_permeability_map.png",
-    permeabilityValues: [0.05, 0.025, 0.007],
     texture: "data/model2_map_06b_topographic.png",
-    riverWaterIncrement: 0.1,
     minElevation: 170, // m
     maxElevation: 250, // m
     modelHeight: 8000, // m
@@ -15,16 +13,17 @@ const presets: {[key: string]: Partial<ISimulationConfig>} = {
   },
   // Test preset. It should behave exactly the same as RiverCity.
   RiverCityScaled: {
-    elevation: "data/model2_map_07_heightmap.png",
+    elevation: "data/model2_map_07_heightmap_v2.png",
     riverData: "data/model2_map_riverdata.png",
     permeability: "data/model2_permeability_map.png",
-    permeabilityValues: [0.005, 0.0025, 0.0007],
     texture: "data/model2_map_06b_topographic.png",
-    riverWaterIncrement: 0.01,
-    minElevation: 17, // m
-    maxElevation: 25, // m
-    modelHeight: 800, // m
-    modelWidth: 800 // m
+    permeabilityValues: [0.002 / 10, 0.001 / 10, 0.0007 / 10],
+    rainStrength: [0.0025 / 10, 0.005 / 10, 0.0075 / 10, 0.02 / 10],
+    riverStageIncreaseSpeed: 0.125 * 10,
+    minElevation: 170 / 10, // m
+    maxElevation: 250 / 10, // m
+    modelHeight: 8000 / 10, // m
+    modelWidth: 8000 / 10 // m
   },
   slope: {
     elevation: [

@@ -142,8 +142,27 @@ describe("FloodingEngine", () => {
     });
   });
 
+  describe("addWaterInRiver", () => {
+    it("should add water using riverWaterIncrment value", () => {
+      const c1 = new Cell({ x: 0, y: 0, waterDepth: 0, isRiver: true });
+      const c2 = new Cell({ x: 1, y: 0, waterDepth: 0, isRiver: false });
+      const cells = [c1, c2];
+      const engine = new FloodingEngine(cells, {
+        gridWidth: 2,
+        gridHeight: 1,
+        cellSize: 1
+      });
+
+      engine.riverWaterIncrement = 1;
+      engine.addWaterInRiver(2);
+
+      expect(c1.waterDepth).toEqual(2);
+      expect(c2.waterDepth).toEqual(0);
+    });
+  });
+
   describe("removeWater", () => {
-    it("should remove water each step using permeability", () => {
+    it("should remove water each step using permeability and floodPermeabilityMult", () => {
       const c1 = new Cell({ x: 0, y: 0, waterDepth: 1, permeability: 0.1 });
       const c2 = new Cell({ x: 1, y: 0, waterDepth: 2, permeability: 0.5 });
       const cells = [c1, c2];
@@ -157,6 +176,14 @@ describe("FloodingEngine", () => {
 
       expect(c1.waterDepth).toEqual(0.8);
       expect(c2.waterDepth).toEqual(1);
+
+      engine.riverWaterIncrement = 1; // flood is in progress
+      engine.floodPermeabilityMult = 0.5; // mult permeability by 0.5
+
+      engine.removeWater(2);
+
+      expect(c1.waterDepth).toBeCloseTo(0.7);
+      expect(c2.waterDepth).toBeCloseTo(0.5);
     });
   });
 });
