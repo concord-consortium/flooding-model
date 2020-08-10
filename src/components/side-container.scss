@@ -50,6 +50,10 @@ $outlineWithoutBottom: 0 -1px 0 $outlineColor, -1px 0 0 $outlineColor, 1px 0 0 $
 
 .tabInsideContainer {
   padding: 6px 12px;
+  svg { // icons
+    vertical-align: middle;
+    height: 19px;
+  }
 }
 
 .tabPanel {
@@ -61,6 +65,7 @@ $outlineWithoutBottom: 0 -1px 0 $outlineColor, -1px 0 0 $outlineColor, 1px 0 0 $
   border-width: 4px;
   margin-top: 2px;
   box-shadow: $outlineWithoutBottom;
+  padding: 15px 15px;
 }
 
 // Styles specific to Flood project.

@@ -1,0 +1,45 @@
+.crossSection {
+  .svgView {
+    position: relative;
+
+    .background {
+      width: 100%;
+      position: absolute;
+      top: 0;
+      left: 0;
+
+      // Hide all the water levels that are in the original SVG.
+      // React component will take these paths and interpolate between them to display the current water level.
+      [data-name="river levels"] {
+        display: none;
+      }
+      [data-name="water levels"] {
+        display: none;
+      }
+      [data-name="water level lines"] {
+        display: none;
+      }
+    }
+
+    .waterLine {
+      width: 100%;
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
+  }
+
+
+  .icon {
+    height: 19px;
+    vertical-align: middle;
+    margin-right: 5px;
+  }
+
+  .header {
+    font-weight: bold;
+    font-size: 14px;
+    color: #434343;
+    text-align: center;
+  }
+}
