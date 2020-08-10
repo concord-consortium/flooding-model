@@ -82,7 +82,11 @@ export class SimulationModel {
   }
 
   @computed public get weather(): Weather {
-    if (this.timeInDays < this.rainDurationInDays) {
+    const rainStart = this.config.rainStartDay;
+    if (this.timeInDays < rainStart) {
+      return "partlyCloudy";
+    }
+    if (this.timeInDays >= rainStart && this.timeInDays < rainStart + this.rainDurationInDays) {
       if (this.rainIntensity === RainIntensity.Light) {
         return "lightRain";
       }
@@ -93,9 +97,6 @@ export class SimulationModel {
         return "heavyRain";
       }
       return "extremeRain";
-    }
-    if (this.timeInDays < this.rainDurationInDays + 2) {
-      return "partlyCloudy";
     }
     return "sunny";
   }
@@ -242,13 +243,15 @@ export class SimulationModel {
       for (let i = 0; i < this.config.speedMult; i += 1) {
         this.time += this.config.timeStep;
 
-        if (this._riverStage < 1) {
-          // At the beginning of simulation there should be no flood until riverStage value reaches value 1.
-          // riverStage value will be used in the future by the cross-section view and river gauge readings.
-          this._riverStage += this.currentRiverWaterIncrement * this.config.riverStageIncreaseSpeed;
-          this.engine.riverWaterIncrement = 0;
-        } else {
-          this.engine.riverWaterIncrement = this.currentRiverWaterIncrement;
+        if (this.time > this.config.rainStartDay) {
+          if (this._riverStage < 1) {
+            // At the beginning of simulation there should be no flood until riverStage value reaches value 1.
+            // riverStage value will be used in the future by the cross-section view and river gauge readings.
+            this._riverStage += this.currentRiverWaterIncrement * this.config.riverStageIncreaseSpeed;
+            this.engine.riverWaterIncrement = 0;
+          } else {
+            this.engine.riverWaterIncrement = this.currentRiverWaterIncrement;
+          }
         }
 
         // Why do we run simulation engine even when its riverWaterIncrement == 0 and waste CPU cycles?
