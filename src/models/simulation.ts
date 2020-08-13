@@ -4,6 +4,7 @@ import { getDefaultConfig, ISimulationConfig, getUrlConfig } from "../config";
 import { getElevationData, getPermeabilityData, getRiverData, getWaterDepthData } from "./utils/data-loaders";
 import { getGridIndexForLocation } from "./utils/grid-utils";
 import { FloodingEngine } from "./engine/flooding-engine";
+import EventEmitter from "eventemitter3";
 
 const MIN_RAIN_DURATION_IN_DAYS = 1;
 const MAX_RAIN_DURATION_IN_DAYS = 4;
@@ -23,6 +24,8 @@ export enum RiverStage {
 }
 
 export type Weather = "sunny" | "partlyCloudy" | "lightRain" | "mediumRain" | "heavyRain" | "extremeRain";
+
+export type Event = "hourChange" | "restart";
 
 // This class is responsible for data loading and general setup. It's more focused
 // on management and interactions handling. Core calculations are delegated to FloodingEngine.
@@ -52,6 +55,8 @@ export class SimulationModel {
   @observable public cellsStateFlag = 0;
   @observable public cellsBaseElevationFlag = 0;
 
+  private emitter = new EventEmitter();
+
   constructor(presetConfig: Partial<ISimulationConfig>) {
     this.load(presetConfig);
     this.resetInputs();
@@ -79,6 +84,10 @@ export class SimulationModel {
 
   @computed public get riverStage() {
     return this._riverStage;
+  }
+
+  public get floodArea() { // in square meters
+    return this.engine?.floodArea || 0;
   }
 
   @computed public get weather(): Weather {
@@ -116,6 +125,18 @@ export class SimulationModel {
       return this.config.rainStrength[3];
     }
     return 0;
+  }
+
+  public on(event: Event, callback: any) {
+    this.emitter.on(event, callback);
+  }
+
+  public off(event: Event, callback: any) {
+    this.emitter.off(event, callback);
+  }
+
+  public emit(event: Event) {
+    this.emitter.emit(event);
   }
 
   public cellAt(xInM: number, yInM: number) {
@@ -226,6 +247,7 @@ export class SimulationModel {
     this.time = 0;
     this._riverStage = this.initialWaterLevel;
     this.engine = new FloodingEngine(this.cells, this.config);
+    this.emit("restart"); // used by graphs
   }
 
   @action.bound public reload() {
@@ -240,7 +262,9 @@ export class SimulationModel {
     requestAnimationFrame(this.rafCallback);
 
     if (this.engine) {
+      const oldTimeInHours = this.timeInHours;
       for (let i = 0; i < this.config.speedMult; i += 1) {
+
         this.time += this.config.timeStep;
 
         if (this.time > this.config.rainStartDay) {
@@ -261,6 +285,9 @@ export class SimulationModel {
       }
       if (this.engine.simulationDidStop) {
         this.simulationRunning = false;
+      }
+      if (this.timeInHours !== oldTimeInHours) {
+        this.emit("hourChange"); // used by graphs
       }
     }
 

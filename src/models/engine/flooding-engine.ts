@@ -41,9 +41,11 @@ export class FloodingEngine {
   public dampingFactor: number;
   public floodPermeabilityMult: number;
 
+  // Outputs
   public simulationDidStop = false;
   public waterSum = 0;
   public riverWaterIncrement = 0;
+  public floodArea = 0; // in square meters
 
   constructor(cells: Cell[], config: IFloodingEngineConfig) {
     this.gridWidth = config.gridWidth;
@@ -128,6 +130,7 @@ export class FloodingEngine {
   public updateWaterDepth(dt: number) {
     const cellArea = this.cellSize * this.cellSize;
     this.waterSum = 0;
+    this.floodArea = 0;
 
     for (const cell of this.activeCells) {
       if (cell.isEdge) {
@@ -146,6 +149,9 @@ export class FloodingEngine {
       cell.waterDepth = Math.max(0, cell.waterDepth + (fluxIn - cell.fluxOut) * dt / (cellArea));
 
       this.waterSum += cell.waterDepth;
+      if (cell.waterDepth > 0.01) {
+        this.floodArea += cellArea;
+      }
     }
   }
 }

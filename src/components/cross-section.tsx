@@ -1,25 +1,16 @@
 import React, { useEffect, useRef } from "react";
 import { interpolate } from "polymorph-js";
-import Marker1 from "../assets/marker1.svg";
-import Marker2 from "../assets/marker2.svg";
-import Marker3 from "../assets/marker3.svg";
 import CSView1 from "../assets/model2_gauge1_cross-section.svg";
 import CSView2 from "../assets/model2_gauge2_cross-section.svg";
 import CSView3 from "../assets/model2_gauge3_cross-section.svg";
-import css from "./cross-section-tab.scss";
 import { observer } from "mobx-react-lite";
 import { useStores } from "../use-stores";
 import { RiverStage } from "../models/simulation";
+import css from "./cross-section.scss";
 
 interface IProps {
   gauge: 1 | 2 | 3;
 }
-
-const Icon: {[key: number]: React.JSXElementConstructor<any>} = {
-  1: Marker1,
-  2: Marker2,
-  3: Marker3
-};
 
 const CrossSectionBackground: {[key: number]: React.JSXElementConstructor<any>} = {
   1: CSView1,
@@ -59,8 +50,7 @@ const imagesCount = waterLine.length;
 // JS code below uses polymorph-js to take water line (that consists of white line and dashed line) and transparent
 // water layer and morph between various states using `riverStage` simulation output. Morphed path is rendered
 // on top of the original SVG. All the necessary selectors are defined as constants above.
-export const CrossSectionTab: React.FC<IProps> = observer(({ gauge }) => {
-  const IconComp = Icon[gauge];
+export const CrossSection: React.FC<IProps> = observer(({ gauge }) => {
   const CrossSectionBgComp = CrossSectionBackground[gauge];
 
   const { simulation } = useStores();
@@ -99,22 +89,17 @@ export const CrossSectionTab: React.FC<IProps> = observer(({ gauge }) => {
 
   return (
     <div className={css.crossSection}>
-      <div className={css.header}>
-        <IconComp className={css.icon}/> Steam Gauge { gauge }: Cross-section
+      <div className={css.background}>
+        <CrossSectionBgComp />
       </div>
-      <div className={css.svgView}>
-        <div className={css.background}>
-          <CrossSectionBgComp />
-        </div>
-        <div className={css.waterLine}>
-          {/* Viewbox should match background SVG viewBox */}
-          <svg viewBox="0 0 402 157">
-            {/* Styles are taken from background SVG */}
-            <path ref={waterLevelRef} style={{ fill: "#50acff", opacity: 0.4 }}/>
-            <path ref={waterWhiteLineRef} style={{ fill: "none", stroke: "#fff", strokeMiterlimit: 10, opacity: 0.6 }}/>
-            <path ref={waterLineRef} style={{ fill: "none", stroke: "#1b96db", strokeMiterlimit: 10, strokeDasharray: "8,4" }}/>
-          </svg>
-        </div>
+      <div className={css.waterLine}>
+        {/* Viewbox should match background SVG viewBox */}
+        <svg viewBox="0 0 402 157">
+          {/* Styles are taken from background SVG */}
+          <path ref={waterLevelRef} style={{ fill: "#50acff", opacity: 0.4 }}/>
+          <path ref={waterWhiteLineRef} style={{ fill: "none", stroke: "#fff", strokeMiterlimit: 10, opacity: 0.6 }}/>
+          <path ref={waterLineRef} style={{ fill: "none", stroke: "#1b96db", strokeMiterlimit: 10, strokeDasharray: "8,4" }}/>
+        </svg>
       </div>
     </div>
   );
