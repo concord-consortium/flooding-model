@@ -50,6 +50,8 @@ export interface ISimulationConfig {
   // We're trying to make sure that 24 hours take around 8 seconds of real world time.
   // But this will greatly depend on performance of the user machine at this point and might require more work later.
   modelTimeToHours: number;
+  // Rain starts with small delay, it's sunny at the beginning of the simulation.
+  rainStartDay: number;
   view3d: boolean;
 }
 
@@ -83,6 +85,7 @@ export const getDefaultConfig: () => IUrlConfig = () => ({
   riverStageIncreaseSpeed: 0.125,
   rainStrength: [0.0025, 0.005, 0.0075, 0.02],
   modelTimeToHours: 0.066,
+  rainStartDay: 1,
   view3d: false
 });
 

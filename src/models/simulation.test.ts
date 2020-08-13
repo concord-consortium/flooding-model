@@ -172,7 +172,8 @@ describe("SimulationModel", () => {
       const s = new SimulationModel({
         elevation: [[0]],
         riverData: null,
-        gridWidth: 1
+        gridWidth: 1,
+        rainStartDay: 0 // to keep the test simpler
       });
       await s.dataReadyPromise;
 
@@ -186,6 +187,17 @@ describe("SimulationModel", () => {
       (s as any)._riverStage = 1;
       s.rafCallback();
       expect(s.engine?.riverWaterIncrement).toBeGreaterThan(0);
+    });
+  });
+
+  describe("weather", () => {
+    it("is based on current day", async () => {
+      const s = await getSimpleSimulation();
+      expect(s.weather).toEqual("partlyCloudy");
+      s.time = s.config.rainStartDay / s.config.modelTimeToHours * 24;
+      expect(s.weather).toEqual("mediumRain");
+      s.time = (s.config.rainStartDay + s.rainDurationInDays) / s.config.modelTimeToHours * 24;
+      expect(s.weather).toEqual("sunny");
     });
   });
 
