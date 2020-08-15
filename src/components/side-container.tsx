@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
-import { CrossSection } from "./cross-section";
+import { GaugeTab } from "./gauge-tab";
 import { FloodAreaGraph } from "./flood-area-graph";
 import Marker1 from "../assets/marker1.svg";
 import Marker2 from "../assets/marker2.svg";
@@ -8,6 +8,9 @@ import Marker3 from "../assets/marker3.svg";
 
 import "react-tabs/style/react-tabs.css";
 import css from "./side-container.scss";
+import { observer } from "mobx-react-lite";
+import { useStores } from "../use-stores";
+import { Header } from "./header";
 
 const tabBgColorCss = [
   css.graphBackground,
@@ -16,9 +19,19 @@ const tabBgColorCss = [
   css.gauge3Background,
 ];
 
-export const SideContainer = () => {
+const gaugeBorderColorCss = [
+  css.gauge1Border,
+  css.gauge2Border,
+  css.gauge3Border
+];
+
+const GaugeMarker = [Marker1, Marker2, Marker3];
+
+export const SideContainer = observer(() => {
+  const { simulation } = useStores();
   const [tabIndex, setTabIndex] = useState(0);
   const handleTabChange = (newTabIndex: number) => setTabIndex(newTabIndex);
+  const gauges = simulation.gauges;
 
   return (
     <Tabs className={`${css.tabs} ${tabBgColorCss[tabIndex]}`} selectedIndex={tabIndex} onSelect={handleTabChange}>
@@ -26,33 +39,33 @@ export const SideContainer = () => {
         <Tab className={`${css.tab} ${css.graphBorder}`} selectedClassName={css.tabSelected}>
           <div className={css.tabInsideContainer}>Graph</div>
         </Tab>
-        <Tab className={`${css.tab} ${css.gauge1Border}`} selectedClassName={css.tabSelected}>
-          <div className={css.tabInsideContainer}>Gauge <Marker1/></div>
-        </Tab>
-        <Tab className={`${css.tab} ${css.gauge2Border}`} selectedClassName={css.tabSelected}>
-          <div className={css.tabInsideContainer}>Gauge <Marker2/></div>
-        </Tab>
-        <Tab className={`${css.tab} ${css.gauge3Border}`} selectedClassName={css.tabSelected}>
-          <div className={css.tabInsideContainer}>Gauge <Marker3/></div>
-        </Tab>
+        {
+          gauges.map((g, idx) => {
+            const Icon = GaugeMarker[idx];
+            return (
+              <Tab key={idx} className={`${css.tab} ${gaugeBorderColorCss[idx]}`} selectedClassName={css.tabSelected}>
+                <div className={css.tabInsideContainer}>Gauge <Icon/></div>
+              </Tab>
+            );
+          })
+        }
       </TabList>
 
+
       <TabPanel className={`react-tabs__tab-panel ${css.tabPanel} ${css.graphBorder}`}>
-        <div className={css.header}>Graph: Total Flood Area vs. Time</div>
-        <FloodAreaGraph />
+        <FloodAreaGraph/>
       </TabPanel>
-      <TabPanel className={`react-tabs__tab-panel ${css.tabPanel} ${css.gauge1Border}`}>
-        <div className={css.header}><Marker1 className={css.icon}/> Steam Gauge 1: Cross-section</div>
-        <CrossSection gauge={1} />
-      </TabPanel>
-      <TabPanel className={`react-tabs__tab-panel ${css.tabPanel} ${css.gauge2Border}`}>
-        <div className={css.header}><Marker2 className={css.icon}/> Steam Gauge 2: Cross-section</div>
-        <CrossSection gauge={2} />
-      </TabPanel>
-      <TabPanel className={`react-tabs__tab-panel ${css.tabPanel} ${css.gauge3Border}`}>
-        <div className={css.header}><Marker3 className={css.icon}/> Steam Gauge 3: Cross-section</div>
-        <CrossSection gauge={3} />
-      </TabPanel>
+      {
+        gauges.map((g, idx) => {
+          const Icon = GaugeMarker[idx];
+          return (<TabPanel key={idx} className={`react-tabs__tab-panel ${css.tabPanel} ${gaugeBorderColorCss[idx]}`}>
+              <Header><Icon className={css.icon}/> Steam Gauge {idx + 1}: Cross-section</Header>
+              <GaugeTab gauge={idx + 1}/>
+            </TabPanel>
+          );
+        }
+      )
+      }
     </Tabs>
   );
-};
+});

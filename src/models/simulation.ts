@@ -90,6 +90,23 @@ export class SimulationModel {
     return this.engine?.floodArea || 0;
   }
 
+  public get gauges() {
+    return this.config.gauges;
+  }
+
+  public getGaugeReading(index: number) {
+    const gauge = this.gauges[index];
+    if (!gauge) {
+      return 0;
+    }
+    if (this.riverStage <= 1) {
+      return gauge.minDepth + (gauge.maxDepth - gauge.minDepth) * this.riverStage;
+    } else {
+      const gaugeCell = this.cellAt(this.config.modelWidth * gauge.x, this.config.modelHeight * gauge.y);
+      return gauge.maxDepth + gaugeCell.waterDepth;
+    }
+  }
+
   @computed public get weather(): Weather {
     const rainStart = this.config.rainStartDay;
     if (this.timeInDays < rainStart) {
@@ -263,6 +280,10 @@ export class SimulationModel {
 
     if (this.engine) {
       const oldTimeInHours = this.timeInHours;
+      if (this.timeInHours === 0) {
+        // Used by graphs. Make sure that initial point (0) is handled by graphs.
+        this.emit("hourChange");
+      }
       for (let i = 0; i < this.config.speedMult; i += 1) {
 
         this.time += this.config.timeStep;

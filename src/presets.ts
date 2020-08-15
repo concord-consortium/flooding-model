@@ -9,21 +9,27 @@ const presets: {[key: string]: Partial<ISimulationConfig>} = {
     minElevation: 170, // m
     maxElevation: 250, // m
     modelHeight: 8000, // m
-    modelWidth: 8000 // m
-  },
-  // Test preset. It should behave exactly the same as RiverCity.
-  RiverCityScaled: {
-    elevation: "data/model2_map_07_heightmap_v2.png",
-    riverData: "data/model2_map_riverdata.png",
-    permeability: "data/model2_permeability_map.png",
-    texture: "data/model2_map_06b_topographic.png",
-    permeabilityValues: [0.002 / 10, 0.001 / 10, 0.0007 / 10],
-    rainStrength: [0.0025 / 10, 0.005 / 10, 0.0075 / 10, 0.02 / 10],
-    riverStageIncreaseSpeed: 0.125 * 10,
-    minElevation: 170 / 10, // m
-    maxElevation: 250 / 10, // m
-    modelHeight: 8000 / 10, // m
-    modelWidth: 8000 / 10 // m
+    modelWidth: 8000, // m
+    gauges: [
+      {
+        minDepth: 0.5, // m
+        maxDepth: 4,
+        x: 0.623,
+        y: 0.743
+      },
+      {
+        minDepth: 0.5, // m
+        maxDepth: 4,
+        x: 0.153,
+        y: 0.44
+      },
+      {
+        minDepth: 0.5, // m
+        maxDepth: 4,
+        x: 0.603,
+        y: 0.26
+      }
+    ]
   },
   slope: {
     elevation: [

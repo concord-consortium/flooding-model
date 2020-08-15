@@ -6,6 +6,8 @@ export interface ISimulationModel {
   floodArea: number;
 }
 
+const SQ_M_TO_ACRES = 1 /4047;
+
 export class FloodAreaDataset {
   @observable public points: {x: number, y: number}[];
   private simulation: ISimulationModel;
@@ -19,7 +21,7 @@ export class FloodAreaDataset {
 
   public getCurrentPoint() {
     // Convert area in sq meters to acres.
-    return { x: this.simulation.timeInHours / 24, y: this.simulation.floodArea / 4047 };
+    return { x: this.simulation.timeInHours / 24, y: this.simulation.floodArea * SQ_M_TO_ACRES };
   }
 
   @action.bound public onHourChange() {
@@ -27,6 +29,6 @@ export class FloodAreaDataset {
   }
 
   @action.bound public reset() {
-    this.points = [this.getCurrentPoint()];
+    this.points = [];
   }
 }
