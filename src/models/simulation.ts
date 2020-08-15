@@ -23,6 +23,9 @@ export enum RiverStage {
   Crest = 1.0
 }
 
+// River is not flowing in the model. Instead, it disappears from the river faster than from the ground.
+const RIVER_PERMEABILITY = 0.1;
+
 export type Weather = "sunny" | "partlyCloudy" | "lightRain" | "mediumRain" | "heavyRain" | "extremeRain";
 
 export type Event = "hourChange" | "restart";
@@ -141,7 +144,11 @@ export class SimulationModel {
     if (weather === "extremeRain") {
       return this.config.rainStrength[3];
     }
-    return 0;
+    if (weather === "partlyCloudy") {
+      return 0;
+    }
+    // Sunny.
+    return -0.0025;
   }
 
   public on(event: Event, callback: any) {
@@ -219,7 +226,7 @@ export class SimulationModel {
             isRiver,
             baseElevation,
             waterDepth: waterDepth && waterDepth[index] || 0,
-            permeability: isRiver ? 0 : (permeability && permeability[index] || 0)
+            permeability: isRiver ? RIVER_PERMEABILITY : (permeability && permeability[index] || 0)
           };
           this.cells.push(new Cell(cellOptions));
         }
