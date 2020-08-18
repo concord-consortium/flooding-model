@@ -24,7 +24,7 @@ export enum RiverStage {
 }
 
 // River is not flowing in the model. Instead, it disappears from the river faster than from the ground.
-const RIVER_PERMEABILITY = 0.1;
+const RIVER_PERMEABILITY = 0.012;
 
 export type Weather = "sunny" | "partlyCloudy" | "lightRain" | "mediumRain" | "heavyRain" | "extremeRain";
 
