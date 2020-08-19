@@ -57,7 +57,7 @@ $outlineWithoutBottom: 0 -1px 0 $outlineColor, -1px 0 0 $outlineColor, 1px 0 0 $
 }
 
 .tabPanel {
-  height: 100%;
+  height: calc(100% - 80px);
   background: white;
   border-top-left-radius: 9px;
   border-top-right-radius: 9px;
@@ -66,9 +66,26 @@ $outlineWithoutBottom: 0 -1px 0 $outlineColor, -1px 0 0 $outlineColor, 1px 0 0 $
   margin-top: 2px;
   box-shadow: $outlineWithoutBottom;
   padding: 15px 15px;
+
+  .header {
+    font-weight: bold;
+    font-size: 14px;
+    color: #434343;
+    text-align: center;
+    margin-bottom: 10px;
+
+    .icon {
+      height: 19px;
+      vertical-align: middle;
+      margin-right: 5px;
+    }
+  }
 }
 
 // Styles specific to Flood project.
+.graphBackground {
+  background: #a7d5ff;
+}
 
 .gauge1Background {
   background: #ffcc7f;
@@ -94,3 +111,6 @@ $outlineWithoutBottom: 0 -1px 0 $outlineColor, -1px 0 0 $outlineColor, 1px 0 0 $
   border-color: #ff1b00;
 }
 
+.graphBorder {
+  border-color: #50acff;
+}

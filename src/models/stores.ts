@@ -1,4 +1,5 @@
 import { SimulationModel } from "./simulation";
+import { FloodAreaDataset } from "./flood-area-dataset";
 import { UIModel } from "./ui";
 import presets from "../presets";
 import { getDefaultConfig, getUrlConfig } from "../config";
@@ -6,6 +7,7 @@ import { getDefaultConfig, getUrlConfig } from "../config";
 export interface IStores {
   simulation: SimulationModel;
   ui: UIModel;
+  floodAreaDataset: FloodAreaDataset;
 }
 
 export const createStores = (): IStores => {
@@ -19,6 +21,7 @@ export const createStores = (): IStores => {
   (window as any).sim = simulation;
   return {
     simulation,
-    ui: new UIModel()
+    ui: new UIModel(),
+    floodAreaDataset: new FloodAreaDataset(simulation)
   };
 };
