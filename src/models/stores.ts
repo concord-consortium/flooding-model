@@ -3,11 +3,13 @@ import { FloodAreaDataset } from "./flood-area-dataset";
 import { UIModel } from "./ui";
 import presets from "../presets";
 import { getDefaultConfig, getUrlConfig } from "../config";
+import { GaugeReadingDataset } from "./gauge-reading-dataset";
 
 export interface IStores {
   simulation: SimulationModel;
   ui: UIModel;
   floodAreaDataset: FloodAreaDataset;
+  gaugeReadingDataset: GaugeReadingDataset;
 }
 
 export const createStores = (): IStores => {
@@ -22,6 +24,7 @@ export const createStores = (): IStores => {
   return {
     simulation,
     ui: new UIModel(),
-    floodAreaDataset: new FloodAreaDataset(simulation)
+    floodAreaDataset: new FloodAreaDataset(simulation),
+    gaugeReadingDataset: new GaugeReadingDataset(simulation)
   };
 };

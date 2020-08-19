@@ -6,10 +6,10 @@ import CSView3 from "../assets/model2_gauge3_cross-section.svg";
 import { observer } from "mobx-react-lite";
 import { useStores } from "../use-stores";
 import { RiverStage } from "../models/simulation";
-import css from "./cross-section.scss";
+import css from "./cross-section-svg-view.scss";
 
 interface IProps {
-  gauge: 1 | 2 | 3;
+  gauge: number;
 }
 
 const CrossSectionBackground: {[key: number]: React.JSXElementConstructor<any>} = {
@@ -50,7 +50,7 @@ const imagesCount = waterLine.length;
 // JS code below uses polymorph-js to take water line (that consists of white line and dashed line) and transparent
 // water layer and morph between various states using `riverStage` simulation output. Morphed path is rendered
 // on top of the original SVG. All the necessary selectors are defined as constants above.
-export const CrossSection: React.FC<IProps> = observer(({ gauge }) => {
+export const CrossSectionSVGView: React.FC<IProps> = observer(({ gauge }) => {
   const CrossSectionBgComp = CrossSectionBackground[gauge];
 
   const { simulation } = useStores();

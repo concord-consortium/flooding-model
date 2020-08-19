@@ -53,6 +53,14 @@ export interface ISimulationConfig {
   // Rain starts with small delay, it's sunny at the beginning of the simulation.
   rainStartDay: number;
   view3d: boolean;
+  gauges: IGaugeConfig[];
+}
+
+export interface IGaugeConfig {
+  minDepth: number;
+  maxDepth: number;
+  x: number;
+  y: number;
 }
 
 export interface IUrlConfig extends ISimulationConfig {
@@ -86,7 +94,8 @@ export const getDefaultConfig: () => IUrlConfig = () => ({
   rainStrength: [0.0025, 0.005, 0.0075, 0.02],
   modelTimeToHours: 0.066,
   rainStartDay: 1,
-  view3d: false
+  view3d: false,
+  gauges: []
 });
 
 const getURLParam = (name: string) => {

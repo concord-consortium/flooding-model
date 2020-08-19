@@ -44,6 +44,7 @@ export class FloodingEngine {
   // Outputs
   public simulationDidStop = false;
   public waterSum = 0;
+  public riverWaterSum = 0;
   public riverWaterIncrement = 0;
   public floodArea = 0; // in square meters
 
@@ -130,6 +131,7 @@ export class FloodingEngine {
   public updateWaterDepth(dt: number) {
     const cellArea = this.cellSize * this.cellSize;
     this.waterSum = 0;
+    this.riverWaterSum = 0;
     this.floodArea = 0;
 
     for (const cell of this.activeCells) {
@@ -149,6 +151,9 @@ export class FloodingEngine {
       cell.waterDepth = Math.max(0, cell.waterDepth + (fluxIn - cell.fluxOut) * dt / (cellArea));
 
       this.waterSum += cell.waterDepth;
+      if (cell.isRiver) {
+        this.riverWaterSum += cell.waterDepth;
+      }
       if (cell.waterDepth > 0.01) {
         this.floodArea += cellArea;
       }

@@ -16,17 +16,18 @@ const getSimulation: () => ISimMock = () => {
 };
 
 describe("FloodAreaDataset", () => {
-  it("starts with 0,0 point", () => {
+  it("starts empty", () => {
     const sim = getSimulation();
     const dataset = new FloodAreaDataset(sim);
 
-    expect(dataset.points[0]).toEqual({x: 0, y: 0});
+    expect(dataset.points).toEqual([]);
   });
 
   it("adds a new point on hour change and leaves just one on restart", () => {
     const sim = getSimulation();
     const dataset = new FloodAreaDataset(sim);
 
+    sim.handlers.hourChange();
     sim.timeInHours = 24;
     sim.floodArea = 100 * 4047;
     sim.handlers.hourChange();
@@ -44,8 +45,6 @@ describe("FloodAreaDataset", () => {
     sim.floodArea = 10 * 4047;
     sim.handlers.restart();
 
-    expect(dataset.points).toEqual([
-      {x: 0, y: 10}
-    ]);
+    expect(dataset.points).toEqual([]);
   });
 });

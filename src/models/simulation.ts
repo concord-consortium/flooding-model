@@ -23,6 +23,9 @@ export enum RiverStage {
   Crest = 1.0
 }
 
+// River is not flowing in the model. Instead, it disappears from the river faster than from the ground.
+const RIVER_PERMEABILITY = 0.012;
+
 export type Weather = "sunny" | "partlyCloudy" | "lightRain" | "mediumRain" | "heavyRain" | "extremeRain";
 
 export type Event = "hourChange" | "restart";
@@ -90,6 +93,23 @@ export class SimulationModel {
     return this.engine?.floodArea || 0;
   }
 
+  public get gauges() {
+    return this.config.gauges;
+  }
+
+  public getGaugeReading(index: number) {
+    const gauge = this.gauges[index];
+    if (!gauge) {
+      return 0;
+    }
+    if (this.riverStage <= 1) {
+      return gauge.minDepth + (gauge.maxDepth - gauge.minDepth) * this.riverStage;
+    } else {
+      const gaugeCell = this.cellAt(this.config.modelWidth * gauge.x, this.config.modelHeight * gauge.y);
+      return gauge.maxDepth + gaugeCell.waterDepth;
+    }
+  }
+
   @computed public get weather(): Weather {
     const rainStart = this.config.rainStartDay;
     if (this.timeInDays < rainStart) {
@@ -124,7 +144,11 @@ export class SimulationModel {
     if (weather === "extremeRain") {
       return this.config.rainStrength[3];
     }
-    return 0;
+    if (weather === "partlyCloudy") {
+      return 0;
+    }
+    // Sunny.
+    return -0.0025;
   }
 
   public on(event: Event, callback: any) {
@@ -202,7 +226,7 @@ export class SimulationModel {
             isRiver,
             baseElevation,
             waterDepth: waterDepth && waterDepth[index] || 0,
-            permeability: isRiver ? 0 : (permeability && permeability[index] || 0)
+            permeability: isRiver ? RIVER_PERMEABILITY : (permeability && permeability[index] || 0)
           };
           this.cells.push(new Cell(cellOptions));
         }
@@ -263,6 +287,10 @@ export class SimulationModel {
 
     if (this.engine) {
       const oldTimeInHours = this.timeInHours;
+      if (this.timeInHours === 0) {
+        // Used by graphs. Make sure that initial point (0) is handled by graphs.
+        this.emit("hourChange");
+      }
       for (let i = 0; i < this.config.speedMult; i += 1) {
 
         this.time += this.config.timeStep;
