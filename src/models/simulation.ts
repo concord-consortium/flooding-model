@@ -1,5 +1,5 @@
 import { action, computed, observable } from "mobx";
-import { Cell, CellOptions } from "./cell";
+import { Cell } from "./cell";
 import { getDefaultConfig, ISimulationConfig, getUrlConfig } from "../config";
 import { getElevationData, getPermeabilityData, getRiverData, getWaterDepthData } from "./utils/data-loaders";
 import { getGridIndexForLocation } from "./utils/grid-utils";
@@ -39,18 +39,20 @@ export class SimulationModel {
   public engine: FloodingEngine | null = null;
   // Cells are not directly observable. Changes are broadcasted using cellsStateFlag and cellsBaseElevationFlag.
   public cells: Cell[] = [];
+  public riverCells: Cell[] = [];
+
   @observable public time = 0;
   @observable public dataReady = false;
   @observable public simulationStarted = false;
   @observable public simulationRunning = false;
 
   // Simulation parameters.
-  @observable public rainIntensity: RainIntensity;
-  @observable public rainDurationInDays: number;
-  @observable public initialWaterLevel: number; // [0, 1]
+  @observable public rainIntensity: RainIntensity = RainIntensity.Medium;
+  @observable public rainDurationInDays = 2;
+  @observable public _initialRiverStage: number = RiverStage.Low;
 
   // Simulation outputs.
-  @observable private _riverStage: number;
+  @observable public gaugeReading: number[] = [];
 
   // These flags can be used by view to trigger appropriate rendering. Theoretically, view could/should check
   // every single cell and re-render when it detects some changes. In practice, we perform these updates in very
@@ -62,7 +64,6 @@ export class SimulationModel {
 
   constructor(presetConfig: Partial<ISimulationConfig>) {
     this.load(presetConfig);
-    this.resetInputs();
   }
 
   @computed public get ready() {
@@ -85,8 +86,8 @@ export class SimulationModel {
     return Math.floor(this.time * this.config.modelTimeToHours) / 24;
   }
 
-  @computed public get riverStage() {
-    return this._riverStage;
+  @computed public get initialRiverStage() {
+    return this._initialRiverStage;
   }
 
   public get floodArea() { // in square meters
@@ -102,12 +103,17 @@ export class SimulationModel {
     if (!gauge) {
       return 0;
     }
-    if (this.riverStage <= 1) {
-      return gauge.minDepth + (gauge.maxDepth - gauge.minDepth) * this.riverStage;
-    } else {
-      const gaugeCell = this.cellAt(this.config.modelWidth * gauge.x, this.config.modelHeight * gauge.y);
-      return gauge.maxDepth + gaugeCell.waterDepth;
+    const gaugeCell = this.cellAt(this.config.modelWidth * gauge.x, this.config.modelHeight * gauge.y);
+    if (!gaugeCell) {
+      return 0;
     }
+    return gauge.minRiverDepth + (gauge.maxRiverDepth - gauge.minRiverDepth) * gaugeCell.riverStage  + gaugeCell.waterDepth;
+  }
+
+  // Update observable gaugeReading array, so cross-section view can re-render itself.
+  // It's impossible to observe method results directly (getGaugeReading).
+  public updateGaugeReadings() {
+    this.gaugeReading = this.gauges.map((g, idx) => this.getGaugeReading(idx));
   }
 
   @computed public get weather(): Weather {
@@ -177,20 +183,26 @@ export class SimulationModel {
     this.rainDurationInDays = Math.max(MIN_RAIN_DURATION_IN_DAYS, Math.min(MAX_RAIN_DURATION_IN_DAYS, value));
   }
 
-  @action.bound public setInitialWaterLevel(value: number) {
-    this.initialWaterLevel = value;
-    this._riverStage = value;
+  @action.bound public setInitialRiverStage(value: number) {
+    this._initialRiverStage = value;
+    for (const cell of this.riverCells) {
+      cell.initialRiverStage = value;
+      cell.riverStage = value;
+    }
+    // Update observable gaugeReading array, so cross-section view can re-render itself.
+    this.updateGaugeReadings();
   }
 
-  @action.bound public load(presetConfig: Partial<ISimulationConfig>) {
+  @action.bound public async load(presetConfig: Partial<ISimulationConfig>) {
     // Configuration are joined together. Default values can be replaced by preset, and preset values can be replaced
     // by URL parameters.
     this.config = Object.assign(getDefaultConfig(), presetConfig, getUrlConfig());
-    this.populateCellsData();
+    await this.populateCellsData();
+    this.setDefaultInputs();
     this.restart();
   }
 
-  @action.bound public populateCellsData() {
+  @action.bound public async populateCellsData() {
     this.dataReady = false;
     const config = this.config;
     this.dataReadyPromise = Promise.all([
@@ -220,15 +232,18 @@ export class SimulationModel {
           if (isEdge) {
             baseElevation = 0;
           }
-          const cellOptions: CellOptions = {
+          const cell = new Cell({
             x, y,
             isEdge,
             isRiver,
             baseElevation,
             waterDepth: waterDepth && waterDepth[index] || 0,
             permeability: isRiver ? RIVER_PERMEABILITY : (permeability && permeability[index] || 0)
-          };
-          this.cells.push(new Cell(cellOptions));
+          });
+          this.cells.push(cell);
+          if (cell.isRiver) {
+            this.riverCells.push(cell);
+          }
         }
       }
       this.updateCellsBaseElevationFlag();
@@ -237,6 +252,7 @@ export class SimulationModel {
 
       this.engine = new FloodingEngine(this.cells, this.config);
     });
+    return this.dataReadyPromise;
   }
 
   @action.bound public start() {
@@ -256,11 +272,10 @@ export class SimulationModel {
     this.simulationRunning = false;
   }
 
-  @action.bound public resetInputs() {
-    this.rainIntensity = RainIntensity.Medium;
-    this.rainDurationInDays = 2;
-    this.initialWaterLevel = 0.5;
-    this._riverStage = this.initialWaterLevel;
+  @action.bound public setDefaultInputs() {
+    this.setRainIntensity(RainIntensity.Medium);
+    this.setRainDurationInDays(2);
+    this.setInitialRiverStage(0.5);
   }
 
   @action.bound public restart() {
@@ -268,14 +283,14 @@ export class SimulationModel {
     this.simulationStarted = false;
     this.cells.forEach(cell => cell.reset());
     this.updateCellsStateFlag();
+    this.setInitialRiverStage(this.initialRiverStage); // to update cells
     this.time = 0;
-    this._riverStage = this.initialWaterLevel;
     this.engine = new FloodingEngine(this.cells, this.config);
     this.emit("restart"); // used by graphs
   }
 
   @action.bound public reload() {
-    this.resetInputs();
+    this.setDefaultInputs();
     this.restart();
   }
 
@@ -291,35 +306,28 @@ export class SimulationModel {
         // Used by graphs. Make sure that initial point (0) is handled by graphs.
         this.emit("hourChange");
       }
+
       for (let i = 0; i < this.config.speedMult; i += 1) {
-
         this.time += this.config.timeStep;
-
         if (this.time > this.config.rainStartDay) {
-          if (this._riverStage < 1) {
-            // At the beginning of simulation there should be no flood until riverStage value reaches value 1.
-            // riverStage value will be used in the future by the cross-section view and river gauge readings.
-            this._riverStage += this.currentRiverWaterIncrement * this.config.riverStageIncreaseSpeed;
-            this.engine.riverWaterIncrement = 0;
-          } else {
-            this.engine.riverWaterIncrement = this.currentRiverWaterIncrement;
-          }
+            // this._riverStage += this.currentRiverWaterIncrement * this.config.riverStageIncreaseSpeed;
+          this.engine.riverWaterIncrement = this.currentRiverWaterIncrement;
         }
-
-        // Why do we run simulation engine even when its riverWaterIncrement == 0 and waste CPU cycles?
-        // To ensure that the initial part of the simulation, which updates riverStage only, doesn't run much faster
-        // than the following part which actually uses computationally expensive FloodingEngine.
         this.engine.update(this.config.timeStep);
       }
+
       if (this.engine.simulationDidStop) {
         this.simulationRunning = false;
       }
+
       if (this.timeInHours !== oldTimeInHours) {
         this.emit("hourChange"); // used by graphs
       }
     }
 
     this.updateCellsStateFlag();
+    // Update observable gaugeReading array, so cross-section view can re-render itself.
+    this.updateGaugeReadings();
   }
 
   @action.bound public updateCellsBaseElevationFlag() {

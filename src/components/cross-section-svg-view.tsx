@@ -5,7 +5,6 @@ import CSView2 from "../assets/model2_gauge2_cross-section.svg";
 import CSView3 from "../assets/model2_gauge3_cross-section.svg";
 import { observer } from "mobx-react-lite";
 import { useStores } from "../use-stores";
-import { RiverStage } from "../models/simulation";
 import css from "./cross-section-svg-view.scss";
 
 interface IProps {
@@ -13,9 +12,9 @@ interface IProps {
 }
 
 const CrossSectionBackground: {[key: number]: React.JSXElementConstructor<any>} = {
-  1: CSView1,
-  2: CSView2,
-  3: CSView3
+  0: CSView1,
+  1: CSView2,
+  2: CSView3
 };
 
 // Semi-transparent water layer.
@@ -63,9 +62,11 @@ export const CrossSectionSVGView: React.FC<IProps> = observer(({ gauge }) => {
   const waterWhiteLineInterpolator = useRef<(offset: number) => string>();
   const waterLevelInterpolator = useRef<(offset: number) => string>();
 
-  const riverStage = simulation.riverStage;
+  const gaugeProps = simulation.config.gauges[gauge];
+  const gaugeReading = simulation.gaugeReading[gauge] === undefined ? gaugeProps.minRiverDepth : simulation.gaugeReading[gauge];
+  const gaugeState = (gaugeReading - gaugeProps.minRiverDepth) / (gaugeProps.maxFloodDepth - gaugeProps.minRiverDepth);
   // Get path between path defined by startImgIdx and startImgIdx + 1.
-  const startImgIdx = Math.max(0, Math.floor(((riverStage - RiverStage.Low) / RiverStage.Crest) * imagesCount));
+  const startImgIdx = Math.max(0, Math.floor(gaugeState * (imagesCount - 1)));
 
   // Keep interpolator updates separate from interpolation itself for performance reasons.
   // Interpolators need to be updated only when path idx needs to change, while the final path is updated more often.
@@ -76,16 +77,16 @@ export const CrossSectionSVGView: React.FC<IProps> = observer(({ gauge }) => {
     waterLevelInterpolator.current = interpolate([waterLevel[startImgIdx], waterLevel[endImageIdx]]);
   }, [startImgIdx]);
 
-  useEffect(() => {
-    // Interpolation between LOW -> MED, MED -> HIGH, or HIGH -> CREST will take the same amount of time.
-    const stepSize = (RiverStage.Crest - RiverStage.Low) / (imagesCount - 1);
-    // Value [0, 1] that defines interpolation level between <pathName>[startImgIdx] and <pathName>[startImgIdx + 1].
-    const stepProgress = (riverStage % stepSize) / stepSize;
+  // Interpolation between LOW -> MED, MED -> HIGH, or HIGH -> CREST will take the same amount of time.
+  const stepSize = 1 / (imagesCount - 1);
+  // Value [0, 1] that defines interpolation level between <pathName>[startImgIdx] and <pathName>[startImgIdx + 1].
+  const stepProgress = (gaugeState % stepSize) / stepSize;
 
+  useEffect(() => {
     waterLineRef.current?.setAttribute("d", waterLineInterpolator.current?.(stepProgress) || "");
     waterWhiteLineRef.current?.setAttribute("d", waterWhiteLineInterpolator.current?.(stepProgress) || "");
     waterLevelRef.current?.setAttribute("d", waterLevelInterpolator.current?.(stepProgress) || "");
-  }, [riverStage]);
+  }, [stepProgress]);
 
   return (
     <div className={css.crossSection}>

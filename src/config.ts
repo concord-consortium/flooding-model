@@ -57,8 +57,9 @@ export interface ISimulationConfig {
 }
 
 export interface IGaugeConfig {
-  minDepth: number;
-  maxDepth: number;
+  minRiverDepth: number;
+  maxRiverDepth: number;
+  maxFloodDepth: number;
   x: number;
   y: number;
 }

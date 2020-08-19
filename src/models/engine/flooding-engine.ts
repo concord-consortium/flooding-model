@@ -10,6 +10,7 @@
 // Example implementation (although GPU-based): https://github.com/skeelogy/skunami.js
 import { Cell } from "../cell";
 import { getGridIndexForLocation } from "../utils/grid-utils";
+import { RiverStage } from "../simulation";
 
 export interface IFloodingEngineConfig {
   gridWidth: number;
@@ -17,6 +18,7 @@ export interface IFloodingEngineConfig {
   cellSize: number;
   floodPermeabilityMult?: number;
   dampingFactor?: number;
+  riverStageIncreaseSpeed?: number;
 }
 
 const GRAVITY = 9.81;
@@ -40,6 +42,7 @@ export class FloodingEngine {
   public cellSize: number;
   public dampingFactor: number;
   public floodPermeabilityMult: number;
+  public riverStageIncreaseSpeed: number;
 
   // Outputs
   public simulationDidStop = false;
@@ -54,6 +57,7 @@ export class FloodingEngine {
     this.cellSize = config.cellSize;
     this.dampingFactor = config.dampingFactor !== undefined ? config.dampingFactor : 0.99;
     this.floodPermeabilityMult = config.floodPermeabilityMult !== undefined ? config.floodPermeabilityMult : 1;
+    this.riverStageIncreaseSpeed = config.riverStageIncreaseSpeed !== undefined ? config.riverStageIncreaseSpeed : 0.125;
 
     this.cells = cells;
     // "Edge" cells exist only to make rendering a bit simpler. Skip them entirely in the simulation.
@@ -78,7 +82,19 @@ export class FloodingEngine {
 
   public addWaterInRiver(dt: number) {
     for (const cell of this.riverCells) {
-      cell.waterDepth += this.riverWaterIncrement * dt;
+      if (cell.riverStage < 1) {
+        const riverStageDiff = this.riverWaterIncrement * dt * this.riverStageIncreaseSpeed;
+        cell.riverStage += this.riverWaterIncrement * dt * this.riverStageIncreaseSpeed;
+        if (riverStageDiff < 0) {
+          const finalRiverStage = Math.min(cell.initialRiverStage + 0.2, RiverStage.High);
+          cell.riverStage = Math.max(cell.riverStage, finalRiverStage);
+        }
+      } else {
+        cell.waterDepth = Math.max(0, cell.waterDepth + this.riverWaterIncrement * dt);
+        if (cell.waterDepth === 0) {
+          cell.riverStage = 0.999;
+        }
+      }
     }
   }
 

@@ -31,7 +31,7 @@ export const BottomBar: React.FC = observer(function WrappedComponent() {
   };
 
   const handleStartingWaterLevel = (event: ChangeEvent, value: number) => {
-    simulation.setInitialWaterLevel(value);
+    simulation.setInitialRiverStage(value);
   };
 
   const handleIncreaseRainDuration = () => {
@@ -41,7 +41,6 @@ export const BottomBar: React.FC = observer(function WrappedComponent() {
   const handleDecreaseRainDuration = () => {
     simulation.setRainDurationInDays(simulation.rainDurationInDays - 1);
   };
-
 
   return (
     <BottomBarContainer>
@@ -66,7 +65,7 @@ export const BottomBar: React.FC = observer(function WrappedComponent() {
       </BottomBarWidgetGroup>
       <BottomBarWidgetGroup title={["Starting", "Water Level"]} hoverable={true} className={css.startingWaterLevel}>
         <Slider
-          value={simulation.initialWaterLevel}
+          value={simulation.initialRiverStage}
           min={RiverStage.Low}
           max={RiverStage.High}
           step={null} // restrict values to marks values
@@ -83,7 +82,7 @@ export const BottomBar: React.FC = observer(function WrappedComponent() {
         startStopDisabled={!simulation.ready}
       />
       <BottomBarWidgetGroup title="River Stage">
-        { simulation.riverStage.toFixed(2) } (0 low, 1 flood)
+        { simulation.initialRiverStage.toFixed(2) } (0 low, 1 flood)
       </BottomBarWidgetGroup>
     </BottomBarContainer>
   );

@@ -15,8 +15,10 @@ export class Cell {
   public isRiver = false;
   public baseElevation = 0;
   public permeability = 0;
+  public riverStage = 0;
   public waterDepth = 0;
   public initialWaterDepth = 0;
+  public initialRiverStage = 0;
   public fluxL = 0; // left
   public fluxR = 0; // right
   public fluxT = 0; // top
