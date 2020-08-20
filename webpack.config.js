@@ -74,7 +74,11 @@ module.exports = (env, argv) => {
             },
             {
               issuer: /\.tsx?$/,
-              loader: '@svgr/webpack'
+              loader: '@svgr/webpack',
+              options: {
+                // Disable optimization so it doesn't break SVG paths interpolation (cross-section view).
+                svgo: false
+              }
             }
           ]
         },
