@@ -38,7 +38,7 @@ describe("SimulationModel", () => {
     expect(s.cells.filter(c => c.isEdge).length).toEqual(16);
 
     expect(s.cellsBaseElevationFlag).toBeGreaterThan(0);
-    expect(s.cellsStateFlag).toBeGreaterThan(1);
+    expect(s.cellsStateFlag).toBeGreaterThan(0);
 
     expect(s.ready).toEqual(true);
 
@@ -101,18 +101,18 @@ describe("SimulationModel", () => {
 
       jest.spyOn(s.cells[0], "reset");
       s.time = 123;
-      s.rainDurationInDays = 123;
-      s.rainIntensity = 123;
-      s.initialWaterLevel = 123;
+      s.setRainDurationInDays(4);
+      s.setRainIntensity(123);
+      s.setInitialRiverStage(123);
 
       s.restart();
       expect(s.simulationRunning).toEqual(false);
       expect(s.simulationStarted).toEqual(false);
       expect(s.cells[0].reset).toHaveBeenCalled();
       expect(s.time).toEqual(0);
-      expect(s.rainDurationInDays).toEqual(123);
+      expect(s.rainDurationInDays).toEqual(4);
       expect(s.rainIntensity).toEqual(123);
-      expect(s.initialWaterLevel).toEqual(123);
+      expect(s.initialRiverStage).toEqual(123);
     });
   });
 
@@ -126,9 +126,9 @@ describe("SimulationModel", () => {
 
       jest.spyOn(s.cells[0], "reset");
       s.time = 123;
-      s.rainDurationInDays = 123;
-      s.rainIntensity = 123;
-      s.initialWaterLevel = 123;
+      s.setRainDurationInDays(123);
+      s.setRainIntensity(123);
+      s.setInitialRiverStage(123);
 
       s.reload();
       expect(s.simulationRunning).toEqual(false);
@@ -137,7 +137,7 @@ describe("SimulationModel", () => {
       expect(s.time).toEqual(0);
       expect(s.rainDurationInDays).toEqual(2);
       expect(s.rainIntensity).toEqual(RainIntensity.Medium);
-      expect(s.initialWaterLevel).toEqual(0.5);
+      expect(s.initialRiverStage).toEqual(0.5);
     });
   });
 
@@ -178,13 +178,6 @@ describe("SimulationModel", () => {
       await s.dataReadyPromise;
 
       s.simulationRunning = true;
-      const oldRiverStage = s.riverStage;
-      s.rafCallback();
-      expect(s.riverStage).toBeGreaterThan(oldRiverStage);
-      expect(s.riverStage).toBeLessThan(1);
-      expect(s.engine?.riverWaterIncrement).toEqual(0);
-
-      (s as any)._riverStage = 1;
       s.rafCallback();
       expect(s.engine?.riverWaterIncrement).toBeGreaterThan(0);
     });
