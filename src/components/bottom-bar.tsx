@@ -81,9 +81,6 @@ export const BottomBar: React.FC = observer(function WrappedComponent() {
         playing={simulation.simulationRunning}
         startStopDisabled={!simulation.ready}
       />
-      <BottomBarWidgetGroup title="River Stage">
-        { simulation.initialRiverStage.toFixed(2) } (0 low, 1 flood)
-      </BottomBarWidgetGroup>
     </BottomBarContainer>
   );
 });
