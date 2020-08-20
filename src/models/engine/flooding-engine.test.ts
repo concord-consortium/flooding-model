@@ -1,5 +1,6 @@
 import { FloodingEngine } from "./flooding-engine";
 import { Cell } from "../cell";
+import { RiverStage } from "../simulation";
 
 describe("FloodingEngine", () => {
   it("organizes Cells into arrays when initialized", () => {
@@ -190,7 +191,7 @@ describe("FloodingEngine", () => {
       expect(c1.waterDepth).toEqual(0);
 
       engine.addWaterInRiver(12);
-      expect(c1.riverStage).toEqual(0.7); // min riverStage is equal to initialRiverStage + 0.2
+      expect(c1.riverStage).toEqual(RiverStage.High); // min riverStage is equal to Math.min(initialRiverStage + 0.2, RiverStage.High)
       expect(c1.waterDepth).toEqual(0);
     });
   });
