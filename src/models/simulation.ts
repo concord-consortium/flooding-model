@@ -17,10 +17,10 @@ export enum RainIntensity {
 }
 
 export enum RiverStage {
-  Low = 0.25,
-  Medium = 0.50,
-  High = 0.75,
-  Crest = 1.0
+  Low = 0,
+  Medium = 1/3,
+  High = 2/3,
+  Crest = 1
 }
 
 // River is not flowing in the model. Instead, it disappears from the river faster than from the ground.
@@ -49,7 +49,7 @@ export class SimulationModel {
   // Simulation parameters.
   @observable public rainIntensity: RainIntensity = RainIntensity.Medium;
   @observable public rainDurationInDays = 2;
-  @observable public _initialRiverStage: number = RiverStage.Low;
+  @observable public _initialRiverStage: number = RiverStage.Medium;
 
   // Simulation outputs.
   @observable public gaugeReading: number[] = [];
@@ -98,12 +98,20 @@ export class SimulationModel {
     return this.config.gauges;
   }
 
+  public getGaugeCell(index: number) {
+    const gauge = this.gauges[index];
+    if (!gauge) {
+      return null;
+    }
+    return this.cellAt(this.config.modelWidth * gauge.x, this.config.modelHeight * gauge.y);
+  }
+
   public getGaugeReading(index: number) {
     const gauge = this.gauges[index];
     if (!gauge) {
       return 0;
     }
-    const gaugeCell = this.cellAt(this.config.modelWidth * gauge.x, this.config.modelHeight * gauge.y);
+    const gaugeCell = this.getGaugeCell(index);
     if (!gaugeCell) {
       return 0;
     }
@@ -275,7 +283,7 @@ export class SimulationModel {
   @action.bound public setDefaultInputs() {
     this.setRainIntensity(RainIntensity.Medium);
     this.setRainDurationInDays(2);
-    this.setInitialRiverStage(0.5);
+    this.setInitialRiverStage(RiverStage.Medium);
   }
 
   @action.bound public restart() {
