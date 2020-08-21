@@ -68,7 +68,7 @@ const getPath = (type: string, stateName: string, levees: Levees) => {
 // JS code below uses polymorph-js to take water line (that consists of white line and dashed line) and transparent
 // water layer and morph between various states using `riverStage` simulation output. Morphed path is rendered
 // on top of the original SVG. All the necessary selectors are defined as constants above.
-export const CrossSectionSVGView: React.FC<IProps> = observer(({ gauge, levees = Levees.Two }) => {
+export const CrossSectionSVGView: React.FC<IProps> = observer(({ gauge, levees = Levees.Zero }) => {
   const CrossSectionBgComp = CrossSectionBackground[gauge];
   const CrossSectionWaterComp = CrossSectionWater[gauge];
   const { simulation } = useStores();
@@ -131,7 +131,7 @@ export const CrossSectionSVGView: React.FC<IProps> = observer(({ gauge, levees =
 
   return (
     <div className={css.crossSection}>
-      <div className={css.background}>
+      <div className={`${css.background} ${css[levees]}`}>
         <CrossSectionBgComp />
       </div>
       <div className={css.svgPathSource}>

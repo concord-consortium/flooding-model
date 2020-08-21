@@ -1,6 +1,39 @@
 .crossSection {
   .background {
     width: 100%;
+
+    &.zeroL {
+      :global(#left_levee), :global(#right_levee) {
+        display: none;
+      }
+    }
+
+    &.leftL {
+      :global(#right_levee) {
+        display: none;
+      }
+      :global(#hidden_for_left_levee) {
+        display: none;
+      }
+    }
+
+    &.rightL {
+      :global(#left_levee) {
+        display: none;
+      }
+      :global(#hidden_for_right_levee) {
+        display: none;
+      }
+    }
+
+    &.twoL {
+      :global(#hidden_for_left_levee) {
+        display: none;
+      }
+      :global(#hidden_for_right_levee) {
+        display: none;
+      }
+    }
   }
 
   .svgPathSource {
