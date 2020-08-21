@@ -1,33 +1,9 @@
 .crossSection {
-  display: grid;
-
   .background {
-    grid-column: 1;
-    grid-row: 1;
     width: 100%;
-
-    // Hide all the water levels that are in the original SVG.
-    // React component will take these paths and interpolate between them to display the current water level.
-    [data-name="river levels"] {
-      display: none;
-    }
-
-    [data-name="water levels"] {
-      display: none;
-    }
-
-    [data-name="water level lines"] {
-      display: none;
-    }
   }
 
   .svgPathSource {
     display: none;
-  }
-
-  .svgPathOutput {
-    grid-column: 1;
-    grid-row: 1;
-    width: 100%;
   }
 }

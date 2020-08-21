@@ -26,36 +26,13 @@ const CrossSectionWater: {[key: number]: React.JSXElementConstructor<any>} = {
   0: CS1Water
 };
 
-// These SVG paths don't work well, as they should be placed between layers of SVG background. In the current
-// implementation, all the output paths are on top of the background.
-// const riverLevel = "river_level";
-// const riverLevelStyle = {fill: "#67A5D9"};
-const waterLevel = "water_level";
-const waterLevelStyle = {fill: "#67A5D9", opacity: 0.4};
-
-const waterLine = "water_line";
-const waterLineStyle = {fill: "none", stroke: "#2D95D2", strokeMiterlimit: 10};
-
-const waterRightDottedLine = "water_right_dotted_line"; // only river states, flood states are just copied
-const waterLeftDottedLine = "water_left_dotted_line"; // only river states, flood states are just copied
-const waterDottedLineStyle = {opacity: 0.75, fill: "none", stroke: "#ffffff", strokeMiterlimit: 10, strokeDasharray: "4,8"};
-
 const pathTypes = [
-  // riverLevel,
-  waterLevel,
-  waterLine,
-  waterRightDottedLine,
-  waterLeftDottedLine
+  "river_level",
+  "water_level",
+  "water_line",
+  "water_right_dotted_line",
+  "water_left_dotted_line"
 ];
-
-const pathStyles = [
-  // riverLevelStyle,
-  waterLevelStyle,
-  waterLineStyle,
-  waterDottedLineStyle,
-  waterDottedLineStyle
-];
-
 
 const riverStateKeys = [0, 0.35, 0.8, 1];
 const riverStateValues = ["LOW", "MED", "HI", "CREST"];
@@ -96,7 +73,7 @@ export const CrossSectionSVGView: React.FC<IProps> = observer(({ gauge, levees =
   const CrossSectionWaterComp = CrossSectionWater[gauge];
   const { simulation } = useStores();
   // SVG output paths.
-  const pathOutputRefs = useRef(pathTypes.map(() => useRef<SVGPathElement>(null)));
+  const pathOutputRefs = useRef(pathTypes.map(() => useRef<SVGPathElement | null>()));
   // SVG path interpolators used to morph one path into another.
   const interpolatorRefs = useRef(pathTypes.map(() => useRef<(offset: number) => string>()));
 
@@ -126,6 +103,13 @@ export const CrossSectionSVGView: React.FC<IProps> = observer(({ gauge, levees =
     stepProgress = range > 0 ? (normalizedGauge - startReading) / range : 1;
   }
 
+  useEffect(() => {
+    pathOutputRefs.current.forEach((pathOutputRef, idx) => {
+      // Empty output paths are defined in the landscape/background SVG.
+      pathOutputRef.current = document.getElementById(pathTypes[idx]) as SVGPathElement | null;
+    });
+  }, []);
+
   // Keep interpolator updates separate from interpolation itself for performance reasons.
   // Interpolators need to be updated only when path idx needs to change, while the final path is updated more often.
   useEffect(() => {
@@ -141,7 +125,6 @@ export const CrossSectionSVGView: React.FC<IProps> = observer(({ gauge, levees =
   useEffect(() => {
     pathOutputRefs.current.forEach((pathOutputRef, idx) => {
       const interpolator = interpolatorRefs.current[idx].current;
-      // console.log("interpolation:", interpolator?.(stepProgress));
       pathOutputRef.current?.setAttribute("d", interpolator?.(stepProgress) || "");
     });
   }, [stepProgress]);
@@ -153,19 +136,6 @@ export const CrossSectionSVGView: React.FC<IProps> = observer(({ gauge, levees =
       </div>
       <div className={css.svgPathSource}>
         <CrossSectionWaterComp />
-      </div>
-      <div className={css.svgPathOutput}>
-        {/* Viewbox should match background SVG viewBox */}
-        <svg viewBox="0 0 402 157">
-          {/* Styles are taken from SVG */}
-          {
-            pathOutputRefs.current.map((pathOutputRef, idx) =>
-              <path key={idx} ref={pathOutputRef} style={pathStyles[idx]} />
-            )
-          }
-          {/*<path ref={waterWhiteLineRef} style={{ fill: "none", stroke: "#fff", strokeMiterlimit: 10, opacity: 0.6 }}/>*/}
-          {/*<path ref={waterLineRef} style={{ fill: "none", stroke: "#2D95D2", strokeMiterlimit: 10,  }}/>*/}
-        </svg>
       </div>
     </div>
   );
