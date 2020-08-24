@@ -18,7 +18,7 @@ export const GaugeReadingGraph: React.FC<IProps> = observer(({ gauge }) => {
       <div className={css.graph}>
         {/* .slice() as it seems ChartJS doesn't work well with MobX observable arrays. There's an error about
           maximum call stack exceeded. MobX observable array differs a bit from regular Array instance. */}
-        <Graph points={gaugeReadingDataset.points[gauge - 1].slice()} yLabel="River Stage (feet)" maxY={30}/>
+        <Graph points={gaugeReadingDataset.points[gauge].slice()} yLabel="River Stage (feet)" maxY={30}/>
       </div>
     </div>
   );

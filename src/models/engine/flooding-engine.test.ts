@@ -143,7 +143,7 @@ describe("FloodingEngine", () => {
   });
 
   describe("addWaterInRiver", () => {
-    it("should add water using riverWaterIncrment value", () => {
+    it("should add water using riverWaterIncrement value, first incrementing riverStage, then waterDepth", () => {
       const c1 = new Cell({ x: 0, y: 0, waterDepth: 0, isRiver: true });
       const c2 = new Cell({ x: 1, y: 0, waterDepth: 0, isRiver: false });
       const cells = [c1, c2];
@@ -153,11 +153,45 @@ describe("FloodingEngine", () => {
         cellSize: 1
       });
 
-      engine.riverWaterIncrement = 1;
-      engine.addWaterInRiver(2);
+      c1.initialRiverStage = 0.5;
+      c1.riverStage = 0.5;
 
-      expect(c1.waterDepth).toEqual(2);
+      engine.riverWaterIncrement = 1;
+      engine.addWaterInRiver(4);
+
+      expect(c1.riverStage).toEqual(1); // + 1 * 4 * 0.125
+      expect(c1.waterDepth).toEqual(0);
+      expect(c2.riverStage).toEqual(0);
       expect(c2.waterDepth).toEqual(0);
+
+      engine.addWaterInRiver(2);
+      expect(c1.riverStage).toEqual(1.25); // + 1 * 2 * 0.125
+      expect(c1.waterDepth).toEqual(0);
+      expect(c2.riverStage).toEqual(0);
+      expect(c2.waterDepth).toEqual(0);
+
+      // Now waterDepth should start increasing, as riverStage is already > 1.
+      engine.addWaterInRiver(2);
+      expect(c1.riverStage).toEqual(1.25);
+      expect(c1.waterDepth).toEqual(2); // + 1 * 2
+
+      // Start reverse process.
+      engine.riverWaterIncrement = -1;
+      engine.addWaterInRiver(1);
+      expect(c1.riverStage).toEqual(1.25);
+      expect(c1.waterDepth).toEqual(1); // - 1 * 1
+
+      engine.addWaterInRiver(1);
+      expect(c1.riverStage).toEqual(1); // riverStage should be reset to 1 when waterDepth reaches 0.
+      expect(c1.waterDepth).toEqual(0);
+
+      engine.addWaterInRiver(1);
+      expect(c1.riverStage).toEqual(0.875); // - 1 * 1 * 0.125
+      expect(c1.waterDepth).toEqual(0);
+
+      engine.addWaterInRiver(12);
+      expect(c1.riverStage).toEqual(0.7); // min riverStage is equal to initialRiverStage + 0.2
+      expect(c1.waterDepth).toEqual(0);
     });
   });
 
