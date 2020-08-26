@@ -9,6 +9,7 @@ import { useStores } from "../../use-stores";
 import { useUpdate } from "react-three-fiber";
 import { getEventHandlers, InteractionHandler } from "./interaction-handler";
 import { useShowCoordsInteraction } from "./use-show-coords-interaction";
+import { Interaction, UIModel } from "../../models/ui";
 
 const vertexIdx = (cell: Cell, gridWidth: number, gridHeight: number) => (gridHeight - 1 - cell.y) * gridWidth + cell.x;
 
@@ -43,15 +44,48 @@ const getTexture = (imgSrcOrCanvas: string | HTMLCanvasElement) => {
   return texture;
 };
 
+const TEXTURE_COL = [1, 1, 1, 1];
+const RIVER_BANK = [2, 0.2, 1, 1];
+
+const setVertexColor = (colArray: number[], cell: Cell, gridWidth: number, gridHeight: number, interaction: Interaction | null) => {
+  const idx = vertexIdx(cell, gridWidth, gridHeight) * 4;
+  let color;
+  if (interaction === Interaction.AddRemoveLevee && cell.isRiverBankMarker) {
+    color = RIVER_BANK;
+  } else {
+    color = TEXTURE_COL;
+  }
+  colArray[idx] = color[0];
+  colArray[idx + 1] = color[1];
+  colArray[idx + 2] = color[2];
+  colArray[idx + 3] = color[3];
+};
+
+const updateColors = (geometry: THREE.PlaneBufferGeometry, simulation: SimulationModel, ui: UIModel) => {
+  const colArray = geometry.attributes.color.array as number[];
+  simulation.cells.forEach(cell => {
+    setVertexColor(colArray, cell, simulation.gridWidth, simulation.gridHeight, ui.interaction);
+  });
+  (geometry.attributes.color as BufferAttribute).needsUpdate = true;
+};
+
+
 export const Terrain = observer(function WrappedComponent() {
-  const { simulation } = useStores();
+  const { simulation, ui } = useStores();
   const height = planeHeight(simulation);
 
   const geometryRef = useUpdate<THREE.PlaneBufferGeometry>(geometry => {
     if (simulation.config.view3d) {
       setupElevation(geometry, simulation);
     }
+    geometry.setAttribute("color",
+      new THREE.Float32BufferAttribute(new Array((simulation.gridWidth) * (simulation.gridHeight) * 4), 4)
+    );
   }, [simulation.config.view3d, simulation.cellsBaseElevationFlag]);
+
+  useUpdate<THREE.PlaneBufferGeometry>(geometry => {
+    updateColors(geometry, simulation, ui);
+  }, [simulation.cellsBaseElevationFlag, ui.interaction], geometryRef.current ? geometryRef : undefined);
 
   const interactions: InteractionHandler[] = [
     useShowCoordsInteraction()
@@ -76,8 +110,8 @@ export const Terrain = observer(function WrappedComponent() {
       />
       {
         simulation.config.view3d ?
-          <meshStandardMaterial attach="material" map={texture || null} color="#aaa" /> :
-          <meshBasicMaterial attach="material" map={texture || null} /> // this material doesn't require any light
+          <meshStandardMaterial attach="material" map={texture || null} vertexColors={true} /> :
+          <meshBasicMaterial attach="material" map={texture || null} vertexColors={true} /> // this material doesn't require any light
       }
     </mesh>
   );

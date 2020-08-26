@@ -177,10 +177,14 @@ export class SimulationModel {
     this.emitter.emit(event);
   }
 
+  public cellAtGrid(gridX: number, gridY: number) {
+    return this.cells[getGridIndexForLocation(gridX, gridY, this.config.gridWidth)];
+  }
+
   public cellAt(xInM: number, yInM: number) {
     const gridX = Math.floor(xInM / this.config.cellSize);
     const gridY = Math.floor(yInM / this.config.cellSize);
-    return this.cells[getGridIndexForLocation(gridX, gridY, this.config.gridWidth)];
+    return this.cellAtGrid(gridX, gridY);
   }
 
   @action.bound public setRainIntensity(value: number) {
@@ -222,6 +226,7 @@ export class SimulationModel {
       const permeability = values[3];
       const elevationDiff = this.config.maxElevation - this.config.minElevation;
       const verticalTilt = (this.config.elevationVerticalTilt / 100) * elevationDiff;
+      const riverEdgeCells = [];
 
       this.cells.length = 0;
 
@@ -248,12 +253,18 @@ export class SimulationModel {
             waterDepth: waterDepth && waterDepth[index] || 0,
             permeability: isRiver ? RIVER_PERMEABILITY : (permeability && permeability[index] || 0)
           });
+
           this.cells.push(cell);
+
           if (cell.isRiver) {
             this.riverCells.push(cell);
+            if (cell.isEdge) {
+              riverEdgeCells.push(cell);
+            }
           }
         }
       }
+      this.markRiverBanks(riverEdgeCells);
       this.updateCellsBaseElevationFlag();
       this.updateCellsStateFlag();
       this.dataReady = true;
@@ -261,6 +272,54 @@ export class SimulationModel {
       this.engine = new FloodingEngine(this.cells, this.config);
     });
     return this.dataReadyPromise;
+  }
+
+  public markRiverBanks(riverEdgeCells: Cell[]) {
+    const getCellNeighbors = (cell: Cell) => [
+      this.cellAtGrid(cell.x - 1, cell.y),
+      this.cellAtGrid(cell.x + 1, cell.y),
+      this.cellAtGrid(cell.x, cell.y - 1),
+      this.cellAtGrid(cell.x, cell.y + 1),
+      this.cellAtGrid(cell.x - 1, cell.y - 1),
+      this.cellAtGrid(cell.x + 1, cell.y + 1),
+      this.cellAtGrid(cell.x - 1, cell.y + 1),
+      this.cellAtGrid(cell.x + 1, cell.y - 1)
+    ];
+
+    const isRiverBank = (cell: Cell) => {
+      if (cell.isRiver) {
+        return false;
+      }
+      let result = false;
+      getCellNeighbors(cell).forEach(n => {
+        if (n && n.isRiver) {
+          result = true;
+        }
+      });
+      return result;
+    };
+
+    const maxSegmentLength = Math.round(this.config.riverBankSegmentLength / this.config.cellSize);
+
+    const queue = riverEdgeCells.slice(); // start with river cells
+
+    while (queue.length > 0) {
+      const cell = queue.shift() as Cell;
+      getCellNeighbors(cell).forEach(n => {
+        if (n && !n.isRiverBank && !n.isRiver && isRiverBank(n)) {
+          queue.push(n);
+          n.isRiverBank = true;
+          n.isRiverBankMarker = !cell.isRiverBankMarker;
+          // Divide river banks into segments
+          if (cell.isRiverBank && cell.riverBankSegment.length < maxSegmentLength) {
+            cell.riverBankSegment.push(n);
+            n.riverBankSegment = cell.riverBankSegment;
+          } else {
+            n.riverBankSegment = [n];
+          }
+        }
+      });
+    }
   }
 
   @action.bound public start() {

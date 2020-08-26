@@ -13,6 +13,9 @@ export class Cell {
   public y: number; // grid Y coord
   public isEdge = false;
   public isRiver = false;
+  public isRiverBank = false;
+  public isRiverBankMarker = false;
+  public riverBankSegment: Cell[] = [];
   public baseElevation = 0;
   public permeability = 0;
   public riverStage = 0;

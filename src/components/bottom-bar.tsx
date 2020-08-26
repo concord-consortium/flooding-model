@@ -7,6 +7,10 @@ import { useStores } from "../use-stores";
 import MoreIcon from "../geohazard-components/assets/more.svg";
 import LessIcon from "../geohazard-components/assets/less.svg";
 import { RainIntensity, RiverStage } from "../models/simulation";
+import { IconButton } from "../geohazard-components/icon-button";
+import { Interaction } from "../models/ui";
+import LeveeIcon from "../assets/levee.svg";
+import LeveeHighlightIcon from "../assets/levee_highlight.svg";
 
 import css from "./bottom-bar.scss";
 
@@ -24,7 +28,7 @@ const startingWaterLevelMarks = [
 ];
 
 export const BottomBar: React.FC = observer(function WrappedComponent() {
-  const { simulation } = useStores();
+  const { simulation, ui } = useStores();
 
   const handleRainIntensityChange = (event: ChangeEvent, value: number) => {
     simulation.setRainIntensity(value);
@@ -40,6 +44,14 @@ export const BottomBar: React.FC = observer(function WrappedComponent() {
 
   const handleDecreaseRainDuration = () => {
     simulation.setRainDurationInDays(simulation.rainDurationInDays - 1);
+  };
+
+  const handleLeveeMode = () => {
+    if (ui.interaction === Interaction.AddRemoveLevee) {
+      ui.interaction = null;
+    } else {
+      ui.interaction = Interaction.AddRemoveLevee;
+    }
   };
 
   return (
@@ -71,6 +83,12 @@ export const BottomBar: React.FC = observer(function WrappedComponent() {
           step={null} // restrict values to marks values
           marks={startingWaterLevelMarks}
           onChange={handleStartingWaterLevel}
+        />
+      </BottomBarWidgetGroup>
+      <BottomBarWidgetGroup hoverable={true}>
+        <IconButton
+          icon={<LeveeIcon />} highlightIcon={<LeveeHighlightIcon />} disabled={simulation.simulationStarted}
+          buttonText="Levee" dataTest="levee-button" onClick={handleLeveeMode}
         />
       </BottomBarWidgetGroup>
       <PlaybackControls

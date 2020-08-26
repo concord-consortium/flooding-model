@@ -1,7 +1,8 @@
 import { observable } from "mobx";
 
 export enum Interaction {
-  HoverOverDraggable = "HoverOverDraggable"
+  HoverOverDraggable = "HoverOverDraggable",
+  AddRemoveLevee = "AddRemoveLevee"
 }
 
 export class UIModel {
