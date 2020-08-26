@@ -1,4 +1,4 @@
-import { RainIntensity, SimulationModel } from "./simulation";
+import { RainIntensity, RiverStage, SimulationModel } from "./simulation";
 import { FloodingEngine } from "./engine/flooding-engine";
 
 const rafMock = jest.fn();
@@ -137,7 +137,7 @@ describe("SimulationModel", () => {
       expect(s.time).toEqual(0);
       expect(s.rainDurationInDays).toEqual(2);
       expect(s.rainIntensity).toEqual(RainIntensity.Medium);
-      expect(s.initialRiverStage).toEqual(0.5);
+      expect(s.initialRiverStage).toEqual(RiverStage.Medium);
     });
   });
 

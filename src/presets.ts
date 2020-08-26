@@ -14,21 +14,21 @@ const presets: {[key: string]: Partial<ISimulationConfig>} = {
       {
         minRiverDepth: 0.5, // m
         maxRiverDepth: 4,
-        maxFloodDepth: 8,
+        maxFloodDepth: 7.7,
         x: 0.623,
         y: 0.743
       },
       {
         minRiverDepth: 0.5, // m
         maxRiverDepth: 4,
-        maxFloodDepth: 8,
+        maxFloodDepth: 10,
         x: 0.153,
         y: 0.44
       },
       {
         minRiverDepth: 0.5, // m
         maxRiverDepth: 4,
-        maxFloodDepth: 8,
+        maxFloodDepth: 10,
         x: 0.603,
         y: 0.26
       }

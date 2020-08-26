@@ -59,7 +59,7 @@ export const SideContainer = observer(() => {
         gauges.map((g, idx) => {
           const Icon = GaugeMarker[idx];
           return (<TabPanel key={idx} className={`react-tabs__tab-panel ${css.tabPanel} ${gaugeBorderColorCss[idx]}`}>
-              <Header><Icon className={css.icon}/> Steam Gauge {idx + 1}: Cross-section</Header>
+              <Header><Icon className={css.icon}/> Stream Gauge {idx + 1}: Cross-section</Header>
               <GaugeTab gauge={idx}/>
             </TabPanel>
           );
