@@ -46,6 +46,11 @@ export const BottomBar: React.FC = observer(function WrappedComponent() {
     simulation.setRainDurationInDays(simulation.rainDurationInDays - 1);
   };
 
+  const handleReload = () => {
+    simulation.reload();
+    ui.reload();
+  };
+
   const handleLeveeMode = () => {
     if (ui.interaction === Interaction.AddRemoveLevee) {
       ui.interaction = null;
@@ -87,12 +92,12 @@ export const BottomBar: React.FC = observer(function WrappedComponent() {
       </BottomBarWidgetGroup>
       <BottomBarWidgetGroup hoverable={true}>
         <IconButton
-          icon={<LeveeIcon />} highlightIcon={<LeveeHighlightIcon />} disabled={simulation.simulationStarted}
+          icon={<LeveeIcon />} highlightIcon={<LeveeHighlightIcon />}
           buttonText="Levee" dataTest="levee-button" onClick={handleLeveeMode}
         />
       </BottomBarWidgetGroup>
       <PlaybackControls
-        onReload={simulation.reload}
+        onReload={handleReload}
         onRestart={simulation.restart}
         onStart={simulation.start}
         onStop={simulation.stop}

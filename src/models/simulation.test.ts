@@ -37,8 +37,8 @@ describe("SimulationModel", () => {
     expect(s.cells.filter(c => c.isRiver).length).toEqual(5);
     expect(s.cells.filter(c => c.isEdge).length).toEqual(16);
 
-    expect(s.cellsBaseElevationFlag).toBeGreaterThan(0);
-    expect(s.cellsStateFlag).toBeGreaterThan(0);
+    expect(s.cellsBaseStateFlag).toBeGreaterThan(0);
+    expect(s.cellsSimulationStateFlag).toBeGreaterThan(0);
 
     expect(s.ready).toEqual(true);
 
@@ -56,14 +56,14 @@ describe("SimulationModel", () => {
       });
       await s.dataReadyPromise;
 
-      expect(s.cellAt(0, 0).x).toEqual(0);
-      expect(s.cellAt(0, 0).y).toEqual(0);
+      expect(s.cellAt(0, 0)?.x).toEqual(0);
+      expect(s.cellAt(0, 0)?.y).toEqual(0);
 
-      expect(s.cellAt(25, 0).x).toEqual(1); // x = 25m => grid x = 1
-      expect(s.cellAt(25, 0).y).toEqual(0);
+      expect(s.cellAt(25, 0)?.x).toEqual(1); // x = 25m => grid x = 1
+      expect(s.cellAt(25, 0)?.y).toEqual(0);
 
-      expect(s.cellAt(95, 60).x).toEqual(4); // x = 95m => grid x = 4
-      expect(s.cellAt(25, 60).y).toEqual(3); // y = 60m => grid y = 3
+      expect(s.cellAt(95, 60)?.x).toEqual(4); // x = 95m => grid x = 4
+      expect(s.cellAt(25, 60)?.y).toEqual(3); // y = 60m => grid y = 3
     });
   });
 
@@ -152,20 +152,20 @@ describe("SimulationModel", () => {
       });
       await s.dataReadyPromise;
 
-      const oldCellStateFlag = s.cellsStateFlag;
+      const oldCellStateFlag = s.cellsSimulationStateFlag;
 
       s.simulationRunning = false;
       s.rafCallback();
       // should do nothing unless model is started (so model can actually stop that way).
       expect(rafMock).not.toHaveBeenCalled();
-      expect(s.cellsStateFlag).toEqual(oldCellStateFlag);
+      expect(s.cellsSimulationStateFlag).toEqual(oldCellStateFlag);
 
       s.simulationRunning = true;
       s.rafCallback();
       // should do nothing unless model is started.
       expect(rafMock).toHaveBeenCalled();
       expect(floodingEngineUpdateMock).toHaveBeenCalledTimes(speedMult);
-      expect(s.cellsStateFlag).toEqual(oldCellStateFlag + 1);
+      expect(s.cellsSimulationStateFlag).toEqual(oldCellStateFlag + 1);
     });
 
     it("updates river stage and engine.riverWaterIncrement based on river stage value", async () => {
@@ -194,23 +194,23 @@ describe("SimulationModel", () => {
     });
   });
 
-  describe("updateCellsBaseElevationFlag", () => {
-    it("increases cellsBaseElevationFlag", async () => {
+  describe("updateCellsBaseStateFlag", () => {
+    it("increases cellsBaseStateFlag", async () => {
       const s = await getSimpleSimulation();
 
-      const oldCellsBaseElevationFlag = s.cellsBaseElevationFlag;
-      s.updateCellsBaseElevationFlag();
-      expect(s.cellsBaseElevationFlag).toEqual(oldCellsBaseElevationFlag + 1);
+      const oldCellsBaseElevationFlag = s.cellsBaseStateFlag;
+      s.updateCellsBaseStateFlag();
+      expect(s.cellsBaseStateFlag).toEqual(oldCellsBaseElevationFlag + 1);
     });
   });
 
-  describe("updateCellsStateFlag", () => {
-    it("increases cellsStateFlag", async () => {
+  describe("updateCellsSimulationStateFlag", () => {
+    it("increases cellsSimulationStateFlag", async () => {
       const s = await getSimpleSimulation();
 
-      const oldCellsStateFlag = s.cellsStateFlag;
-      s.updateCellsStateFlag();
-      expect(s.cellsStateFlag).toEqual(oldCellsStateFlag + 1);
+      const oldcellsSimulationStateFlag = s.cellsSimulationStateFlag;
+      s.updateCellsSimulationStateFlag();
+      expect(s.cellsSimulationStateFlag).toEqual(oldcellsSimulationStateFlag + 1);
     });
   });
 });

@@ -37,9 +37,12 @@ export class SimulationModel {
   public config: ISimulationConfig;
   public dataReadyPromise: Promise<void>;
   public engine: FloodingEngine | null = null;
-  // Cells are not directly observable. Changes are broadcasted using cellsStateFlag and cellsBaseElevationFlag.
+  // Cells are not directly observable. Changes are broadcasted using cellsSimulationStateFlag and cellsBaseStateFlag.
   public cells: Cell[] = [];
   public riverCells: Cell[] = [];
+  public edgeCells: Cell[] = [];
+
+  @observable public riverBankSegments: Cell[][] = [];
 
   @observable public time = 0;
   @observable public dataReady = false;
@@ -57,8 +60,8 @@ export class SimulationModel {
   // These flags can be used by view to trigger appropriate rendering. Theoretically, view could/should check
   // every single cell and re-render when it detects some changes. In practice, we perform these updates in very
   // specific moments and usually for all the cells, so this approach can be way more efficient.
-  @observable public cellsStateFlag = 0;
-  @observable public cellsBaseElevationFlag = 0;
+  @observable public cellsSimulationStateFlag = 0;
+  @observable public cellsBaseStateFlag = 0;
 
   private emitter = new EventEmitter();
 
@@ -178,6 +181,9 @@ export class SimulationModel {
   }
 
   public cellAtGrid(gridX: number, gridY: number) {
+    if (gridX < 0 || gridX >= this.config.gridWidth || gridY < 0 || gridY >= this.gridHeight) {
+      return undefined;
+    }
     return this.cells[getGridIndexForLocation(gridX, gridY, this.config.gridWidth)];
   }
 
@@ -185,6 +191,28 @@ export class SimulationModel {
     const gridX = Math.floor(xInM / this.config.cellSize);
     const gridY = Math.floor(yInM / this.config.cellSize);
     return this.cellAtGrid(gridX, gridY);
+  }
+
+  public getCellNeighbors4(cell: Cell) {
+    return [
+      this.cellAtGrid(cell.x - 1, cell.y),
+      this.cellAtGrid(cell.x + 1, cell.y),
+      this.cellAtGrid(cell.x, cell.y - 1),
+      this.cellAtGrid(cell.x, cell.y + 1)
+    ].filter(c => c !== undefined) as Cell[];
+  }
+
+  public getCellNeighbors8(cell: Cell) {
+    return [
+      this.cellAtGrid(cell.x - 1, cell.y),
+      this.cellAtGrid(cell.x + 1, cell.y),
+      this.cellAtGrid(cell.x, cell.y - 1),
+      this.cellAtGrid(cell.x, cell.y + 1),
+      this.cellAtGrid(cell.x - 1, cell.y - 1),
+      this.cellAtGrid(cell.x + 1, cell.y + 1),
+      this.cellAtGrid(cell.x - 1, cell.y + 1),
+      this.cellAtGrid(cell.x + 1, cell.y - 1)
+    ].filter(c => c !== undefined) as Cell[];
   }
 
   @action.bound public setRainIntensity(value: number) {
@@ -226,9 +254,9 @@ export class SimulationModel {
       const permeability = values[3];
       const elevationDiff = this.config.maxElevation - this.config.minElevation;
       const verticalTilt = (this.config.elevationVerticalTilt / 100) * elevationDiff;
-      const riverEdgeCells = [];
 
       this.cells.length = 0;
+      this.edgeCells.length = 0;
 
       for (let y = 0; y < this.gridHeight; y++) {
         for (let x = 0; x < this.gridWidth; x++) {
@@ -246,6 +274,7 @@ export class SimulationModel {
             baseElevation = 0;
           }
           const cell = new Cell({
+            id: index,
             x, y,
             isEdge,
             isRiver,
@@ -258,15 +287,16 @@ export class SimulationModel {
 
           if (cell.isRiver) {
             this.riverCells.push(cell);
-            if (cell.isEdge) {
-              riverEdgeCells.push(cell);
-            }
+          }
+          if (cell.isEdge) {
+            this.edgeCells.push(cell);
           }
         }
       }
-      this.markRiverBanks(riverEdgeCells);
-      this.updateCellsBaseElevationFlag();
-      this.updateCellsStateFlag();
+      this.markShoreIndices();
+      this.markRiverBanks();
+      this.updateCellsBaseStateFlag();
+      this.updateCellsSimulationStateFlag();
       this.dataReady = true;
 
       this.engine = new FloodingEngine(this.cells, this.config);
@@ -274,24 +304,43 @@ export class SimulationModel {
     return this.dataReadyPromise;
   }
 
-  public markRiverBanks(riverEdgeCells: Cell[]) {
-    const getCellNeighbors = (cell: Cell) => [
-      this.cellAtGrid(cell.x - 1, cell.y),
-      this.cellAtGrid(cell.x + 1, cell.y),
-      this.cellAtGrid(cell.x, cell.y - 1),
-      this.cellAtGrid(cell.x, cell.y + 1),
-      this.cellAtGrid(cell.x - 1, cell.y - 1),
-      this.cellAtGrid(cell.x + 1, cell.y + 1),
-      this.cellAtGrid(cell.x - 1, cell.y + 1),
-      this.cellAtGrid(cell.x + 1, cell.y - 1)
-    ];
+  // Model area is divided into distinct areas by rivers. Each area will get different index. Useful while generating
+  // river bank segments (to ensure that one segment doesn't cross the river).
+  @action.bound public markShoreIndices() {
+    let shoreIdx = 0;
 
+    const markShoreArea = (cell: Cell) => {
+      cell.shoreIdx = shoreIdx;
+      const queue = [cell];
+      while (queue.length > 0) {
+        const c = queue.shift();
+        if (!c) {
+          continue;
+        }
+        this.getCellNeighbors4(c).forEach(n => {
+          if (!n.isRiver && n.shoreIdx === -1) {
+            n.shoreIdx = shoreIdx;
+            queue.push(n);
+          }
+        });
+      }
+      shoreIdx += 1;
+    };
+
+    for (const cell of this.edgeCells) {
+      if (!cell.isRiver && cell.shoreIdx === -1) {
+        markShoreArea(cell);
+      }
+    }
+  }
+
+  @action.bound public markRiverBanks() {
     const isRiverBank = (cell: Cell) => {
       if (cell.isRiver) {
         return false;
       }
       let result = false;
-      getCellNeighbors(cell).forEach(n => {
+      this.getCellNeighbors4(cell).forEach(n => {
         if (n && n.isRiver) {
           result = true;
         }
@@ -299,27 +348,56 @@ export class SimulationModel {
       return result;
     };
 
-    const maxSegmentLength = Math.round(this.config.riverBankSegmentLength / this.config.cellSize);
+    const expectedSegmentLength = Math.round(this.config.riverBankSegmentLength / this.config.cellSize);
+    const riverBankSegments: Cell[][] = [];
+    const queue = [];
 
-    const queue = riverEdgeCells.slice(); // start with river cells
+    for (const cell of this.edgeCells) {
+      if (isRiverBank(cell)) {
+        cell.isRiverBank = true;
+        const segment = [cell];
+        riverBankSegments.push(segment);
+        cell.riverBankSegmentIdx = riverBankSegments.length - 1;
+        queue.push(cell);
+      }
+    }
 
     while (queue.length > 0) {
       const cell = queue.shift() as Cell;
-      getCellNeighbors(cell).forEach(n => {
-        if (n && !n.isRiverBank && !n.isRiver && isRiverBank(n)) {
+      const neighbors = this.getCellNeighbors8(cell);
+      let foundNeigh = false;
+      for (const n of neighbors) {
+        // A few conditions here:
+        // - follow just one neighbor, don't add more than one to the queue. It ensures that segments don't have forks.
+        // - check if shoreIdx properties are equal. It ensures that one segment won't cross the river.
+        if (!foundNeigh && n && !n.isRiverBank && n.shoreIdx === cell.shoreIdx && !n.isRiver && isRiverBank(n)) {
+          foundNeigh = true;
           queue.push(n);
           n.isRiverBank = true;
-          n.isRiverBankMarker = !cell.isRiverBankMarker;
-          // Divide river banks into segments
-          if (cell.isRiverBank && cell.riverBankSegment.length < maxSegmentLength) {
-            cell.riverBankSegment.push(n);
-            n.riverBankSegment = cell.riverBankSegment;
+          // Divide river banks into segments. Note that new segments are created by splitting the previous one into
+          // two pieces. Why? Otherwise, we would end up with some very short segments when two segments approach
+          // each other from two different directions. Creating too long segments and dividing them into two ensures
+          // that segments will be always as long as we expect, and sometimes they can be even longer (what looks
+          // better than too short ones).
+          const prevSegment = riverBankSegments[cell.riverBankSegmentIdx];
+          // * 2 ensures that we'll split a segment only when we can create two new ones that will have length
+          // close to the desired segment length.
+          if (prevSegment.length < expectedSegmentLength * 2) {
+            prevSegment.push(n);
+            n.riverBankSegmentIdx = cell.riverBankSegmentIdx;
           } else {
-            n.riverBankSegment = [n];
+            const newSegment = prevSegment.slice(expectedSegmentLength);
+            newSegment.push(n);
+            riverBankSegments.push(newSegment);
+            newSegment.forEach(c => { c.riverBankSegmentIdx = riverBankSegments.length - 1; });
+            // Limit length of the previous segment.
+            prevSegment.length = Math.min(expectedSegmentLength, prevSegment.length);
           }
         }
-      });
+      }
     }
+    // Update observable property.
+    this.riverBankSegments = riverBankSegments;
   }
 
   @action.bound public start() {
@@ -343,16 +421,20 @@ export class SimulationModel {
     this.setRainIntensity(RainIntensity.Medium);
     this.setRainDurationInDays(2);
     this.setInitialRiverStage(RiverStage.Medium);
+    this.cells.forEach(c => {
+      c.leveeHeight = 0;
+    });
+    this.updateCellsBaseStateFlag();
   }
 
   @action.bound public restart() {
     this.simulationRunning = false;
     this.simulationStarted = false;
     this.cells.forEach(cell => cell.reset());
-    this.updateCellsStateFlag();
     this.setInitialRiverStage(this.initialRiverStage); // to update cells
     this.time = 0;
     this.engine = new FloodingEngine(this.cells, this.config);
+    this.updateCellsSimulationStateFlag();
     this.emit("restart"); // used by graphs
   }
 
@@ -392,16 +474,16 @@ export class SimulationModel {
       }
     }
 
-    this.updateCellsStateFlag();
+    this.updateCellsSimulationStateFlag();
     // Update observable gaugeReading array, so cross-section view can re-render itself.
     this.updateGaugeReadings();
   }
 
-  @action.bound public updateCellsBaseElevationFlag() {
-    this.cellsBaseElevationFlag += 1;
+  @action.bound public updateCellsBaseStateFlag() {
+    this.cellsBaseStateFlag += 1;
   }
 
-  @action.bound public updateCellsStateFlag() {
-    this.cellsStateFlag += 1;
+  @action.bound public updateCellsSimulationStateFlag() {
+    this.cellsSimulationStateFlag += 1;
   }
 }
