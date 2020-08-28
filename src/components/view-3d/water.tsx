@@ -3,10 +3,11 @@ import { Cell } from "../../models/cell";
 import * as THREE from "three";
 import { BufferAttribute } from "three";
 import { SimulationModel } from "../../models/simulation";
-import { mToViewUnit, PLANE_WIDTH, planeHeight } from "./helpers";
+import { PLANE_WIDTH, planeHeight } from "./helpers";
 import { observer } from "mobx-react-lite";
 import { useStores } from "../../use-stores";
 import { useUpdate } from "react-three-fiber";
+import { useElevation } from "./use-elevation";
 // Very simple shaders. They won't work great in 3D view, as there's no lighting there. But 3D view is used only
 // for tests models at the moment. If 3D view ever gets more useful, these shaders should be updated to include
 // some light calculations / reflections.
@@ -19,19 +20,6 @@ const WATER_COL = new THREE.Vector3(80/255, 172/255, 255/255);
 const MAX_OPACITY = 0.75;
 // Water below this depth will have opacity between MAX_OPACITY and 0. It ensures that water appears and disappears smoothly.
 const MAX_OPACITY_WATER_DEPTH = 0.5; // m
-
-const setupElevation = (geometry: THREE.PlaneBufferGeometry, simulation: SimulationModel) => {
-  const posArray = geometry.attributes.position.array as number[];
-  const mult = mToViewUnit(simulation);
-  // Apply height map to vertices of plane.
-  for (const cell of simulation.cells) {
-    const zAttrIdx = vertexIdx(cell, simulation.gridWidth, simulation.gridHeight) * 3 + 2;
-    // .baseElevation doesn't include water depth.
-    posArray[zAttrIdx] = cell.elevation * mult;
-  }
-  geometry.computeVertexNormals();
-  (geometry.attributes.position as BufferAttribute).needsUpdate = true;
-};
 
 const setupAlpha = (geometry: THREE.PlaneBufferGeometry, simulation: SimulationModel) => {
   const alphaArray = geometry.attributes.alpha.array as number[];
@@ -52,16 +40,11 @@ export const Water = observer(function WrappedComponent() {
     );
   }, [simulation.gridWidth, simulation.gridHeight]);
 
-  // Elevation update is only necessary in 3D view.
-  useUpdate<THREE.PlaneBufferGeometry>(geometry => {
-    if (simulation.config.view3d) {
-      setupElevation(geometry, simulation);
-    }
-  }, [simulation.config.view3d, simulation.cellsStateFlag], geometryRef.current ? geometryRef : undefined);
+  useElevation({ includeWaterDepth: true, geometryRef });
 
   useUpdate<THREE.PlaneBufferGeometry>(geometry => {
     setupAlpha(geometry, simulation);
-  }, [simulation.cellsStateFlag], geometryRef.current ? geometryRef : undefined);
+  }, [simulation.cellsSimulationStateFlag], geometryRef.current ? geometryRef : undefined);
 
   const uniforms = {
     color: {value: WATER_COL}
