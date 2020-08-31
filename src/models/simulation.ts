@@ -62,6 +62,7 @@ export class SimulationModel {
   // specific moments and usually for all the cells, so this approach can be way more efficient.
   @observable public cellsSimulationStateFlag = 0;
   @observable public cellsBaseStateFlag = 0;
+  @observable public leveesCount = 0;
 
   private emitter = new EventEmitter();
 
@@ -91,6 +92,10 @@ export class SimulationModel {
 
   @computed public get initialRiverStage() {
     return this._initialRiverStage;
+  }
+
+  @computed public get remainingLevees() {
+    return this.config.maxLevees - this.leveesCount;
   }
 
   public get floodArea() { // in square meters
@@ -424,6 +429,7 @@ export class SimulationModel {
     this.cells.forEach(c => {
       c.leveeHeight = 0;
     });
+    this.leveesCount = 0;
     this.updateCellsBaseStateFlag();
   }
 

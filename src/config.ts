@@ -58,6 +58,8 @@ export interface ISimulationConfig {
   riverBankSegmentLength: number;
   // Height of the levee.
   leveeHeight: number;
+  // Number of available levee segments.
+  maxLevees: number;
 }
 
 export interface IGaugeConfig {
@@ -102,7 +104,8 @@ export const getDefaultConfig: () => IUrlConfig = () => ({
   view3d: false,
   gauges: [],
   riverBankSegmentLength: 800, // m
-  leveeHeight: 4 // m
+  leveeHeight: 4, // m
+  maxLevees: 10
 });
 
 const getURLParam = (name: string) => {

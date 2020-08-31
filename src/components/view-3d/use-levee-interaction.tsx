@@ -25,9 +25,11 @@ export const useLeveeInteraction: () => InteractionHandler = () => {
       while (queue.length > 0) {
         const c = queue.shift() as Cell;
         if (c.isRiverBank) {
+          // Don't update interactionTarget if not necessary for performance reasons. It'll trigger levees.tsx re-render.
           if (ui.interactionTarget !== c.riverBankSegmentIdx) {
-            // Don't update interactionTarget if not necessary for performance reasons. It'll trigger levees.tsx re-render.
-            ui.interactionTarget = c.riverBankSegmentIdx;
+            // Make sure that user can't highlight a new levee if there are no remaining levees to be placed.
+            const shouldHighlight = c.isLevee || simulation.remainingLevees > 0;
+            ui.interactionTarget = shouldHighlight ? c.riverBankSegmentIdx : null;
           }
           return;
         }
@@ -48,6 +50,8 @@ export const useLeveeInteraction: () => InteractionHandler = () => {
         simulation.riverBankSegments[ui.interactionTarget].forEach(cell => {
           cell.leveeHeight = cell.isLevee ? 0 : leveeHeight;
         });
+        const isLevee = simulation.riverBankSegments[ui.interactionTarget][0].isLevee;
+        simulation.leveesCount += isLevee ? 1 : -1;
         simulation.updateCellsBaseStateFlag();
       }
     }

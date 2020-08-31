@@ -90,7 +90,8 @@ export const BottomBar: React.FC = observer(function WrappedComponent() {
           onChange={handleStartingWaterLevel}
         />
       </BottomBarWidgetGroup>
-      <BottomBarWidgetGroup hoverable={true}>
+      <BottomBarWidgetGroup hoverable={false}>
+        <div className={css.leveesCount}>{ simulation.remainingLevees }</div>
         <IconButton
           icon={<LeveeIcon />} highlightIcon={<LeveeHighlightIcon />}
           buttonText="Levee" dataTest="levee-button" onClick={handleLeveeMode}

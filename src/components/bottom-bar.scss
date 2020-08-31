@@ -35,3 +35,17 @@
   width: 100px;
 }
 
+
+.leveesCount {
+  position: absolute;
+  top: 4px;
+  right: 5px;
+  width: 32px;
+  height: 14px;
+  font-size: 12px;
+  background: #dfdfdf;
+  border-radius: 7px;
+  text-align: center;
+  z-index: 1;
+  pointer-events: none;
+}
