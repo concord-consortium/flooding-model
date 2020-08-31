@@ -35,32 +35,33 @@ interface ILeveeSegmentProps {
   hovered: boolean;
 }
 export const LeveeSegment: React.FC<ILeveeSegmentProps> = ({ vertices, visible, hovered, dashed }) => (
-  <group>
-    <mesh>
-      <meshLine attach="geometry" vertices={vertices}/>
-      <meshLineMaterial
-        attach="material"
-        opacity={hovered ? 1 : 0}
-        lineWidth={WIDTH}
-        color={HOVER_COLOR}
-        transparent={true}
-        depthTest={true}
-      />
-    </mesh>
-    <mesh>
-      <meshLine attach="geometry" vertices={vertices}/>
-      <meshLineMaterial
-        attach="material"
-        opacity={visible ? 1 : 0}
-        dashArray={dashed ? DASH_LEN : 0}
-        lineWidth={WIDTH}
-        color={COLOR}
-        transparent={true}
-        depthTest={true}
-        dashRatio={0.5}
-      />
-    </mesh>
-  </group>
+  visible ?
+    <group>
+      <mesh>
+        <meshLine attach="geometry" vertices={vertices}/>
+        <meshLineMaterial
+          attach="material"
+          opacity={hovered ? 1 : 0}
+          lineWidth={WIDTH}
+          color={HOVER_COLOR}
+          transparent={true}
+        />
+      </mesh>
+      <mesh>
+        <meshLine attach="geometry" vertices={vertices}/>
+        <meshLineMaterial
+          attach="material"
+          opacity={visible ? 1 : 0}
+          dashArray={dashed ? DASH_LEN : 0}
+          lineWidth={WIDTH}
+          color={COLOR}
+          transparent={true}
+          dashRatio={0.5}
+        />
+      </mesh>
+    </group>
+    :
+    null
 );
 
 export const Levees: React.FC = observer(function WrappedComponent() {
