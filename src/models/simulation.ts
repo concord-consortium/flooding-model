@@ -237,6 +237,9 @@ export class SimulationModel {
 
       this.dataReady = true;
       this.engine = new FloodingEngine(this.cells, this.config);
+
+      this.updateCellsBaseStateFlag();
+      this.updateCellsSimulationStateFlag();
       });
     return this.dataReadyPromise;
   }
