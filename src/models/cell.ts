@@ -24,9 +24,6 @@ export class Cell {
   public isRiver = false;
   public isRiverBank = false;
   public riverBankSegmentIdx: number;
-  // Model area is divided into distinct areas by rivers. Each area has different index. Useful while generating
-  // river bank segments (to ensure that one segment doesn't cross the river).
-  public shoreIdx = -1;
   public permeability = 0;
   public riverStage = 0;
   public initialWaterDepth = 0;
