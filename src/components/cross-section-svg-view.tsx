@@ -9,7 +9,7 @@ import CS3Water from "../assets/Model 2 Gauge 3 CS Water.svg";
 import { observer } from "mobx-react-lite";
 import { useStores } from "../use-stores";
 import css from "./cross-section-svg-view.scss";
-import { IGaugeConfig } from "../config";
+import { ICrossSectionConfig } from "../config";
 
 enum Levees {
   Zero = "zeroL",
@@ -20,7 +20,6 @@ enum Levees {
 
 interface IProps {
   gauge: number;
-  levees?: Levees;
 }
 
 const CrossSectionBackground: {[key: number]: React.JSXElementConstructor<any>} = {
@@ -60,7 +59,7 @@ const getPathSelector = (type: string, stateName: string, levees: Levees) => {
   return `#${dataName}`;
 };
 
-const getStateDesc = (gaugeReading: number, gaugeProps: IGaugeConfig) => {
+const getStateDesc = (gaugeReading: number, gaugeProps: ICrossSectionConfig) => {
   let normalizedGauge, stepArray, valueArray;
   // Separate paths for pre-flood and flood phases.
   if (gaugeReading < gaugeProps.maxRiverDepth) {
@@ -95,19 +94,31 @@ const getStateDesc = (gaugeReading: number, gaugeProps: IGaugeConfig) => {
 // some of its element using CSS and make transformations using JS. CSS hides all the water level lines by default.
 // JS code below uses polymorph-js to take water line (that consists of white line and dashed line) and transparent
 // water layer and morph between various states using `riverStage` simulation output.
-export const CrossSectionSVGView: React.FC<IProps> = observer(({ gauge, levees = Levees.Zero }) => {
+export const CrossSectionSVGView: React.FC<IProps> = observer(({ gauge}) => {
   const CrossSectionBgComp = CrossSectionBackground[gauge];
   const CrossSectionWaterComp = CrossSectionWater[gauge];
   const { simulation } = useStores();
+
   // SVG output paths.
   const pathOutputRefs = useRef(pathTypes.map(() => useRef<SVGPathElement | null>()));
   // SVG path interpolators used to morph one path into another.
   const interpolatorRefs = useRef(pathTypes.map(() => useRef<(offset: number) => string>()));
 
-  const gaugeProps = simulation.config.gauges[gauge];
-  const gaugeReading = simulation.gaugeReading[gauge] === undefined ? gaugeProps.minRiverDepth : simulation.gaugeReading[gauge];
+  const gaugeProps = simulation.config.crossSections[gauge];
+  const crossSectionState = simulation.crossSectionState[gauge];
 
-  const { startState, endState, stepProgress } = getStateDesc(gaugeReading, gaugeProps);
+  const { startState, endState, stepProgress } = getStateDesc(crossSectionState.riverGaugeReading, gaugeProps);
+
+  let levees: Levees;
+  if (crossSectionState.leftLevee && crossSectionState.rightLevee) {
+    levees = Levees.Two;
+  } else if (crossSectionState.leftLevee) {
+    levees = Levees.Left;
+  } else if (crossSectionState.rightLevee) {
+    levees = Levees.Right;
+  } else {
+    levees = Levees.Zero;
+  }
 
   useEffect(() => {
     pathOutputRefs.current.forEach((pathOutputRef, idx) => {

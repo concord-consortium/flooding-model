@@ -1,11 +1,11 @@
 import { action, observable } from "mobx";
-import { IGaugeConfig } from "../config";
+import { ICrossSectionConfig } from "../config";
 
 export interface ISimulationModel {
   on: (event: "hourChange" | "restart", callback: () => void) => void;
   timeInHours: number;
-  getGaugeReading: (gaugeIdx: number) => number;
-  gauges: IGaugeConfig[];
+  getRiverGaugeReading: (gaugeIdx: number) => number;
+  crossSections: ICrossSectionConfig[];
 }
 
 const M_TO_FEET = 3.281;
@@ -23,16 +23,16 @@ export class GaugeReadingDataset {
 
   public getCurrentPoint(gaugeIdx: number) {
     // Convert area in sq meters to acres.
-    return { x: this.simulation.timeInHours / 24, y: this.simulation.getGaugeReading(gaugeIdx) * M_TO_FEET };
+    return { x: this.simulation.timeInHours / 24, y: this.simulation.getRiverGaugeReading(gaugeIdx) * M_TO_FEET };
   }
 
   @action.bound public onHourChange() {
-    this.simulation.gauges.forEach((g, idx) => {
+    this.simulation.crossSections.forEach((g, idx) => {
       this.points[idx] = this.points[idx].concat(this.getCurrentPoint(idx));
     });
   }
 
   @action.bound public reset() {
-    this.points = this.simulation.gauges.map((g, idx) => []);
+    this.points = this.simulation.crossSections.map((g, idx) => []);
   }
 }

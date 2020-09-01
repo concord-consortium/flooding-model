@@ -27,6 +27,12 @@ export type Weather = "sunny" | "partlyCloudy" | "lightRain" | "mediumRain" | "h
 
 export type Event = "hourChange" | "restart";
 
+export interface ICrossSectionState {
+  riverGaugeReading: number;
+  leftLevee: boolean;
+  rightLevee: boolean;
+}
+
 // This class is responsible for data loading and general setup. It's more focused
 // on management and interactions handling. Core calculations are delegated to FloodingEngine.
 // Also, all the observable properties should be here, so the view code can observe them.
@@ -52,7 +58,7 @@ export class SimulationModel {
   @observable public _initialRiverStage: number = RiverStage.Medium;
 
   // Simulation outputs.
-  @observable public gaugeReading: number[] = [];
+  @observable public crossSectionState: ICrossSectionState[] = [];
 
   // These flags can be used by view to trigger appropriate rendering. Theoretically, view could/should check
   // every single cell and re-render when it detects some changes. In practice, we perform these updates in very
@@ -99,34 +105,51 @@ export class SimulationModel {
     return this.engine?.floodArea || 0;
   }
 
-  public get gauges() {
-    return this.config.gauges;
+  public get crossSections() {
+    return this.config.crossSections;
   }
 
-  public getGaugeCell(index: number) {
-    const gauge = this.gauges[index];
-    if (!gauge) {
+  public getCrossSectionCell(index: number, type: "riverGauge" | "leftLevee" | "rightLevee") {
+    const cs = this.crossSections[index];
+    if (!cs) {
       return null;
     }
-    return this.cellAt(this.config.modelWidth * gauge.x, this.config.modelHeight * gauge.y);
+    const coords = cs[type];
+    return this.cellAt(this.config.modelWidth * coords.x, this.config.modelHeight * coords.y);
   }
 
-  public getGaugeReading(index: number) {
-    const gauge = this.gauges[index];
-    if (!gauge) {
+  public getRiverGaugeReading(index: number) {
+    const cs = this.crossSections[index];
+    if (!cs) {
       return 0;
     }
-    const gaugeCell = this.getGaugeCell(index);
+    const gaugeCell = this.getCrossSectionCell(index, "riverGauge");
     if (!gaugeCell) {
       return 0;
     }
-    return gauge.minRiverDepth + (gauge.maxRiverDepth - gauge.minRiverDepth) * gaugeCell.riverStage  + gaugeCell.waterDepth;
+    return cs.minRiverDepth + (cs.maxRiverDepth - cs.minRiverDepth) * gaugeCell.riverStage  + gaugeCell.waterDepth;
   }
 
-  // Update observable gaugeReading array, so cross-section view can re-render itself.
-  // It's impossible to observe method results directly (getGaugeReading).
-  public updateGaugeReadings() {
-    this.gaugeReading = this.gauges.map((g, idx) => this.getGaugeReading(idx));
+  public getCrossSectionState(index: number) {
+    const cs = this.crossSections[index];
+    if (!cs) {
+      return null;
+    }
+    return {
+      riverGaugeReading: this.getRiverGaugeReading(index),
+      leftLevee: !!this.getCrossSectionCell(index, "leftLevee")?.isLevee,
+      rightLevee: !!this.getCrossSectionCell(index, "rightLevee")?.isLevee
+    };
+  }
+
+  // Update observable crossSectionState array, so cross-section view can re-render itself.
+  // It's impossible to observe method results directly (e.g. getRiverGaugeReading).
+  public updateCrossSectionStates() {
+    this.crossSectionState = this.crossSections.map((g, idx) => this.getCrossSectionState(idx) || {
+      riverGaugeReading: 0,
+      leftLevee: false,
+      rightLevee: false
+    });
   }
 
   @computed public get weather(): Weather {
@@ -214,8 +237,20 @@ export class SimulationModel {
       cell.initialRiverStage = value;
       cell.riverStage = value;
     }
-    // Update observable gaugeReading array, so cross-section view can re-render itself.
-    this.updateGaugeReadings();
+    // Update observable crossSectionState array, so cross-section view can re-render itself.
+    this.updateCrossSectionStates();
+  }
+
+  // Adds or removes levee in the provided river bank.
+  @action.bound public toggleLevee(riverBankIdx: number) {
+    const leveeHeight = this.config.leveeHeight;
+    this.riverBankSegments[riverBankIdx].forEach(cell => {
+      cell.leveeHeight = cell.isLevee ? 0 : leveeHeight;
+    });
+    const isLevee = this.riverBankSegments[riverBankIdx][0].isLevee;
+    this.leveesCount += isLevee ? 1 : -1;
+    this.updateCellsBaseStateFlag();
+    this.updateCrossSectionStates();
   }
 
   @action.bound public async load(presetConfig: Partial<ISimulationConfig>) {
@@ -320,8 +355,8 @@ export class SimulationModel {
     }
 
     this.updateCellsSimulationStateFlag();
-    // Update observable gaugeReading array, so cross-section view can re-render itself.
-    this.updateGaugeReadings();
+    // Update observable crossSectionState array, so cross-section view can re-render itself.
+    this.updateCrossSectionStates();
   }
 
   @action.bound public updateCellsBaseStateFlag() {
