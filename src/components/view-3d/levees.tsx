@@ -93,11 +93,13 @@ export const Levees: React.FC = observer(function WrappedComponent() {
   }, [cellSize, unitConversionFactor, riverBankSegments, view3d]);
 
   const isLevee = useMemo(() => {
+    // cellsBaseStateFlag flag marks that some changes have been made to cells (for performance reasons the whole cells
+    // array is not observable). The statement below is gratuitous, it just prevents eslint exhaustive-deps rule from
+    // complaining about unnecessary variable in the dependencies array.
+    simulation.cellsBaseStateFlag;
     // If one cell in the river bank segment is levee, then the whole segment is a levee. No need to check other cells.
     return riverBankSegments.map(segment => segment[0].isLevee);
-    // exhaustive-deps would complain about simulation.cellsBaseStateFlag. It's necessary here, as this
-    // flag marks that some changes have been made to cells (for performance reasons the whole array is not recreated).
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+
   }, [riverBankSegments, simulation.cellsBaseStateFlag]);
 
   return (<>
