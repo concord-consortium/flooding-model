@@ -1,0 +1,42 @@
+.iconButton {
+  min-width: 60px;
+  width: 100%;
+  height: 100%;
+
+  svg {
+    position: absolute;
+    left: 0;
+    bottom: 27px;
+    height: 30px;
+    width: 100%;
+  }
+
+  .iconButtonHighlightSvg {
+    display: none;
+  }
+
+  .iconButtonDisabledSvg {
+    display: none;
+  }
+
+  &:hover {
+    .iconButtonHighlightSvg {
+      display: block;
+      opacity: 0.6;
+    }
+  }
+
+  &:active {
+    .iconButtonHighlightSvg {
+      display: block;
+      opacity: 1;
+    }
+  }
+
+  .iconButtonText {
+    position: absolute;
+    top: 45px;
+    left: 0;
+    width: 100%;
+  }
+}

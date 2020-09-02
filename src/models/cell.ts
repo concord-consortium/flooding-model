@@ -1,4 +1,5 @@
 export interface CellOptions {
+  id?: number;
   x: number;
   y: number;
   isEdge?: boolean;
@@ -9,14 +10,22 @@ export interface CellOptions {
 }
 
 export class Cell {
+  // Base state (each time it's updated, simulation.cellsBaseStateFlag should be updated!):
+  public leveeHeight = 0;
+  public baseElevation = 0;
+  // ---
+  // Simulation state (each time it's updated, simulation.cellsSimulationStateFlag should be updated!):
+  public waterDepth = 0;
+  // ---
+  public id: number; // unique id
   public x: number; // grid X coord
   public y: number; // grid Y coord
   public isEdge = false;
   public isRiver = false;
-  public baseElevation = 0;
+  public isRiverBank = false;
+  public riverBankSegmentIdx: number;
   public permeability = 0;
   public riverStage = 0;
-  public waterDepth = 0;
   public initialWaterDepth = 0;
   public initialRiverStage = 0;
   public fluxL = 0; // left
@@ -30,11 +39,15 @@ export class Cell {
   }
 
   public get elevation() {
-    return this.baseElevation + this.waterDepth;
+    return this.baseElevation + this.waterDepth + this.leveeHeight;
   }
 
   public get fluxOut() {
     return this.fluxL + this.fluxR + this.fluxB + this.fluxT;
+  }
+
+  public get isLevee() {
+    return this.leveeHeight > 0;
   }
 
   public reset() {

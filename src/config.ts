@@ -54,6 +54,12 @@ export interface ISimulationConfig {
   rainStartDay: number;
   view3d: boolean;
   gauges: IGaugeConfig[];
+  // Length of the river bank segment that is used to construct levees (in meters).
+  riverBankSegmentLength: number;
+  // Height of the levee.
+  leveeHeight: number;
+  // Number of available levee segments.
+  maxLevees: number;
 }
 
 export interface IGaugeConfig {
@@ -96,7 +102,10 @@ export const getDefaultConfig: () => IUrlConfig = () => ({
   modelTimeToHours: 0.066,
   rainStartDay: 1,
   view3d: false,
-  gauges: []
+  gauges: [],
+  riverBankSegmentLength: 800, // m
+  leveeHeight: 4, // m
+  maxLevees: 10
 });
 
 const getURLParam = (name: string) => {

@@ -1,10 +1,10 @@
 import { action, computed, observable } from "mobx";
 import { Cell } from "./cell";
 import { getDefaultConfig, ISimulationConfig, getUrlConfig } from "../config";
-import { getElevationData, getPermeabilityData, getRiverData, getWaterDepthData } from "./utils/data-loaders";
-import { getGridIndexForLocation } from "./utils/grid-utils";
+import { cellAtGrid, getCellNeighbors4, getCellNeighbors8 } from "./utils/grid-utils";
 import { FloodingEngine } from "./engine/flooding-engine";
 import EventEmitter from "eventemitter3";
+import { populateCellsData } from "./utils/load-and-initialize-cells";
 
 const MIN_RAIN_DURATION_IN_DAYS = 1;
 const MAX_RAIN_DURATION_IN_DAYS = 4;
@@ -23,9 +23,6 @@ export enum RiverStage {
   Crest = 1
 }
 
-// River is not flowing in the model. Instead, it disappears from the river faster than from the ground.
-const RIVER_PERMEABILITY = 0.012;
-
 export type Weather = "sunny" | "partlyCloudy" | "lightRain" | "mediumRain" | "heavyRain" | "extremeRain";
 
 export type Event = "hourChange" | "restart";
@@ -37,9 +34,12 @@ export class SimulationModel {
   public config: ISimulationConfig;
   public dataReadyPromise: Promise<void>;
   public engine: FloodingEngine | null = null;
-  // Cells are not directly observable. Changes are broadcasted using cellsStateFlag and cellsBaseElevationFlag.
+  // Cells are not directly observable. Changes are broadcasted using cellsSimulationStateFlag and cellsBaseStateFlag.
   public cells: Cell[] = [];
   public riverCells: Cell[] = [];
+  public edgeCells: Cell[] = [];
+
+  @observable public riverBankSegments: Cell[][] = [];
 
   @observable public time = 0;
   @observable public dataReady = false;
@@ -57,8 +57,9 @@ export class SimulationModel {
   // These flags can be used by view to trigger appropriate rendering. Theoretically, view could/should check
   // every single cell and re-render when it detects some changes. In practice, we perform these updates in very
   // specific moments and usually for all the cells, so this approach can be way more efficient.
-  @observable public cellsStateFlag = 0;
-  @observable public cellsBaseElevationFlag = 0;
+  @observable public cellsSimulationStateFlag = 0;
+  @observable public cellsBaseStateFlag = 0;
+  @observable public leveesCount = 0;
 
   private emitter = new EventEmitter();
 
@@ -88,6 +89,10 @@ export class SimulationModel {
 
   @computed public get initialRiverStage() {
     return this._initialRiverStage;
+  }
+
+  @computed public get remainingLevees() {
+    return this.config.maxLevees - this.leveesCount;
   }
 
   public get floodArea() { // in square meters
@@ -177,10 +182,22 @@ export class SimulationModel {
     this.emitter.emit(event);
   }
 
+  public cellAtGrid(gridX: number, gridY: number) {
+    return cellAtGrid(gridX, gridY, this.cells, this.config.gridWidth, this.config.gridHeight);
+  }
+
+  public getCellNeighbors4(cell: Cell) {
+    return getCellNeighbors4(cell, this.cells, this.config.gridWidth, this.config.gridHeight);
+  }
+
+  public getCellNeighbors8(cell: Cell) {
+    return getCellNeighbors8(cell, this.cells, this.config.gridWidth, this.config.gridHeight);
+  }
+
   public cellAt(xInM: number, yInM: number) {
     const gridX = Math.floor(xInM / this.config.cellSize);
     const gridY = Math.floor(yInM / this.config.cellSize);
-    return this.cells[getGridIndexForLocation(gridX, gridY, this.config.gridWidth)];
+    return this.cellAtGrid(gridX, gridY);
   }
 
   @action.bound public setRainIntensity(value: number) {
@@ -212,54 +229,18 @@ export class SimulationModel {
 
   @action.bound public async populateCellsData() {
     this.dataReady = false;
-    const config = this.config;
-    this.dataReadyPromise = Promise.all([
-      getElevationData(config), getRiverData(config), getWaterDepthData(config), getPermeabilityData(config)
-    ]).then(values => {
-      const elevation = values[0];
-      const river = values[1];
-      const waterDepth = values[2];
-      const permeability = values[3];
-      const elevationDiff = this.config.maxElevation - this.config.minElevation;
-      const verticalTilt = (this.config.elevationVerticalTilt / 100) * elevationDiff;
+    this.dataReadyPromise = populateCellsData(this.config).then(result => {
+      this.cells = result.cells;
+      this.edgeCells = result.edgeCells;
+      this.riverCells = result.riverCells;
+      this.riverBankSegments = result.riverBankSegments;
 
-      this.cells.length = 0;
-
-      for (let y = 0; y < this.gridHeight; y++) {
-        for (let x = 0; x < this.gridWidth; x++) {
-          const index = getGridIndexForLocation(x, y, this.gridWidth);
-          const isRiver = river && river[index] > 0;
-          // When fillTerrainEdge is set to true, edges are set to elevation 0.
-          const isEdge = config.fillTerrainEdges &&
-            (x === 0 || x === this.gridWidth - 1 || y === 0 || y === this.gridHeight - 1);
-          let baseElevation = elevation && elevation[index];
-          if (verticalTilt && baseElevation !== undefined) {
-            const vertProgress = y / this.gridHeight;
-            baseElevation += Math.abs(verticalTilt) * (verticalTilt > 0 ? vertProgress : 1 - vertProgress);
-          }
-          if (isEdge) {
-            baseElevation = 0;
-          }
-          const cell = new Cell({
-            x, y,
-            isEdge,
-            isRiver,
-            baseElevation,
-            waterDepth: waterDepth && waterDepth[index] || 0,
-            permeability: isRiver ? RIVER_PERMEABILITY : (permeability && permeability[index] || 0)
-          });
-          this.cells.push(cell);
-          if (cell.isRiver) {
-            this.riverCells.push(cell);
-          }
-        }
-      }
-      this.updateCellsBaseElevationFlag();
-      this.updateCellsStateFlag();
       this.dataReady = true;
-
       this.engine = new FloodingEngine(this.cells, this.config);
-    });
+
+      this.updateCellsBaseStateFlag();
+      this.updateCellsSimulationStateFlag();
+      });
     return this.dataReadyPromise;
   }
 
@@ -284,16 +265,21 @@ export class SimulationModel {
     this.setRainIntensity(RainIntensity.Medium);
     this.setRainDurationInDays(2);
     this.setInitialRiverStage(RiverStage.Medium);
+    this.cells.forEach(c => {
+      c.leveeHeight = 0;
+    });
+    this.leveesCount = 0;
+    this.updateCellsBaseStateFlag();
   }
 
   @action.bound public restart() {
     this.simulationRunning = false;
     this.simulationStarted = false;
     this.cells.forEach(cell => cell.reset());
-    this.updateCellsStateFlag();
     this.setInitialRiverStage(this.initialRiverStage); // to update cells
     this.time = 0;
     this.engine = new FloodingEngine(this.cells, this.config);
+    this.updateCellsSimulationStateFlag();
     this.emit("restart"); // used by graphs
   }
 
@@ -333,16 +319,16 @@ export class SimulationModel {
       }
     }
 
-    this.updateCellsStateFlag();
+    this.updateCellsSimulationStateFlag();
     // Update observable gaugeReading array, so cross-section view can re-render itself.
     this.updateGaugeReadings();
   }
 
-  @action.bound public updateCellsBaseElevationFlag() {
-    this.cellsBaseElevationFlag += 1;
+  @action.bound public updateCellsBaseStateFlag() {
+    this.cellsBaseStateFlag += 1;
   }
 
-  @action.bound public updateCellsStateFlag() {
-    this.cellsStateFlag += 1;
+  @action.bound public updateCellsSimulationStateFlag() {
+    this.cellsSimulationStateFlag += 1;
   }
 }

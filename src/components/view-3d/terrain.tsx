@@ -1,29 +1,12 @@
 import React, { useMemo } from "react";
-import { Cell } from "../../models/cell";
 import * as THREE from "three";
-import { BufferAttribute } from "three";
-import { SimulationModel } from "../../models/simulation";
-import { mToViewUnit, PLANE_WIDTH, planeHeight } from "./helpers";
+import { PLANE_WIDTH, planeHeight } from "./helpers";
 import { observer } from "mobx-react-lite";
 import { useStores } from "../../use-stores";
-import { useUpdate } from "react-three-fiber";
 import { getEventHandlers, InteractionHandler } from "./interaction-handler";
+import { useElevation } from "./use-elevation";
+import { useLeveeInteraction } from "./use-levee-interaction";
 import { useShowCoordsInteraction } from "./use-show-coords-interaction";
-
-const vertexIdx = (cell: Cell, gridWidth: number, gridHeight: number) => (gridHeight - 1 - cell.y) * gridWidth + cell.x;
-
-const setupElevation = (geometry: THREE.PlaneBufferGeometry, simulation: SimulationModel) => {
-  const posArray = geometry.attributes.position.array as number[];
-  const mult = mToViewUnit(simulation);
-  // Apply height map to vertices of plane.
-  for (const cell of simulation.cells) {
-    const zAttrIdx = vertexIdx(cell, simulation.gridWidth, simulation.gridHeight) * 3 + 2;
-    // .baseElevation doesn't include water depth.
-    posArray[zAttrIdx] = cell.baseElevation * mult;
-  }
-  geometry.computeVertexNormals();
-  (geometry.attributes.position as BufferAttribute).needsUpdate = true;
-};
 
 const getTexture = (imgSrcOrCanvas: string | HTMLCanvasElement) => {
   let source;
@@ -46,17 +29,13 @@ const getTexture = (imgSrcOrCanvas: string | HTMLCanvasElement) => {
 export const Terrain = observer(function WrappedComponent() {
   const { simulation } = useStores();
   const height = planeHeight(simulation);
-
-  const geometryRef = useUpdate<THREE.PlaneBufferGeometry>(geometry => {
-    if (simulation.config.view3d) {
-      setupElevation(geometry, simulation);
-    }
-  }, [simulation.config.view3d, simulation.cellsBaseElevationFlag]);
+  // This hook will setup terrain elevation WITHOUT water depth.
+  const geometryRef = useElevation({ includeWaterDepth: false });
 
   const interactions: InteractionHandler[] = [
-    useShowCoordsInteraction()
+    useShowCoordsInteraction(),
+    useLeveeInteraction()
   ];
-
   // Note that getEventHandlers won't return event handlers if it's not necessary. This is important,
   // as adding even an empty event handler enables raycasting machinery in react-three-fiber and it has big
   // performance cost in case of fairly complex terrain mesh. That's why when all the interactions are disabled,
@@ -76,7 +55,7 @@ export const Terrain = observer(function WrappedComponent() {
       />
       {
         simulation.config.view3d ?
-          <meshStandardMaterial attach="material" map={texture || null} color="#aaa" /> :
+          <meshStandardMaterial attach="material" map={texture || null} /> :
           <meshBasicMaterial attach="material" map={texture || null} /> // this material doesn't require any light
       }
     </mesh>

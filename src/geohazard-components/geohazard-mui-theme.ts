@@ -28,6 +28,7 @@ export default createMuiTheme({
         },
         "&$disabled": {
           color: "inherit",
+          filter: "grayscale(1)",
           opacity: 0.25
         }
       },
