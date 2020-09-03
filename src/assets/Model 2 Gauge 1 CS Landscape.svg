@@ -1003,6 +1003,9 @@
           <path id="water_line" style="fill:none;stroke:#2D95D2;stroke-miterlimit:10;"/>
           <path id="water_right_dotted_line" style="opacity:0.75;fill:none;stroke:#FFFFFF;stroke-miterlimit:10;stroke-dasharray:4,8;" />
           <path id="water_left_dotted_line" style="opacity:0.75;fill:none;stroke:#FFFFFF;stroke-miterlimit:10;stroke-dasharray:4,8;" />
+          <path id="flood_left_water_line" style="fill:none;stroke:#2D95D2;stroke-miterlimit:10;"/>
+          <path id="flood_center_water_line" style="fill:none;stroke:#2D95D2;stroke-miterlimit:10;"/>
+          <path id="flood_right_water_line" style="fill:none;stroke:#2D95D2;stroke-miterlimit:10;"/>
         </g>
         <g id="levees">
           <g id="right_levee" data-name="right levee">

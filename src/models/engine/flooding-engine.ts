@@ -74,10 +74,10 @@ export class FloodingEngine {
   }
 
   public update(dt: number) {
+    this.removeWater(dt);
     this.addWaterInRiver(dt);
     this.updateFlux(dt);
     this.updateWaterDepth(dt);
-    this.removeWater(dt);
   }
 
   public addWaterInRiver(dt: number) {

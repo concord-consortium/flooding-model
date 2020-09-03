@@ -28,7 +28,10 @@ export type Weather = "sunny" | "partlyCloudy" | "lightRain" | "mediumRain" | "h
 export type Event = "hourChange" | "restart";
 
 export interface ICrossSectionState {
+  riverDepth: number;
   riverGaugeReading: number;
+  leftLandGaugeReading: number;
+  rightLandGaugeReading: number;
   leftLevee: boolean;
   rightLevee: boolean;
 }
@@ -109,7 +112,7 @@ export class SimulationModel {
     return this.config.crossSections;
   }
 
-  public getCrossSectionCell(index: number, type: "riverGauge" | "leftLevee" | "rightLevee") {
+  public getCrossSectionCell(index: number, type: "riverGauge" | "leftLevee" | "rightLevee" | "leftLandGauge" | "rightLandGauge") {
     const cs = this.crossSections[index];
     if (!cs) {
       return null;
@@ -118,12 +121,12 @@ export class SimulationModel {
     return this.cellAt(this.config.modelWidth * coords.x, this.config.modelHeight * coords.y);
   }
 
-  public getRiverGaugeReading(index: number) {
-    const cs = this.crossSections[index];
+  public getRiverDepth(gaugeIndex: number) {
+    const cs = this.crossSections[gaugeIndex];
     if (!cs) {
       return 0;
     }
-    const gaugeCell = this.getCrossSectionCell(index, "riverGauge");
+    const gaugeCell = this.getCrossSectionCell(gaugeIndex, "riverGauge");
     if (!gaugeCell) {
       return 0;
     }
@@ -136,20 +139,29 @@ export class SimulationModel {
       return null;
     }
     return {
-      riverGaugeReading: this.getRiverGaugeReading(index),
+      riverDepth: this.getRiverDepth(index),
+      riverGaugeReading: this.getCrossSectionCell(index, "riverGauge")?.waterDepth || 0,
+      leftLandGaugeReading: this.getCrossSectionCell(index, "leftLandGauge")?.waterDepth || 0,
+      rightLandGaugeReading: this.getCrossSectionCell(index, "rightLandGauge")?.waterDepth || 0,
       leftLevee: !!this.getCrossSectionCell(index, "leftLevee")?.isLevee,
-      rightLevee: !!this.getCrossSectionCell(index, "rightLevee")?.isLevee
+      rightLevee: !!this.getCrossSectionCell(index, "rightLevee")?.isLevee,
     };
   }
 
   // Update observable crossSectionState array, so cross-section view can re-render itself.
-  // It's impossible to observe method results directly (e.g. getRiverGaugeReading).
+  // It's impossible to observe method results directly (e.g. getRiverDepth).
   public updateCrossSectionStates() {
     this.crossSectionState = this.crossSections.map((g, idx) => this.getCrossSectionState(idx) || {
+      riverDepth: 0,
       riverGaugeReading: 0,
+      leftLandGaugeReading: 0,
+      rightLandGaugeReading: 0,
       leftLevee: false,
       rightLevee: false
     });
+    // const cs = this.crossSectionState[0];
+    // const hDiff = (this.getCrossSectionCell(0, "rightLandGauge")?.baseElevation || 0) - (this.getCrossSectionCell(0, "riverGauge")?.baseElevation || 0);
+    // console.log(cs.riverGaugeReading.toFixed(2), (cs.rightLandGaugeReading + hDiff).toFixed(2));
   }
 
   @computed public get weather(): Weather {

@@ -4,7 +4,7 @@ import { ICrossSectionConfig } from "../config";
 export interface ISimulationModel {
   on: (event: "hourChange" | "restart", callback: () => void) => void;
   timeInHours: number;
-  getRiverGaugeReading: (gaugeIdx: number) => number;
+  getRiverDepth: (gaugeIdx: number) => number;
   crossSections: ICrossSectionConfig[];
 }
 
@@ -23,7 +23,7 @@ export class GaugeReadingDataset {
 
   public getCurrentPoint(gaugeIdx: number) {
     // Convert area in sq meters to acres.
-    return { x: this.simulation.timeInHours / 24, y: this.simulation.getRiverGaugeReading(gaugeIdx) * M_TO_FEET };
+    return { x: this.simulation.timeInHours / 24, y: this.simulation.getRiverDepth(gaugeIdx) * M_TO_FEET };
   }
 
   @action.bound public onHourChange() {
