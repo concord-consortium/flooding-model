@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from "react";
 import { interpolate, InterpolateOptions } from "polymorph-js";
 import CS1Background from "../assets/Model 2 Gauge 1 CS Landscape.svg";
-import CS1Water from "../assets/Model 2 Gauge 1 CS Water_V2.svg";
+import CS1Water from "../assets/Model 2 Gauge 1 CS Water.svg";
 import CS2Background from "../assets/Model 2 Gauge 2 CS Landscape.svg";
 import CS2Water from "../assets/Model 2 Gauge 2 CS Water.svg";
 import CS3Background from "../assets/Model 2 Gauge 3 CS Landscape.svg";
@@ -27,21 +27,18 @@ const CrossSectionWater: {[key: number]: React.JSXElementConstructor<any>} = {
 const interpolationOptions: InterpolateOptions = { precision: 3, optimize: "none" };
 
 const pathTypes = [
-  // "river_level",
-  // "water_level",
-  "water_line",
+  "left_water_line",
+  "center_water_line",
+  "right_water_line",
   "flood_left_water_line",
-  "flood_center_water_line",
   "flood_right_water_line",
-  // "water_right_dotted_line",
-  // "water_left_dotted_line"
 ];
 
 const riverStateSteps = [0, 0.35, 0.8, 1];
 const riverStateValues = ["LOW", "MED", "HI", "CREST"];
 
 const floodStateSteps = [0, 1];
-const floodStateValues = ["FLOOD1", "FLOOD4"];
+const floodStateValues = ["CREST", "FLOOD4"];
 
 const getPath = (type: string, stateName: string) => {
   return document.getElementById(`${type}_${stateName}`)?.getAttribute("d") || null;
@@ -148,10 +145,10 @@ export const CrossSectionSVGView: React.FC<IProps> = observer(({ gauge}) => {
       const dummyInterpolator = () => "";
       const pathType = pathTypes[idx];
       let startState, endState;
-      if (pathType.startsWith("flood_left")) {
+      if (pathType.indexOf("left") !== -1) {
         startState = leftState.startState;
         endState = leftState.endState;
-      } else if (pathType.startsWith("flood_right")) {
+      } else if (pathType.indexOf("right") !== -1) {
         startState = rightState.startState;
         endState = rightState.endState;
       } else {
