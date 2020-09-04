@@ -211,8 +211,8 @@ export class SimulationModel {
   }
 
   public cellAt(xInM: number, yInM: number) {
-    const gridX = Math.floor(xInM / this.config.cellSize);
-    const gridY = Math.floor(yInM / this.config.cellSize);
+    const gridX = Math.round(xInM / this.config.cellSize);
+    const gridY = Math.round(yInM / this.config.cellSize);
     return this.cellAtGrid(gridX, gridY);
   }
 
