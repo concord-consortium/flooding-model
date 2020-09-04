@@ -25,9 +25,9 @@ export class Cell {
   public isRiverBank = false;
   public riverBankSegmentIdx: number;
   public permeability = 0;
-  public riverStage = 0;
+  public waterSaturation = 0;
+  public initialWaterSaturation = 0;
   public initialWaterDepth = 0;
-  public initialRiverStage = 0;
   public fluxL = 0; // left
   public fluxR = 0; // right
   public fluxT = 0; // top
@@ -52,6 +52,7 @@ export class Cell {
 
   public reset() {
     this.waterDepth = this.initialWaterDepth;
+    this.waterSaturation = this.initialWaterSaturation;
     this.fluxL = 0;
     this.fluxR = 0;
     this.fluxT = 0;

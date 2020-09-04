@@ -48,7 +48,7 @@ export class FloodingEngine {
   public simulationDidStop = false;
   public waterSum = 0;
   public riverWaterSum = 0;
-  public riverWaterIncrement = 0;
+  public waterSaturationIncrement = 0;
   public floodArea = 0; // in square meters
 
   constructor(cells: Cell[], config: IFloodingEngineConfig) {
@@ -75,31 +75,33 @@ export class FloodingEngine {
 
   public update(dt: number) {
     this.removeWater(dt);
-    this.addWaterInRiver(dt);
+    this.addWater(dt);
     this.updateFlux(dt);
     this.updateWaterDepth(dt);
   }
 
-  public addWaterInRiver(dt: number) {
+  public addWater(dt: number) {
     for (const cell of this.cells) {
-      // When river is still not overflowing (riverStage <= 1), only riverStage value gets updated during this step.
-      // When riverStage gets bigger than 1, waterDepth is incremented too, which will trigger the flooding
+      // When river is still not overflowing (waterSaturation <= 1), only waterSaturation value gets updated during this step.
+      // When waterSaturation gets bigger than 1, waterDepth is incremented too, which will trigger the flooding
       // calculations in other steps.
-      if (cell.riverStage <= 1) {
-        const riverStageDiff = this.riverWaterIncrement * dt * this.riverStageIncreaseSpeed;
-        cell.riverStage += this.riverWaterIncrement * dt * this.riverStageIncreaseSpeed;
+      if (cell.waterSaturation <= 1) {
+        const riverStageDiff = this.waterSaturationIncrement * dt * this.riverStageIncreaseSpeed;
+        cell.waterSaturation += this.waterSaturationIncrement * dt * this.riverStageIncreaseSpeed;
+        cell.waterSaturation = Math.min(1 + 1e-6, cell.waterSaturation);
         if (riverStageDiff < 0) {
-          const finalRiverStage = Math.min(cell.initialRiverStage + 0.2, RiverStage.High);
-          cell.riverStage = Math.max(cell.riverStage, finalRiverStage);
+          const finalRiverStage = Math.min(cell.initialWaterSaturation + 0.2, RiverStage.High);
+          cell.waterSaturation = Math.max(cell.waterSaturation, finalRiverStage);
         }
       } else {
+        // Only rivers can actually overflow above the surface level.
         if (cell.isRiver) {
-          cell.waterDepth = Math.max(0, cell.waterDepth + this.riverWaterIncrement * dt);
+          cell.waterDepth = Math.max(0, cell.waterDepth + this.waterSaturationIncrement * dt);
         }
         if (cell.waterDepth === 0) {
-          // If we're here, it means that river has flooded, but not it's back to normal state (riverWaterIncrement
-          // is negative). Start decreasing riverStage value when waterDepth reaches 0.
-          cell.riverStage = 1;
+          // If we're here, it means that river has flooded, but not it's back to normal state (waterSaturationIncrement
+          // is negative). Start decreasing waterSaturation value when waterDepth reaches 0.
+          cell.waterSaturation = 1;
         }
       }
     }
@@ -111,7 +113,7 @@ export class FloodingEngine {
         continue;
       }
       // During the flood event ground permeability is much lower than typically, as the water table is very high.
-      const flood = this.riverWaterIncrement > 0;
+      const flood = this.waterSaturationIncrement > 0;
       cell.waterDepth -= cell.permeability * dt * (flood ? this.floodPermeabilityMult : 1);
       cell.waterDepth = Math.max(0, cell.waterDepth);
     }

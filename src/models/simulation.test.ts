@@ -103,7 +103,7 @@ describe("SimulationModel", () => {
       s.time = 123;
       s.setRainDurationInDays(4);
       s.setRainIntensity(123);
-      s.setInitialRiverStage(123);
+      s.setInitialWaterSaturation(123);
 
       s.restart();
       expect(s.simulationRunning).toEqual(false);
@@ -112,7 +112,7 @@ describe("SimulationModel", () => {
       expect(s.time).toEqual(0);
       expect(s.rainDurationInDays).toEqual(4);
       expect(s.rainIntensity).toEqual(123);
-      expect(s.initialRiverStage).toEqual(123);
+      expect(s.initialWaterSaturation).toEqual(123);
     });
   });
 
@@ -128,7 +128,7 @@ describe("SimulationModel", () => {
       s.time = 123;
       s.setRainDurationInDays(123);
       s.setRainIntensity(123);
-      s.setInitialRiverStage(123);
+      s.setInitialWaterSaturation(123);
 
       s.reload();
       expect(s.simulationRunning).toEqual(false);
@@ -137,7 +137,7 @@ describe("SimulationModel", () => {
       expect(s.time).toEqual(0);
       expect(s.rainDurationInDays).toEqual(2);
       expect(s.rainIntensity).toEqual(RainIntensity.Medium);
-      expect(s.initialRiverStage).toEqual(RiverStage.Medium);
+      expect(s.initialWaterSaturation).toEqual(RiverStage.Medium);
     });
   });
 
@@ -168,7 +168,7 @@ describe("SimulationModel", () => {
       expect(s.cellsSimulationStateFlag).toEqual(oldCellStateFlag + 1);
     });
 
-    it("updates river stage and engine.riverWaterIncrement based on river stage value", async () => {
+    it("updates river stage and engine.waterSaturationIncrement based on river stage value", async () => {
       const s = new SimulationModel({
         elevation: [[0]],
         riverData: null,
@@ -179,7 +179,7 @@ describe("SimulationModel", () => {
 
       s.simulationRunning = true;
       s.rafCallback();
-      expect(s.engine?.riverWaterIncrement).toBeGreaterThan(0);
+      expect(s.engine?.waterSaturationIncrement).toBeGreaterThan(0);
     });
   });
 
