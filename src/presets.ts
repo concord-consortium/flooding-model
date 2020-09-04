@@ -60,6 +60,31 @@ const presets: {[key: string]: Partial<ISimulationConfig>} = {
           x: 46 / 300,
           y: 135 / 300
         }
+      },
+      {
+        minRiverDepth: 0.5, // m
+        maxRiverDepth: 4,
+        maxFloodDepth: 9,
+        riverGauge: {
+          x: 184 / 300,
+          y: 64 / 300
+        },
+        rightLevee: {
+          x: 185 / 300,
+          y: 64 / 300
+        },
+        rightLandGauge: {
+          x: 186 / 300,
+          y: 64 / 300
+        },
+        leftLevee: {
+          x: 182 / 300,
+          y: 64 / 300
+        },
+        leftLandGauge: {
+          x: 181 / 300,
+          y: 64 / 300
+        }
       }
     ]
   },

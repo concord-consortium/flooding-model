@@ -10,9 +10,6 @@
       <g id="sky_back" data-name="sky back">
         <rect width="402" height="157" rx="4" style="fill:#ecf4fb"/>
       </g>
-      <g id="outputs1">
-        <path id="river_level" style="fill:#67A5D9;" />
-      </g>
       <g id="right_landscape" data-name="right landscape">
         <g id="hidden_for_right_levee" data-name="hidden for right levee">
           <g style="opacity:0.4">
@@ -1629,6 +1626,11 @@
                 style="fill:#6c5522"/>
         </g>
       </g>
+      <g id="outputs1">
+        <path id="center_water_line" style="fill:none;stroke:#2D95D2;stroke-miterlimit:10;"/>
+        <path id="flood_right_water_line" style="fill:none;stroke:#2D95D2;stroke-miterlimit:10;"/>
+        <path id="flood_left_water_line" style="fill:none;stroke:#2D95D2;stroke-miterlimit:10;"/>
+      </g>
       <g id="earth">
         <path id="earth-2" data-name="earth"
               d="M105.49475,58.02653c.81259,2.22689.66516,4.4402,2.41639,7.75636.98058,1.85683,2.64355,9.23831,4.65576,9.23831,2.448,0,8.50446.00005,12.02671.00005H142.241c2.61729,0,3.10152,5.39556,4.55966,7.97936,1.746,3.0938,5.31042,8.34063,8.95263,9.96011s10.42991.90864,14.24671.90864,7.369-2.46966,11.4138-2.46966S192.9503,94.62247,201,94.62247s22.1279.97907,27.08749-1.37907,6.92552-2.43506,9.95731-4.05177c2.90544-1.54934,7.59806-2.746,9.47989-3.65659s5.571-4.10212,7.9588-5.28455c3.5817-1.77364,12.50955-5.22924,15.63281-5.22924h45.66251c3.79788,0,14.3508-3.35094,19.76709-3.67938,4.27837-.25945,39.038-3.56073,43.468-3.86795,5.59779-.38821,17.30239-.12162,20.98611-.12162V153a3,3,0,0,1-3,3H4a3,3,0,0,1-3-3V53.4846c9.56731.678,11.44719.76726,15.72189,1.10465,10.64941.84052,29.61927.18776,47.48242,0,20.6286-.21683,35.79277,0,36.73916,0C105.00484,54.58925,104.68225,55.79963,105.49475,58.02653Z"
@@ -1973,10 +1975,11 @@
         </g>
       </g>
       <g id="outputs2">
-        <path id="water_level" style="fill:#67A5D9;opacity:0.4;" />
-        <path id="water_line" style="fill:none;stroke:#2D95D2;stroke-miterlimit:10;"/>
-        <path id="water_right_dotted_line" style="opacity:0.75;fill:none;stroke:#FFFFFF;stroke-miterlimit:10;stroke-dasharray:4,8;" />
-        <path id="water_left_dotted_line" style="opacity:0.75;fill:none;stroke:#FFFFFF;stroke-miterlimit:10;stroke-dasharray:4,8;" />
+        <path id="left_water_line" style="fill:none;stroke:#2D95D2;stroke-miterlimit:10;"/>
+        <path id="right_water_line" style="fill:none;stroke:#2D95D2;stroke-miterlimit:10;"/>
+        <!--            <path id="center_water_line" style="fill:none;stroke:#2D95D2;stroke-miterlimit:10;"/>-->
+        <!--            <path id="flood_right_water_line" style="fill:none;stroke:#2D95D2;stroke-miterlimit:10;"/>-->
+        <!--            <path id="flood_left_water_line" style="fill:none;stroke:#2D95D2;stroke-miterlimit:10;"/>-->
       </g>
       <g id="levees">
         <g id="right_levee" data-name="right levee">
