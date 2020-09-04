@@ -114,7 +114,7 @@ export class SimulationModel {
   public getCrossSectionCell(index: number, type: "riverGauge" | "leftLevee" | "rightLevee" | "leftLandGauge" | "rightLandGauge") {
     const cs = this.crossSections[index];
     const coords = cs[type];
-    return this.cellAt(this.config.modelWidth * coords.x, this.config.modelHeight * coords.y);
+    return this.cellAt(Math.round(this.config.modelWidth * coords.x), Math.round(this.config.modelHeight * coords.y));
   }
 
   public getRiverDepth(gaugeIndex: number) {
@@ -211,8 +211,8 @@ export class SimulationModel {
   }
 
   public cellAt(xInM: number, yInM: number) {
-    const gridX = Math.round(xInM / this.config.cellSize);
-    const gridY = Math.round(yInM / this.config.cellSize);
+    const gridX = Math.floor(xInM / this.config.cellSize);
+    const gridY = Math.floor(yInM / this.config.cellSize);
     return this.cellAtGrid(gridX, gridY);
   }
 
