@@ -81,7 +81,7 @@ export class FloodingEngine {
   }
 
   public addWaterInRiver(dt: number) {
-    for (const cell of this.riverCells) {
+    for (const cell of this.cells) {
       // When river is still not overflowing (riverStage <= 1), only riverStage value gets updated during this step.
       // When riverStage gets bigger than 1, waterDepth is incremented too, which will trigger the flooding
       // calculations in other steps.
@@ -93,7 +93,9 @@ export class FloodingEngine {
           cell.riverStage = Math.max(cell.riverStage, finalRiverStage);
         }
       } else {
-        cell.waterDepth = Math.max(0, cell.waterDepth + this.riverWaterIncrement * dt);
+        if (cell.isRiver) {
+          cell.waterDepth = Math.max(0, cell.waterDepth + this.riverWaterIncrement * dt);
+        }
         if (cell.waterDepth === 0) {
           // If we're here, it means that river has flooded, but not it's back to normal state (riverWaterIncrement
           // is negative). Start decreasing riverStage value when waterDepth reaches 0.

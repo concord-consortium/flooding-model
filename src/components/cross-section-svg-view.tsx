@@ -61,7 +61,14 @@ const getStateDesc = (simulation: SimulationModel, gauge: number, segment: "left
   if (gaugeReading === 0) {
     stepArray = riverStateSteps;
     valueArray = riverStateValues;
-    normalizedGauge = (crossSectionState.riverDepth - csConfig.minRiverDepth) / (csConfig.maxRiverDepth - csConfig.minRiverDepth);
+    if (segment === "center") {
+      normalizedGauge = crossSectionState.riverStage;
+    } else if (segment === "left") {
+      normalizedGauge = crossSectionState.leftWaterTable;
+    } else {
+      normalizedGauge = crossSectionState.rightWaterTable;
+    }
+    normalizedGauge = Math.min(1, normalizedGauge);
   } else {
     stepArray = floodStateSteps;
     valueArray = floodStateValues;
@@ -171,9 +178,9 @@ export const CrossSectionSVGView: React.FC<IProps> = observer(({ gauge}) => {
       const interpolator = interpolatorRefs.current[idx].current;
       const pathType = pathTypes[idx];
       let stepProgress;
-      if (pathType.startsWith("flood_left")) {
+      if (pathType.indexOf("left") !== -1) {
         stepProgress = leftState.stepProgress;
-      } else if (pathType.startsWith("flood_right")) {
+      } else if (pathType.indexOf("right") !== -1) {
         stepProgress = rightState.stepProgress;
       } else {
         stepProgress = centerState.stepProgress;

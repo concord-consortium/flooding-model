@@ -29,6 +29,9 @@ export type Event = "hourChange" | "restart";
 
 export interface ICrossSectionState {
   riverDepth: number;
+  riverStage: number;
+  leftWaterTable: number;
+  rightWaterTable: number;
   riverGaugeReading: number;
   leftLandGaugeReading: number;
   rightLandGaugeReading: number;
@@ -140,6 +143,9 @@ export class SimulationModel {
     }
     return {
       riverDepth: this.getRiverDepth(index),
+      riverStage: this.getCrossSectionCell(index, "riverGauge")?.riverStage || 0,
+      leftWaterTable: this.getCrossSectionCell(index, "leftLandGauge")?.riverStage || 0,
+      rightWaterTable: this.getCrossSectionCell(index, "rightLandGauge")?.riverStage || 0,
       riverGaugeReading: this.getCrossSectionCell(index, "riverGauge")?.waterDepth || 0,
       leftLandGaugeReading: this.getCrossSectionCell(index, "leftLandGauge")?.waterDepth || 0,
       rightLandGaugeReading: this.getCrossSectionCell(index, "rightLandGauge")?.waterDepth || 0,
@@ -153,15 +159,15 @@ export class SimulationModel {
   public updateCrossSectionStates() {
     this.crossSectionState = this.crossSections.map((g, idx) => this.getCrossSectionState(idx) || {
       riverDepth: 0,
+      riverStage: 0,
+      leftWaterTable: 0,
+      rightWaterTable: 0,
       riverGaugeReading: 0,
       leftLandGaugeReading: 0,
       rightLandGaugeReading: 0,
       leftLevee: false,
       rightLevee: false
     });
-    // const cs = this.crossSectionState[0];
-    // const hDiff = (this.getCrossSectionCell(0, "rightLandGauge")?.baseElevation || 0) - (this.getCrossSectionCell(0, "riverGauge")?.baseElevation || 0);
-    // console.log(cs.riverGaugeReading.toFixed(2), (cs.rightLandGaugeReading + hDiff).toFixed(2));
   }
 
   @computed public get weather(): Weather {
@@ -245,7 +251,7 @@ export class SimulationModel {
 
   @action.bound public setInitialRiverStage(value: number) {
     this._initialRiverStage = value;
-    for (const cell of this.riverCells) {
+    for (const cell of this.cells) {
       cell.initialRiverStage = value;
       cell.riverStage = value;
     }
