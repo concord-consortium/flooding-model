@@ -58,13 +58,17 @@ const getSegmentProgress = (csState: ICrossSectionState, csConfig: ICrossSection
 
   if (segment === "left" && waterDepth > 0) {
     // Flood. Add elevation difference.
-      const riverBaseElev = centerCell.baseElevation || 0;
-      const leftGaugeElev = leftCell.baseElevation || 0;
-      waterDepth += leftGaugeElev - riverBaseElev;
+    const riverBaseElev = centerCell.baseElevation || 0;
+    const leftGaugeElev = leftCell.baseElevation || 0;
+    // Land is always higher than river in all our cross-section, but heightmap might not be precise.
+    // Ensure that this value is > 0.
+    waterDepth += Math.max(0, leftGaugeElev - riverBaseElev);
   } else if (segment === "right" && waterDepth > 0) {
     const riverBaseElev = centerCell.baseElevation || 0;
     const rightGaugeElev = rightCell.baseElevation || 0;
-    waterDepth += rightGaugeElev - riverBaseElev;
+    // Land is always higher than river in all our cross-section, but heightmap might not be precise.
+    // Ensure that this value is > 0.
+    waterDepth += Math.max(0, rightGaugeElev - riverBaseElev);
   }
 
   const normalizedWaterDepth = waterDepth / (csConfig.maxFloodDepth - csConfig.maxRiverDepth); // [0, 1]
