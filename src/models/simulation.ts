@@ -304,7 +304,6 @@ export class SimulationModel {
     this.simulationRunning = false;
     this.simulationStarted = false;
     this.cells.forEach(cell => cell.reset());
-    // this.setInitialWaterSaturation(this.initialWaterSaturation); // to update cells
     this.time = 0;
     this.engine = new FloodingEngine(this.cells, this.config);
     this.updateCrossSectionStates();
