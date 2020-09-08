@@ -7,6 +7,7 @@ import { Terrain } from "./terrain";
 import { Water } from "./water";
 import { Levees } from "./levees";
 import Shutterbug from "shutterbug";
+import { Gauges } from "./gauges";
 
 // This needs to be a separate component, as useThree depends on context provided by <Canvas> component.
 const ShutterbugSupport = () => {
@@ -44,6 +45,7 @@ export const View3d = () => {
         <Terrain />
         <Water />
         <Levees />
+        <Gauges />
         <ShutterbugSupport/>
     </Canvas>
   );

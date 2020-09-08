@@ -76,6 +76,13 @@ export interface ICrossSectionConfig {
   rightLevee: ICoords;
   leftLandGauge: ICoords;
   rightLandGauge: ICoords;
+  marker: {
+    img: string,
+    highlightImg: string,
+    anchorX?: number,
+    anchorY?: number,
+    scale?: number
+  }
 }
 
 export interface IUrlConfig extends ISimulationConfig {

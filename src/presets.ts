@@ -34,6 +34,12 @@ const presets: {[key: string]: Partial<ISimulationConfig>} = {
         rightLandGauge: {
           x: 190 / 300,
           y: 225 / 300
+        },
+        marker: {
+          img: "data/model2_marker1.png",
+          highlightImg: "data/model2_marker1_highlight.png",
+          anchorX: 0.6,
+          anchorY: 0.45
         }
       },
       {
@@ -59,6 +65,13 @@ const presets: {[key: string]: Partial<ISimulationConfig>} = {
         leftLandGauge: {
           x: 46 / 300,
           y: 135 / 300
+        },
+        marker: {
+          img: "data/model2_marker2.png",
+          highlightImg: "data/model2_marker2_highlight.png",
+          anchorX: 0.4,
+          anchorY: 0.27,
+          scale: 1.3
         }
       },
       {
@@ -84,6 +97,12 @@ const presets: {[key: string]: Partial<ISimulationConfig>} = {
         leftLandGauge: {
           x: 181 / 300,
           y: 64 / 300
+        },
+        marker: {
+          img: "data/model2_marker3.png",
+          highlightImg: "data/model2_marker3_highlight.png",
+          anchorX: 0.63,
+          anchorY: 0.3
         }
       }
     ]
