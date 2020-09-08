@@ -1,24 +1,8 @@
 import React, { useMemo, useState } from "react";
-import * as THREE from "three";
 import { observer } from "mobx-react-lite";
-import { mToViewUnit, PLANE_WIDTH } from "./helpers";
+import { mToViewUnit, PLANE_WIDTH, getTexture } from "./helpers";
 import { useStores } from "../../use-stores";
 import { PointerEvent } from "react-three-fiber/canvas";
-
-const getTexture = (imgSrcOrCanvas: string | HTMLCanvasElement) => {
-  let source;
-  let Texture = THREE.Texture;
-  if (typeof imgSrcOrCanvas === "string") {
-    source = document.createElement("img");
-    source.src = imgSrcOrCanvas;
-    source.onload = () => texture.needsUpdate = true;
-  } else {
-    source = imgSrcOrCanvas; // canvas
-    Texture = THREE.CanvasTexture;
-  }
-  const texture = new Texture(source);
-  return texture;
-};
 
 interface IProps {
   // Image src or HTML Canvas that is going to be used as a texture source.
@@ -51,21 +35,18 @@ export const Marker: React.FC<IProps> = observer(function WrappedComponent({
   const ratio = mToViewUnit(simulation);
   const x = position.x * ratio;
   const y = position.y * ratio;
-  const z = (simulation.cellAt(position.x, position.y)?.elevation || 0) * ratio;
+  const z = simulation.config.view3d ? (simulation.cellAt(position.x, position.y)?.elevation || 0) * ratio : 0.001;
 
   const texture = (hovered || active) && highlightTexture ? highlightTexture : defTexture;
 
   const eventHandlers = {
     onPointerOver: (e: PointerEvent) => {
-      e.stopPropagation();
       setHovered(true);
     },
     onPointerOut: (e: PointerEvent) => {
-      e.stopPropagation();
       setHovered(false);
     },
     onPointerUp: (e: PointerEvent) => {
-      e.stopPropagation();
       onClick?.();
     }
   };
