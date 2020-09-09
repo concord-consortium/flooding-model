@@ -39,7 +39,7 @@ const presets: {[key: string]: Partial<ISimulationConfig>} = {
           img: "data/model2_marker1.png",
           highlightImg: "data/model2_marker1_highlight.png",
           anchorX: 0.6,
-          anchorY: 0.45
+          anchorY: 0.35
         }
       },
       {
@@ -69,7 +69,7 @@ const presets: {[key: string]: Partial<ISimulationConfig>} = {
         marker: {
           img: "data/model2_marker2.png",
           highlightImg: "data/model2_marker2_highlight.png",
-          anchorX: 0.4,
+          anchorX: 0.5,
           anchorY: 0.27,
           scale: 1.3
         }

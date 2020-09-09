@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from "react";
 import { observer } from "mobx-react-lite";
-import { mToViewUnit, PLANE_WIDTH, getTexture } from "./helpers";
+import { mToViewUnit, getTexture } from "./helpers";
 import { useStores } from "../../use-stores";
 import { PointerEvent } from "react-three-fiber/canvas";
 
@@ -33,9 +33,9 @@ export const Marker: React.FC<IProps> = observer(function WrappedComponent({
   }
 
   const ratio = mToViewUnit(simulation);
-  const x = position.x * ratio;
-  const y = position.y * ratio;
-  const z = simulation.config.view3d ? (simulation.cellAt(position.x, position.y)?.elevation || 0) * ratio : 0.001;
+  const x = position.x * ratio + (0.5 - anchorX) * width;
+  const y = position.y * ratio + (0.5 - anchorY) * height;
+  const z = simulation.config.view3d ? (simulation.cellAt(position.x, position.y)?.elevation || 0) * ratio : 0;
 
   const texture = (hovered || active) && highlightTexture ? highlightTexture : defTexture;
 
@@ -51,15 +51,10 @@ export const Marker: React.FC<IProps> = observer(function WrappedComponent({
     }
   };
   return (
-    <sprite
-      renderOrder={1}
-      position={[x, y, z]}
-      scale={[width * PLANE_WIDTH, height * PLANE_WIDTH, 1]}
-      center-x={anchorX}
-      center-y={anchorY}
-      {...eventHandlers}
-    >
-      <spriteMaterial attach="material" map={texture} depthTest={false} />
-    </sprite>
+    <mesh position={[x, y, z]} {...eventHandlers} renderOrder={1} >
+      <planeGeometry attach="geometry" args={[width, height]}
+      />
+      <meshBasicMaterial attach="material" map={texture} depthTest={false} transparent={true} />
+    </mesh>
   );
 });
