@@ -10,27 +10,81 @@ const presets: {[key: string]: Partial<ISimulationConfig>} = {
     maxElevation: 250, // m
     modelHeight: 8000, // m
     modelWidth: 8000, // m
-    gauges: [
+    crossSections: [
       {
         minRiverDepth: 0.5, // m
         maxRiverDepth: 4,
-        maxFloodDepth: 7.7,
-        x: 0.623,
-        y: 0.743
+        maxFloodDepth: 9,
+        riverGauge: {
+          x: 187 / 300,
+          y: 223 / 300
+        },
+        leftLevee: {
+         x: 185 / 300,
+         y: 223 / 300
+        },
+        rightLevee: {
+          x: 188 / 300,
+          y: 224 / 300
+        },
+        leftLandGauge: {
+          x: 182 / 300,
+          y: 223 / 300
+        },
+        rightLandGauge: {
+          x: 190 / 300,
+          y: 225 / 300
+        }
       },
       {
         minRiverDepth: 0.5, // m
         maxRiverDepth: 4,
-        maxFloodDepth: 10,
-        x: 0.153,
-        y: 0.44
+        maxFloodDepth: 8.5,
+        riverGauge: {
+          x: 46 / 300,
+          y: 132 / 300
+        },
+        rightLevee: {
+          x: 46 / 300,
+          y: 131 / 300
+        },
+        leftLevee: {
+          x: 46 / 300,
+          y: 133 / 300
+        },
+        rightLandGauge: {
+          x: 46 / 300,
+          y: 130 / 300
+        },
+        leftLandGauge: {
+          x: 46 / 300,
+          y: 135 / 300
+        }
       },
       {
         minRiverDepth: 0.5, // m
         maxRiverDepth: 4,
-        maxFloodDepth: 10,
-        x: 0.603,
-        y: 0.26
+        maxFloodDepth: 9,
+        riverGauge: {
+          x: 184 / 300,
+          y: 64 / 300
+        },
+        rightLevee: {
+          x: 185 / 300,
+          y: 64 / 300
+        },
+        rightLandGauge: {
+          x: 186 / 300,
+          y: 64 / 300
+        },
+        leftLevee: {
+          x: 182 / 300,
+          y: 64 / 300
+        },
+        leftLandGauge: {
+          x: 181 / 300,
+          y: 64 / 300
+        }
       }
     ]
   },

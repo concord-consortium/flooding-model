@@ -53,7 +53,7 @@ export interface ISimulationConfig {
   // Rain starts with small delay, it's sunny at the beginning of the simulation.
   rainStartDay: number;
   view3d: boolean;
-  gauges: IGaugeConfig[];
+  crossSections: ICrossSectionConfig[];
   // Length of the river bank segment that is used to construct levees (in meters).
   riverBankSegmentLength: number;
   // Height of the levee.
@@ -62,12 +62,20 @@ export interface ISimulationConfig {
   maxLevees: number;
 }
 
-export interface IGaugeConfig {
+export interface ICoords {
+  x: number;
+  y: number;
+}
+
+export interface ICrossSectionConfig {
   minRiverDepth: number;
   maxRiverDepth: number;
   maxFloodDepth: number;
-  x: number;
-  y: number;
+  riverGauge: ICoords;
+  leftLevee: ICoords;
+  rightLevee: ICoords;
+  leftLandGauge: ICoords;
+  rightLandGauge: ICoords;
 }
 
 export interface IUrlConfig extends ISimulationConfig {
@@ -102,8 +110,8 @@ export const getDefaultConfig: () => IUrlConfig = () => ({
   modelTimeToHours: 0.066,
   rainStartDay: 1,
   view3d: false,
-  gauges: [],
-  riverBankSegmentLength: 800, // m
+  crossSections: [],
+  riverBankSegmentLength: 700, // m
   leveeHeight: 4, // m
   maxLevees: 10
 });

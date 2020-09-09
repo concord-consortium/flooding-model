@@ -143,8 +143,8 @@ describe("FloodingEngine", () => {
     });
   });
 
-  describe("addWaterInRiver", () => {
-    it("should add water using riverWaterIncrement value, first incrementing riverStage, then waterDepth", () => {
+  describe("addWater", () => {
+    it("should add water using waterSaturationIncrement value, first incrementing waterSaturation, then waterDepth", () => {
       const c1 = new Cell({ x: 0, y: 0, waterDepth: 0, isRiver: true });
       const c2 = new Cell({ x: 1, y: 0, waterDepth: 0, isRiver: false });
       const cells = [c1, c2];
@@ -154,45 +154,56 @@ describe("FloodingEngine", () => {
         cellSize: 1
       });
 
-      c1.initialRiverStage = 0.5;
-      c1.riverStage = 0.5;
+      c1.initialWaterSaturation = 0.5;
+      c1.waterSaturation = 0.5;
+      c2.initialWaterSaturation = 0.5;
+      c2.waterSaturation = 0.5;
 
-      engine.riverWaterIncrement = 1;
-      engine.addWaterInRiver(4);
+      engine.waterSaturationIncrement = 1;
+      engine.addWater(4);
 
-      expect(c1.riverStage).toEqual(1); // + 1 * 4 * 0.125
+      expect(c1.waterSaturation).toEqual(1); // + 1 * 4 * 0.125
       expect(c1.waterDepth).toEqual(0);
-      expect(c2.riverStage).toEqual(0);
+      expect(c2.waterSaturation).toEqual(1);
       expect(c2.waterDepth).toEqual(0);
 
-      engine.addWaterInRiver(2);
-      expect(c1.riverStage).toEqual(1.25); // + 1 * 2 * 0.125
+      engine.addWater(2);
+      expect(c1.waterSaturation).toBeGreaterThan(1); // + 1 * 2 * 0.125
       expect(c1.waterDepth).toEqual(0);
-      expect(c2.riverStage).toEqual(0);
+      expect(c2.waterSaturation).toBeGreaterThan(1);
       expect(c2.waterDepth).toEqual(0);
 
-      // Now waterDepth should start increasing, as riverStage is already > 1.
-      engine.addWaterInRiver(2);
-      expect(c1.riverStage).toEqual(1.25);
+      // Now waterDepth should start increasing (but only in river!), as waterSaturation is already > 1.
+      engine.addWater(2);
+      expect(c1.waterSaturation).toBeGreaterThan(1);
       expect(c1.waterDepth).toEqual(2); // + 1 * 2
+      expect(c2.waterDepth).toEqual(0); // non-river cells don't get surface water
 
       // Start reverse process.
-      engine.riverWaterIncrement = -1;
-      engine.addWaterInRiver(1);
-      expect(c1.riverStage).toEqual(1.25);
+      engine.waterSaturationIncrement = -1;
+      engine.addWater(1);
+      expect(c1.waterSaturation).toBeGreaterThan(1);
       expect(c1.waterDepth).toEqual(1); // - 1 * 1
+      expect(c2.waterSaturation).toEqual(0.875);
+      expect(c2.waterDepth).toEqual(0);
 
-      engine.addWaterInRiver(1);
-      expect(c1.riverStage).toEqual(1); // riverStage should be reset to 1 when waterDepth reaches 0.
+      engine.addWater(1);
+      expect(c1.waterSaturation).toEqual(1); // waterSaturation should be reset to 1 when waterDepth reaches 0.
       expect(c1.waterDepth).toEqual(0);
+      expect(c2.waterSaturation).toEqual(0.75);
+      expect(c2.waterDepth).toEqual(0);
 
-      engine.addWaterInRiver(1);
-      expect(c1.riverStage).toEqual(0.875); // - 1 * 1 * 0.125
+      engine.addWater(1);
+      expect(c1.waterSaturation).toEqual(0.875); // - 1 * 1 * 0.125
       expect(c1.waterDepth).toEqual(0);
+      expect(c2.waterSaturation).toEqual(RiverStage.High); // min waterSaturation is equal to Math.min(initialWaterSaturation + 0.2, RiverStage.High)
+      expect(c2.waterDepth).toEqual(0);
 
-      engine.addWaterInRiver(12);
-      expect(c1.riverStage).toEqual(RiverStage.High); // min riverStage is equal to Math.min(initialRiverStage + 0.2, RiverStage.High)
+      engine.addWater(12);
+      expect(c1.waterSaturation).toEqual(RiverStage.High); // min waterSaturation is equal to Math.min(initialWaterSaturation + 0.2, RiverStage.High)
       expect(c1.waterDepth).toEqual(0);
+      expect(c2.waterSaturation).toEqual(RiverStage.High);
+      expect(c2.waterDepth).toEqual(0);
     });
   });
 
@@ -212,7 +223,7 @@ describe("FloodingEngine", () => {
       expect(c1.waterDepth).toEqual(0.8);
       expect(c2.waterDepth).toEqual(1);
 
-      engine.riverWaterIncrement = 1; // flood is in progress
+      engine.waterSaturationIncrement = 1; // flood is in progress
       engine.floodPermeabilityMult = 0.5; // mult permeability by 0.5
 
       engine.removeWater(2);

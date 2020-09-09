@@ -31,7 +31,7 @@ export const SideContainer = observer(() => {
   const { simulation } = useStores();
   const [tabIndex, setTabIndex] = useState(0);
   const handleTabChange = (newTabIndex: number) => setTabIndex(newTabIndex);
-  const gauges = simulation.gauges;
+  const crossSections = simulation.crossSections;
 
   return (
     <Tabs className={`${css.tabs} ${tabBgColorCss[tabIndex]}`} selectedIndex={tabIndex} onSelect={handleTabChange}>
@@ -40,7 +40,7 @@ export const SideContainer = observer(() => {
           <div className={css.tabInsideContainer}>Graph</div>
         </Tab>
         {
-          gauges.map((g, idx) => {
+          crossSections.map((g, idx) => {
             const Icon = GaugeMarker[idx];
             return (
               <Tab key={idx} className={`${css.tab} ${gaugeBorderColorCss[idx]}`} selectedClassName={css.tabSelected}>
@@ -56,7 +56,7 @@ export const SideContainer = observer(() => {
         <FloodAreaGraph/>
       </TabPanel>
       {
-        gauges.map((g, idx) => {
+        crossSections.map((g, idx) => {
           const Icon = GaugeMarker[idx];
           return (<TabPanel key={idx} className={`react-tabs__tab-panel ${css.tabPanel} ${gaugeBorderColorCss[idx]}`}>
               <Header><Icon className={css.icon}/> Stream Gauge {idx + 1}: Cross-section</Header>

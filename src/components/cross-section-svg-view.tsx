@@ -8,20 +8,9 @@ import CS3Background from "../assets/Model 2 Gauge 3 CS Landscape.svg";
 import CS3Water from "../assets/Model 2 Gauge 3 CS Water.svg";
 import { observer } from "mobx-react-lite";
 import { useStores } from "../use-stores";
+import { ICrossSectionState } from "../models/simulation";
+import { ICrossSectionConfig } from "../config";
 import css from "./cross-section-svg-view.scss";
-import { IGaugeConfig } from "../config";
-
-enum Levees {
-  Zero = "zeroL",
-  Right = "rightL",
-  Left = "leftL",
-  Two = "twoL"
-}
-
-interface IProps {
-  gauge: number;
-  levees?: Levees;
-}
 
 const CrossSectionBackground: {[key: number]: React.JSXElementConstructor<any>} = {
   0: CS1Background,
@@ -39,63 +28,91 @@ const CrossSectionWater: {[key: number]: React.JSXElementConstructor<any>} = {
 const interpolationOptions: InterpolateOptions = { precision: 3, optimize: "none" };
 
 const pathTypes = [
-  "river_level",
-  "water_level",
-  "water_line",
-  "water_right_dotted_line",
-  "water_left_dotted_line"
+  "left_water_line",
+  "center_water_line",
+  "right_water_line",
+  "flood_left_water_line",
+  "flood_right_water_line",
 ];
 
-const riverStateSteps = [0, 0.35, 0.8, 1];
-const riverStateValues = ["LOW", "MED", "HI", "CREST"];
-
-const floodStateSteps = [0, 0.25, 0.5, 0.75, 1];
-const floodStateValues = ["CREST", "FLOOD1", "FLOOD2", "FLOOD3", "FLOOD4"];
-
-const getPathSelector = (type: string, stateName: string, levees: Levees) => {
-  let dataName = `${type}_${stateName}`; // e.g. river_level_CREST
-  if (stateName.startsWith("FLOOD")) {
-    dataName = `${levees}_${dataName}`;
-  }
-  return `#${dataName}`;
+const getPath = (type: string, stateName: string) => {
+  return document.getElementById(`${type}_${stateName}`)?.getAttribute("d") || null;
 };
 
-const getStateDesc = (gaugeReading: number, gaugeProps: IGaugeConfig) => {
-  let normalizedGauge, stepArray, valueArray;
-  // Separate paths for pre-flood and flood phases.
-  if (gaugeReading < gaugeProps.maxRiverDepth) {
-    normalizedGauge = (gaugeReading - gaugeProps.minRiverDepth) / (gaugeProps.maxRiverDepth - gaugeProps.minRiverDepth);
-    stepArray = riverStateSteps;
-    valueArray = riverStateValues;
+// [0, 1] - before flood, only water table line being changed. [1-2] - flood, water line above earth surface.
+const progressSteps = [0, 0.35, 0.8, 1, 2];
+const progressValues = ["LOW", "MED", "HI", "CREST", "FLOOD4"];
+
+const getSegmentProgress = (csState: ICrossSectionState, csConfig: ICrossSectionConfig, segment: "left" | "center" | "right") => {
+  const { centerCell, leftCell, rightCell } = csState;
+  let cell;
+  if (segment === "left") {
+    cell = leftCell;
+  } else if (segment === "right") {
+    cell = rightCell;
   } else {
-    normalizedGauge = (gaugeReading - gaugeProps.maxRiverDepth) / (gaugeProps.maxFloodDepth - gaugeProps.maxRiverDepth);
-    stepArray = floodStateSteps;
-    valueArray = floodStateValues;
+    cell = centerCell;
+  }
+  const waterSaturation = cell.waterSaturation; // [0, 1]
+  let waterDepth = cell.waterDepth; // [0, ?]
+
+  if (segment === "left" && waterDepth > 0) {
+    // Flood. Add elevation difference.
+    const riverBaseElev = centerCell.baseElevation || 0;
+    const leftGaugeElev = leftCell.baseElevation || 0;
+    // Land is always higher than river in all our cross-section, but heightmap might not be precise.
+    // Ensure that this value is > 0.
+    waterDepth += Math.max(0, leftGaugeElev - riverBaseElev);
+  } else if (segment === "right" && waterDepth > 0) {
+    const riverBaseElev = centerCell.baseElevation || 0;
+    const rightGaugeElev = rightCell.baseElevation || 0;
+    // Land is always higher than river in all our cross-section, but heightmap might not be precise.
+    // Ensure that this value is > 0.
+    waterDepth += Math.max(0, rightGaugeElev - riverBaseElev);
   }
 
+  const normalizedWaterDepth = waterDepth / (csConfig.maxFloodDepth - csConfig.maxRiverDepth); // [0, 1]
+  const totalProgress = waterSaturation + normalizedWaterDepth; // value between [0, 2]
+
   let startStateIdx = 0;
-  while (normalizedGauge > stepArray[startStateIdx + 1]) {
+  while (totalProgress > progressSteps[startStateIdx + 1]) {
     startStateIdx += 1;
   }
 
-  const startState = valueArray[startStateIdx];
-  const endState = valueArray[startStateIdx + 1] || valueArray[riverStateValues.length - 1];
+  const startState = progressValues[startStateIdx];
+  const endState = progressValues[startStateIdx + 1] || progressValues[progressValues.length - 1];
 
   // stepProgress: value [0, 1] that defines interpolation level between startState and endState.
-  const startReading = stepArray[startStateIdx];
-  const endReading = stepArray[startStateIdx + 1] === undefined ? 1 : stepArray[startStateIdx + 1];
-  const range = (endReading - startReading);
-  const stepProgress = range > 0 ? (normalizedGauge - startReading) / range : 1;
+  const startStep = progressSteps[startStateIdx];
+  const endStep = progressSteps[startStateIdx + 1] === undefined ? 1 : progressSteps[startStateIdx + 1];
+  const range = (endStep - startStep);
+  const stepProgress = range > 0 ? (totalProgress - startStep) / range : 1;
 
   return { startState, endState, stepProgress };
 };
 
-// Cross-section view is based on SVG images and only one simulation output - riverStage.
+const getLeveesClassName = (csState: ICrossSectionState) => {
+  const { leftLeveeCell, rightLeveeCell } = csState;
+  if (leftLeveeCell.isLevee && rightLeveeCell.isLevee) {
+    return "twoL";
+  } else if (leftLeveeCell.isLevee) {
+    return "leftL";
+  } else if (rightLeveeCell.isLevee) {
+    return "rightL";
+  } else {
+    return "zeroL";
+  }
+};
+
+interface IProps {
+  gauge: number;
+}
+
 // SVG image is imported by webpack svgr loader and directly embedded into DOM source. That way it's possible to hide
 // some of its element using CSS and make transformations using JS. CSS hides all the water level lines by default.
 // JS code below uses polymorph-js to take water line (that consists of white line and dashed line) and transparent
-// water layer and morph between various states using `riverStage` simulation output.
-export const CrossSectionSVGView: React.FC<IProps> = observer(({ gauge, levees = Levees.Zero }) => {
+// water layer and morph between various states using various simulation outputs.
+export const CrossSectionSVGView: React.FC<IProps> = observer(({ gauge}) => {
   const CrossSectionBgComp = CrossSectionBackground[gauge];
   const CrossSectionWaterComp = CrossSectionWater[gauge];
   const { simulation } = useStores();
@@ -104,10 +121,12 @@ export const CrossSectionSVGView: React.FC<IProps> = observer(({ gauge, levees =
   // SVG path interpolators used to morph one path into another.
   const interpolatorRefs = useRef(pathTypes.map(() => useRef<(offset: number) => string>()));
 
-  const gaugeProps = simulation.config.gauges[gauge];
-  const gaugeReading = simulation.gaugeReading[gauge] === undefined ? gaugeProps.minRiverDepth : simulation.gaugeReading[gauge];
+  const csConfig = simulation.crossSections[gauge];
+  const csState = simulation.crossSectionState[gauge];
 
-  const { startState, endState, stepProgress } = getStateDesc(gaugeReading, gaugeProps);
+  const leftState = getSegmentProgress(csState, csConfig, "left");
+  const centerState = getSegmentProgress(csState, csConfig, "center");
+  const rightState = getSegmentProgress(csState, csConfig, "right");
 
   useEffect(() => {
     pathOutputRefs.current.forEach((pathOutputRef, idx) => {
@@ -120,24 +139,48 @@ export const CrossSectionSVGView: React.FC<IProps> = observer(({ gauge, levees =
   // Interpolators need to be updated only when path idx needs to change, while the final path is updated more often.
   useEffect(() => {
     interpolatorRefs.current.forEach((interpolatorRef, idx) => {
-      interpolatorRef.current = interpolate(
-        [getPathSelector(pathTypes[idx], startState, levees), getPathSelector(pathTypes[idx], endState, levees)],
-        interpolationOptions
-      );
+      const dummyInterpolator = () => "";
+      const pathType = pathTypes[idx];
+      let startState, endState;
+      if (pathType.indexOf("left") !== -1) {
+        startState = leftState.startState;
+        endState = leftState.endState;
+      } else if (pathType.indexOf("right") !== -1) {
+        startState = rightState.startState;
+        endState = rightState.endState;
+      } else {
+        startState = centerState.startState;
+        endState = centerState.endState;
+      }
+      const path1 = getPath(pathTypes[idx], startState);
+      const path2 = getPath(pathTypes[idx], endState);
+      if (path1 && path2) {
+        interpolatorRef.current = interpolate([path1, path2], interpolationOptions);
+      } else {
+        interpolatorRef.current = dummyInterpolator;
+      }
     });
-  }, [levees, startState, endState]);
-
+  }, [leftState, centerState, rightState]);
 
   useEffect(() => {
     pathOutputRefs.current.forEach((pathOutputRef, idx) => {
       const interpolator = interpolatorRefs.current[idx].current;
+      const pathType = pathTypes[idx];
+      let stepProgress;
+      if (pathType.indexOf("left") !== -1) {
+        stepProgress = leftState.stepProgress;
+      } else if (pathType.indexOf("right") !== -1) {
+        stepProgress = rightState.stepProgress;
+      } else {
+        stepProgress = centerState.stepProgress;
+      }
       pathOutputRef.current?.setAttribute("d", interpolator?.(stepProgress) || "");
     });
-  }, [stepProgress]);
+  }, [centerState, leftState, rightState]);
 
   return (
     <div className={css.crossSection}>
-      <div className={`${css.background} ${css[levees]}`}>
+      <div className={`${css.background} ${css[getLeveesClassName(csState)]}`}>
         {/* Note that background has layers of output paths where interpolated paths are injected */}
         <CrossSectionBgComp />
       </div>

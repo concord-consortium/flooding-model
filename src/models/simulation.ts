@@ -27,6 +27,14 @@ export type Weather = "sunny" | "partlyCloudy" | "lightRain" | "mediumRain" | "h
 
 export type Event = "hourChange" | "restart";
 
+export interface ICrossSectionState {
+  centerCell: Cell;
+  leftCell: Cell;
+  rightCell: Cell;
+  leftLeveeCell: Cell;
+  rightLeveeCell: Cell;
+}
+
 // This class is responsible for data loading and general setup. It's more focused
 // on management and interactions handling. Core calculations are delegated to FloodingEngine.
 // Also, all the observable properties should be here, so the view code can observe them.
@@ -52,7 +60,7 @@ export class SimulationModel {
   @observable public _initialRiverStage: number = RiverStage.Medium;
 
   // Simulation outputs.
-  @observable public gaugeReading: number[] = [];
+  @observable public crossSectionState: ICrossSectionState[] = [];
 
   // These flags can be used by view to trigger appropriate rendering. Theoretically, view could/should check
   // every single cell and re-render when it detects some changes. In practice, we perform these updates in very
@@ -87,7 +95,7 @@ export class SimulationModel {
     return Math.floor(this.time * this.config.modelTimeToHours) / 24;
   }
 
-  @computed public get initialRiverStage() {
+  @computed public get initialWaterSaturation() {
     return this._initialRiverStage;
   }
 
@@ -99,34 +107,42 @@ export class SimulationModel {
     return this.engine?.floodArea || 0;
   }
 
-  public get gauges() {
-    return this.config.gauges;
+  public get crossSections() {
+    return this.config.crossSections;
   }
 
-  public getGaugeCell(index: number) {
-    const gauge = this.gauges[index];
-    if (!gauge) {
-      return null;
-    }
-    return this.cellAt(this.config.modelWidth * gauge.x, this.config.modelHeight * gauge.y);
+  public getCrossSectionCell(index: number, type: "riverGauge" | "leftLevee" | "rightLevee" | "leftLandGauge" | "rightLandGauge") {
+    const cs = this.crossSections[index];
+    const coords = cs[type];
+    return this.cellAtGrid(Math.round(this.config.gridWidth * coords.x), Math.round(this.config.gridHeight * coords.y));
   }
 
-  public getGaugeReading(index: number) {
-    const gauge = this.gauges[index];
-    if (!gauge) {
+  public getRiverDepth(gaugeIndex: number) {
+    const cs = this.crossSections[gaugeIndex];
+    if (!cs) {
       return 0;
     }
-    const gaugeCell = this.getGaugeCell(index);
+    const gaugeCell = this.getCrossSectionCell(gaugeIndex, "riverGauge");
     if (!gaugeCell) {
       return 0;
     }
-    return gauge.minRiverDepth + (gauge.maxRiverDepth - gauge.minRiverDepth) * gaugeCell.riverStage  + gaugeCell.waterDepth;
+    return cs.minRiverDepth + (cs.maxRiverDepth - cs.minRiverDepth) * gaugeCell.waterSaturation + gaugeCell.waterDepth;
   }
 
-  // Update observable gaugeReading array, so cross-section view can re-render itself.
-  // It's impossible to observe method results directly (getGaugeReading).
-  public updateGaugeReadings() {
-    this.gaugeReading = this.gauges.map((g, idx) => this.getGaugeReading(idx));
+  public getCrossSectionState(index: number) {
+    return {
+      centerCell: this.getCrossSectionCell(index, "riverGauge"),
+      leftCell: this.getCrossSectionCell(index, "leftLandGauge"),
+      rightCell: this.getCrossSectionCell(index, "rightLandGauge"),
+      leftLeveeCell: this.getCrossSectionCell(index, "leftLevee"),
+      rightLeveeCell: this.getCrossSectionCell(index, "rightLevee")
+    } as ICrossSectionState;
+  }
+
+  // Update observable crossSectionState array, so cross-section view can re-render itself.
+  // It's impossible to observe method results directly (e.g. getRiverDepth).
+  public updateCrossSectionStates() {
+    this.crossSectionState = this.crossSections.map((g, idx) => this.getCrossSectionState(idx));
   }
 
   @computed public get weather(): Weather {
@@ -208,14 +224,26 @@ export class SimulationModel {
     this.rainDurationInDays = Math.max(MIN_RAIN_DURATION_IN_DAYS, Math.min(MAX_RAIN_DURATION_IN_DAYS, value));
   }
 
-  @action.bound public setInitialRiverStage(value: number) {
+  @action.bound public setInitialWaterSaturation(value: number) {
     this._initialRiverStage = value;
-    for (const cell of this.riverCells) {
-      cell.initialRiverStage = value;
-      cell.riverStage = value;
+    for (const cell of this.cells) {
+      cell.initialWaterSaturation = value;
+      cell.waterSaturation = value;
     }
-    // Update observable gaugeReading array, so cross-section view can re-render itself.
-    this.updateGaugeReadings();
+    // Update observable crossSectionState array, so cross-section view can re-render itself.
+    this.updateCrossSectionStates();
+  }
+
+  // Adds or removes levee in the provided river bank.
+  @action.bound public toggleLevee(riverBankIdx: number) {
+    const leveeHeight = this.config.leveeHeight;
+    this.riverBankSegments[riverBankIdx].forEach(cell => {
+      cell.leveeHeight = cell.isLevee ? 0 : leveeHeight;
+    });
+    const isLevee = this.riverBankSegments[riverBankIdx][0].isLevee;
+    this.leveesCount += isLevee ? 1 : -1;
+    this.updateCellsBaseStateFlag();
+    this.updateCrossSectionStates();
   }
 
   @action.bound public async load(presetConfig: Partial<ISimulationConfig>) {
@@ -264,7 +292,7 @@ export class SimulationModel {
   @action.bound public setDefaultInputs() {
     this.setRainIntensity(RainIntensity.Medium);
     this.setRainDurationInDays(2);
-    this.setInitialRiverStage(RiverStage.Medium);
+    this.setInitialWaterSaturation(RiverStage.Medium);
     this.cells.forEach(c => {
       c.leveeHeight = 0;
     });
@@ -276,9 +304,9 @@ export class SimulationModel {
     this.simulationRunning = false;
     this.simulationStarted = false;
     this.cells.forEach(cell => cell.reset());
-    this.setInitialRiverStage(this.initialRiverStage); // to update cells
     this.time = 0;
     this.engine = new FloodingEngine(this.cells, this.config);
+    this.updateCrossSectionStates();
     this.updateCellsSimulationStateFlag();
     this.emit("restart"); // used by graphs
   }
@@ -305,7 +333,7 @@ export class SimulationModel {
         this.time += this.config.timeStep;
         if (this.time > this.config.rainStartDay) {
             // this._riverStage += this.currentRiverWaterIncrement * this.config.riverStageIncreaseSpeed;
-          this.engine.riverWaterIncrement = this.currentRiverWaterIncrement;
+          this.engine.waterSaturationIncrement = this.currentRiverWaterIncrement;
         }
         this.engine.update(this.config.timeStep);
       }
@@ -320,8 +348,8 @@ export class SimulationModel {
     }
 
     this.updateCellsSimulationStateFlag();
-    // Update observable gaugeReading array, so cross-section view can re-render itself.
-    this.updateGaugeReadings();
+    // Update observable crossSectionState array, so cross-section view can re-render itself.
+    this.updateCrossSectionStates();
   }
 
   @action.bound public updateCellsBaseStateFlag() {

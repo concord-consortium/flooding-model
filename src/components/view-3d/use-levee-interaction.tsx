@@ -46,13 +46,7 @@ export const useLeveeInteraction: () => InteractionHandler = () => {
     },
     onPointerUp: () => {
       if (ui.interactionTarget !== null) {
-        const leveeHeight = simulation.config.leveeHeight;
-        simulation.riverBankSegments[ui.interactionTarget].forEach(cell => {
-          cell.leveeHeight = cell.isLevee ? 0 : leveeHeight;
-        });
-        const isLevee = simulation.riverBankSegments[ui.interactionTarget][0].isLevee;
-        simulation.leveesCount += isLevee ? 1 : -1;
-        simulation.updateCellsBaseStateFlag();
+        simulation.toggleLevee(ui.interactionTarget);
       }
     }
   };
