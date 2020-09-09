@@ -2,17 +2,19 @@ import React from "react";
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
 import { GaugeTab } from "./gauge-tab";
 import { FloodAreaGraph } from "./flood-area-graph";
+import { MapsTab } from "./maps-tab";
 import Marker1 from "../assets/marker1.svg";
 import Marker2 from "../assets/marker2.svg";
 import Marker3 from "../assets/marker3.svg";
-
-import "react-tabs/style/react-tabs.css";
-import css from "./side-container.scss";
 import { observer } from "mobx-react-lite";
 import { useStores } from "../use-stores";
 import { Header } from "./header";
 
+import "react-tabs/style/react-tabs.css";
+import css from "./side-container.scss";
+
 const tabBgColorCss = [
+  css.mapsBackground,
   css.graphBackground,
   css.gauge1Background,
   css.gauge2Background,
@@ -27,9 +29,9 @@ const gaugeBorderColorCss = [
 
 const GaugeMarker = [Marker1, Marker2, Marker3];
 
-// For now there is one tab in front of the gauge tabs. This function is used by the gauge markers to get correct
+// For now there are two tabs in front of the gauge tabs. This function is used by the gauge markers to get correct
 // gauge tab index. When more tabs are added, this constant might need to be updated.
-const PRE_GAUGES_TAB_COUNT = 1;
+const PRE_GAUGES_TAB_COUNT = 2;
 export const getGaugeTabIndex = (gaugeIndex: number) => {
   return PRE_GAUGES_TAB_COUNT + gaugeIndex;
 };
@@ -43,6 +45,9 @@ export const SideContainer = observer(() => {
   return (
     <Tabs className={`${css.tabs} ${tabBgColorCss[tabIndex]}`} selectedIndex={tabIndex} onSelect={handleTabChange}>
       <TabList className={`react-tabs__tab-list ${css.tabList}`}>
+        <Tab className={`${css.tab} ${css.mapsBorder}`} selectedClassName={css.tabSelected}>
+          <div className={css.tabInsideContainer}>Maps</div>
+        </Tab>
         <Tab className={`${css.tab} ${css.graphBorder}`} selectedClassName={css.tabSelected}>
           <div className={css.tabInsideContainer}>Graph</div>
         </Tab>
@@ -59,6 +64,9 @@ export const SideContainer = observer(() => {
       </TabList>
 
 
+      <TabPanel className={`react-tabs__tab-panel ${css.tabPanel} ${css.mapsBorder}`}>
+        <MapsTab/>
+      </TabPanel>
       <TabPanel className={`react-tabs__tab-panel ${css.tabPanel} ${css.graphBorder}`}>
         <FloodAreaGraph/>
       </TabPanel>

@@ -11,6 +11,7 @@ import { Gauges } from "./gauges";
 import { InteractionHandler } from "./interaction-handler";
 import { useShowCoordsInteraction } from "./use-show-coords-interaction";
 import { useLeveeInteraction } from "./use-levee-interaction";
+import { observer } from "mobx-react-lite";
 
 // This needs to be a separate component, as useThree depends on context provided by <Canvas> component.
 const ShutterbugSupport = () => {
@@ -25,9 +26,8 @@ const ShutterbugSupport = () => {
   return null;
 };
 
-export const View3d = () => {
-  const stores = useStores();
-  const simulation = stores.simulation;
+export const View3d = observer(() => {
+  const { simulation, ui } = useStores();
   const config = simulation.config;
   // 0.4999 is used, as 0.5 causes a weird rotation of the camera due to constraints enforced by OrbitControls config.
   const cameraPos: [number, number, number] = [PLANE_WIDTH * 0.5, planeHeight(simulation) * 0.4999, PLANE_WIDTH * 2];
@@ -42,24 +42,33 @@ export const View3d = () => {
     useLeveeInteraction()
   ];
 
+  let mainLayer;
+  if (ui.mainLayer === "street") {
+    mainLayer = config.streetTexture;
+  } else if (ui.mainLayer === "topo") {
+    mainLayer = config.topoTexture;
+  } else {
+    mainLayer = config.permeabilityTexture;
+  }
+
   return (
     <Canvas camera={{ fov: 33, up: DEFAULT_UP, position: cameraPos }} pixelRatio={pixelRatio} >
       <CameraControls/>
       {
-        simulation.config.view3d &&
+        config.view3d &&
         <>
           <hemisphereLight args={[0xC6C2B6, 0x3A403B, 1.2]} up={DEFAULT_UP} intensity={1.0}/>
           <pointLight position={[0.5, 0.5, 3]} intensity={0.3}/>
         </>
       }
-      <Terrain interactions={terrainInteractions} textureImg={config.texture} />
+      <Terrain interactions={terrainInteractions} textureImg={mainLayer} />
       <Water />
       <Levees />
       <Gauges />
       { config.scaleImg && <Terrain textureImg={config.scaleImg} /> }
-      { config.placeLabelsImg && <Terrain textureImg={config.placeLabelsImg} /> }
-      { config.pointsOfInterestImg && <Terrain textureImg={config.pointsOfInterestImg} /> }
+      { ui.placesLayerEnabled && config.placeLabelsImg && <Terrain textureImg={config.placeLabelsImg} /> }
+      { ui.poiLayerEnabled && config.pointsOfInterestImg && <Terrain textureImg={config.pointsOfInterestImg} /> }
       <ShutterbugSupport/>
     </Canvas>
   );
-};
+});
