@@ -60,6 +60,12 @@ export interface ISimulationConfig {
   leveeHeight: number;
   // Number of available levee segments.
   maxLevees: number;
+  // Optional layer with scale image.
+  scaleImg: string | null;
+  // Optional layer with places.
+  placeLabelsImg: string | null;
+  // Optional layer with POIs.
+  pointsOfInterestImg: string | null;
 }
 
 export interface ICoords {
@@ -120,7 +126,10 @@ export const getDefaultConfig: () => IUrlConfig = () => ({
   crossSections: [],
   riverBankSegmentLength: 700, // m
   leveeHeight: 4, // m
-  maxLevees: 10
+  maxLevees: 10,
+  scaleImg: null,
+  placeLabelsImg: null,
+  pointsOfInterestImg: null
 });
 
 const getURLParam = (name: string) => {

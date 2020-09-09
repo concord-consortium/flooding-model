@@ -6,6 +6,9 @@ const presets: {[key: string]: Partial<ISimulationConfig>} = {
     riverData: "data/model2_map_riverdata.png",
     permeability: "data/model2_permeability_map.png",
     texture: "data/model2_map_06b_topographic.png",
+    scaleImg: "data/model2_map_01_scale.png",
+    placeLabelsImg: "data/model2_map_02_place_labels.png",
+    pointsOfInterestImg: "data/model2_map_03_point_of_interest_labels.png",
     minElevation: 170, // m
     maxElevation: 250, // m
     modelHeight: 8000, // m
