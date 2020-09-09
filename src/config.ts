@@ -37,8 +37,6 @@ export interface ISimulationConfig {
   // Post processing of elevation data. Tilts elevation data in one axis. Value in %, usually between -100 and 100.
   // Useful to compensate the fact that upstream river part is usually placed higher than downstream part.
   elevationVerticalTilt: number;
-  // Visual layer.
-  texture: string | null;
   // During the flood event ground permeability is lower than typically, as the water table is very high.
   // This parameter lets you set exact value.
   floodPermeabilityMult: number;
@@ -60,6 +58,16 @@ export interface ISimulationConfig {
   leveeHeight: number;
   // Number of available levee segments.
   maxLevees: number;
+  // Visual layers.
+  topoTexture: string | null;
+  streetTexture: string | null;
+  permeabilityTexture: string | null;
+  // Optional layer with scale image.
+  scaleImg: string | null;
+  // Optional layer with places.
+  placeLabelsImg: string | null;
+  // Optional layer with POIs.
+  pointsOfInterestImg: string | null;
 }
 
 export interface ICoords {
@@ -106,7 +114,6 @@ export const getDefaultConfig: () => IUrlConfig = () => ({
   riverData: null,
   waterDepth: null,
   waterHeightmapMaxDepth: 10,
-  texture: null,
   gridWidth: 300,
   fillTerrainEdges: true,
   showCoordsOnClick: false,
@@ -120,7 +127,13 @@ export const getDefaultConfig: () => IUrlConfig = () => ({
   crossSections: [],
   riverBankSegmentLength: 700, // m
   leveeHeight: 4, // m
-  maxLevees: 10
+  maxLevees: 10,
+  topoTexture: null,
+  streetTexture: null,
+  permeabilityTexture: null,
+  scaleImg: null,
+  placeLabelsImg: null,
+  pointsOfInterestImg: null
 });
 
 const getURLParam = (name: string) => {

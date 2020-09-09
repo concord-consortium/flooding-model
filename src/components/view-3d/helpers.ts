@@ -10,3 +10,18 @@ export const planeHeight = (simulation: SimulationModel) =>
 
 // Ratio between model unit (meters) and 3D view distance unit (unitless).
 export const mToViewUnit = (simulation: SimulationModel) => PLANE_WIDTH / simulation.config.modelWidth;
+
+export const getTexture = (imgSrcOrCanvas: string | HTMLCanvasElement) => {
+  let source;
+  let Texture = THREE.Texture;
+  if (typeof imgSrcOrCanvas === "string") {
+    source = document.createElement("img");
+    source.src = imgSrcOrCanvas;
+    source.onload = () => texture.needsUpdate = true;
+  } else {
+    source = imgSrcOrCanvas; // canvas
+    Texture = THREE.CanvasTexture;
+  }
+  const texture = new Texture(source);
+  return texture;
+};

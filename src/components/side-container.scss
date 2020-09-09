@@ -76,6 +76,10 @@ $outlineWithoutBottom: 0 -1px 0 $outlineColor, -1px 0 0 $outlineColor, 1px 0 0 $
 }
 
 // Styles specific to Flood project.
+.mapsBackground {
+  background: #98d1a3;
+}
+
 .graphBackground {
   background: #a7d5ff;
 }
@@ -106,4 +110,8 @@ $outlineWithoutBottom: 0 -1px 0 $outlineColor, -1px 0 0 $outlineColor, 1px 0 0 $
 
 .graphBorder {
   border-color: #50acff;
+}
+
+.mapsBorder {
+  border-color: #32a447;
 }

@@ -37,6 +37,11 @@ export default createMuiTheme({
         padding: 0,
       }
     },
+    MuiCheckbox: {
+      root: {
+        padding: 2
+      }
+    },
     MuiSwitch: {
       root: {
         padding: 14
