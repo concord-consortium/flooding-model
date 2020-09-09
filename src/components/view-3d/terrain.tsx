@@ -20,7 +20,6 @@ export const Terrain: React.FC<IProps> = observer(function WrappedComponent({ te
   // eventHandlers will be an empty object and nothing will be attached to the terrain mesh.
   const eventHandlers = getEventHandlers(interactions || []);
 
-  console.log(textureImg);
   const texture = useMemo(() => textureImg && getTexture(textureImg), [textureImg]);
 
   // When flat 2D view is used, the plane geometry can have just one segment each direction.
