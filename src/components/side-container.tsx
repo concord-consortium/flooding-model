@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
 import { GaugeTab } from "./gauge-tab";
 import { FloodAreaGraph } from "./flood-area-graph";
@@ -27,10 +27,17 @@ const gaugeBorderColorCss = [
 
 const GaugeMarker = [Marker1, Marker2, Marker3];
 
+// For now there is one tab in front of the gauge tabs. This function is used by the gauge markers to get correct
+// gauge tab index. When more tabs are added, this constant might need to be updated.
+const PRE_GAUGES_TAB_COUNT = 1;
+export const getGaugeTabIndex = (gaugeIndex: number) => {
+  return PRE_GAUGES_TAB_COUNT + gaugeIndex;
+};
+
 export const SideContainer = observer(() => {
-  const { simulation } = useStores();
-  const [tabIndex, setTabIndex] = useState(0);
-  const handleTabChange = (newTabIndex: number) => setTabIndex(newTabIndex);
+  const { simulation, ui } = useStores();
+  const tabIndex = ui.tabIndex;
+  const handleTabChange = (newTabIndex: number) => ui.setTabIndex(newTabIndex);
   const crossSections = simulation.crossSections;
 
   return (

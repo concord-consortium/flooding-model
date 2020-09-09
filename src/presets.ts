@@ -34,6 +34,12 @@ const presets: {[key: string]: Partial<ISimulationConfig>} = {
         rightLandGauge: {
           x: 190 / 300,
           y: 225 / 300
+        },
+        marker: {
+          img: "data/model2_marker1.png",
+          highlightImg: "data/model2_marker1_highlight.png",
+          anchorX: 0.6,
+          anchorY: 0.35
         }
       },
       {
@@ -41,24 +47,31 @@ const presets: {[key: string]: Partial<ISimulationConfig>} = {
         maxRiverDepth: 4,
         maxFloodDepth: 8.5,
         riverGauge: {
-          x: 46 / 300,
+          x: 44 / 300,
           y: 132 / 300
         },
         rightLevee: {
-          x: 46 / 300,
+          x: 44 / 300,
           y: 131 / 300
         },
         leftLevee: {
-          x: 46 / 300,
-          y: 133 / 300
+          x: 44 / 300,
+          y: 134 / 300
         },
         rightLandGauge: {
-          x: 46 / 300,
+          x: 44 / 300,
           y: 130 / 300
         },
         leftLandGauge: {
-          x: 46 / 300,
+          x: 44 / 300,
           y: 135 / 300
+        },
+        marker: {
+          img: "data/model2_marker2.png",
+          highlightImg: "data/model2_marker2_highlight.png",
+          anchorX: 0.5,
+          anchorY: 0.27,
+          scale: 1.3
         }
       },
       {
@@ -84,6 +97,12 @@ const presets: {[key: string]: Partial<ISimulationConfig>} = {
         leftLandGauge: {
           x: 181 / 300,
           y: 64 / 300
+        },
+        marker: {
+          img: "data/model2_marker3.png",
+          highlightImg: "data/model2_marker3_highlight.png",
+          anchorX: 0.63,
+          anchorY: 0.3
         }
       }
     ]
