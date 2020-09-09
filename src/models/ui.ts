@@ -36,5 +36,8 @@ export class UIModel {
   @action.bound public reload() {
     this.interaction = null;
     this.interactionTarget = null;
+    this.mainLayer = "street";
+    this.poiLayerEnabled = true;
+    this.placesLayerEnabled = true;
   }
 }
