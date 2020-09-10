@@ -9,6 +9,15 @@ export interface CellOptions {
   permeability?: number;
 }
 
+export interface ICellSnapshot {
+  waterDepth: number;
+  waterSaturation: number;
+  fluxL: number;
+  fluxR: number;
+  fluxT: number;
+  fluxB: number;
+}
+
 export class Cell {
   // Base state (each time it's updated, simulation.cellsBaseStateFlag should be updated!):
   public leveeHeight = 0;
@@ -57,5 +66,20 @@ export class Cell {
     this.fluxR = 0;
     this.fluxT = 0;
     this.fluxB = 0;
+  }
+
+  public snapshot(): ICellSnapshot {
+    return {
+      waterDepth: this.waterDepth,
+      waterSaturation: this.waterSaturation,
+      fluxL: this.fluxL,
+      fluxR: this.fluxR,
+      fluxT: this.fluxT,
+      fluxB: this.fluxB
+    };
+  }
+
+  public restoreSnapshot(snapshot: ICellSnapshot) {
+    Object.assign(this, snapshot);
   }
 }

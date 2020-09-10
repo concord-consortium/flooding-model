@@ -1,15 +1,13 @@
-import { action, observable } from "mobx";
-
 export interface ISimulationModel {
   on: (event: "hourChange" | "restart", callback: () => void) => void;
   timeInHours: number;
   floodArea: number;
 }
 
-const SQ_M_TO_ACRES = 1 /4047;
+const SQ_M_TO_ACRES = 1 / 4047;
 
 export class FloodAreaDataset {
-  @observable public points: {x: number, y: number}[];
+  public points: {x: number, y: number}[];
   private simulation: ISimulationModel;
 
   constructor(simulation: ISimulationModel) {
@@ -24,11 +22,12 @@ export class FloodAreaDataset {
     return { x: this.simulation.timeInHours / 24, y: this.simulation.floodArea * SQ_M_TO_ACRES };
   }
 
-  @action.bound public onHourChange() {
-    this.points = this.points.concat(this.getCurrentPoint());
+  public onHourChange = () => {
+    const timeInHours = this.simulation.timeInHours;
+    this.points[timeInHours] = this.getCurrentPoint();
   }
 
-  @action.bound public reset() {
+  public reset = () => {
     this.points = [];
   }
 }

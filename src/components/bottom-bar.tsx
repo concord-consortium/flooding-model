@@ -11,6 +11,7 @@ import { IconButton } from "../geohazard-components/icon-button";
 import { Interaction } from "../models/ui";
 import LeveeIcon from "../assets/levee.svg";
 import LeveeHighlightIcon from "../assets/levee_highlight.svg";
+import { SNAPSHOT_INTERVAL } from "../models/snapshots-manager";
 
 import css from "./bottom-bar.scss";
 
@@ -28,7 +29,7 @@ const startingWaterLevelMarks = [
 ];
 
 export const BottomBar: React.FC = observer(function WrappedComponent() {
-  const { simulation, ui } = useStores();
+  const { simulation, ui, snapshotsManager } = useStores();
 
   const handleRainIntensityChange = (event: ChangeEvent, value: number) => {
     simulation.setRainIntensity(value);
@@ -58,6 +59,15 @@ export const BottomBar: React.FC = observer(function WrappedComponent() {
       ui.interaction = Interaction.AddRemoveLevee;
     }
   };
+
+  const handleTimeChange = (event: ChangeEvent, value: number) => {
+    if (value <= snapshotsManager.maxDay) {
+      snapshotsManager.restoreSnapshot(value);
+    }
+  };
+
+  // this will generate marks array from 0 to config.simulationLength.
+  const timeMarks = Array.from(Array(simulation.config.simulationLength + 1).keys()).map(v => ({ value: v, label: v}));
 
   return (
     <BottomBarContainer>
@@ -105,6 +115,16 @@ export const BottomBar: React.FC = observer(function WrappedComponent() {
         playing={simulation.simulationRunning}
         startStopDisabled={!simulation.ready}
       />
+      <BottomBarWidgetGroup title="Time (days)" hoverable={true} className={css.timeSlider}>
+        <Slider
+          value={simulation.timeInDays}
+          min={0}
+          max={timeMarks.length - 1}
+          step={SNAPSHOT_INTERVAL / 24}
+          marks={timeMarks}
+          onChange={handleTimeChange}
+        />
+      </BottomBarWidgetGroup>
     </BottomBarContainer>
   );
 });

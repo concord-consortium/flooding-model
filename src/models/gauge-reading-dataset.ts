@@ -1,4 +1,3 @@
-import { action, observable } from "mobx";
 import { ICrossSectionConfig } from "../config";
 
 export interface ISimulationModel {
@@ -11,7 +10,7 @@ export interface ISimulationModel {
 const M_TO_FEET = 3.281;
 
 export class GaugeReadingDataset {
-  @observable public points: {x: number, y: number}[][];
+  public points: {x: number, y: number}[][];
   private simulation: ISimulationModel;
 
   constructor(simulation: ISimulationModel) {
@@ -26,13 +25,14 @@ export class GaugeReadingDataset {
     return { x: this.simulation.timeInHours / 24, y: this.simulation.getRiverDepth(gaugeIdx) * M_TO_FEET };
   }
 
-  @action.bound public onHourChange() {
+  public onHourChange = () => {
+    const timeInHours = this.simulation.timeInHours;
     this.simulation.crossSections.forEach((g, idx) => {
-      this.points[idx] = this.points[idx].concat(this.getCurrentPoint(idx));
+      this.points[idx][timeInHours] = this.getCurrentPoint(idx);
     });
   }
 
-  @action.bound public reset() {
+  public reset = () => {
     this.points = this.simulation.crossSections.map((g, idx) => []);
   }
 }

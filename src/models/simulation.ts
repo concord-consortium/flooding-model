@@ -1,5 +1,5 @@
 import { action, computed, observable } from "mobx";
-import { Cell } from "./cell";
+import { Cell, ICellSnapshot } from "./cell";
 import { getDefaultConfig, ISimulationConfig, getUrlConfig } from "../config";
 import { cellAtGrid, getCellNeighbors4, getCellNeighbors8 } from "./utils/grid-utils";
 import { FloodingEngine } from "./engine/flooding-engine";
@@ -33,6 +33,11 @@ export interface ICrossSectionState {
   rightCell: Cell;
   leftLeveeCell: Cell;
   rightLeveeCell: Cell;
+}
+
+export interface ISimulationSnapshot {
+  time: number;
+  cellSnapshots: ICellSnapshot[];
 }
 
 // This class is responsible for data loading and general setup. It's more focused
@@ -317,6 +322,9 @@ export class SimulationModel {
   }
 
   @action.bound public rafCallback() {
+    if (this.timeInDays >= this.config.simulationLength) {
+      this.stop();
+    }
     if (!this.simulationRunning) {
       return;
     }
@@ -358,5 +366,22 @@ export class SimulationModel {
 
   @action.bound public updateCellsSimulationStateFlag() {
     this.cellsSimulationStateFlag += 1;
+  }
+
+  public snapshot(): ISimulationSnapshot {
+    return {
+      time: this.time,
+      cellSnapshots: this.cells.map(c => c.snapshot())
+    };
+  }
+
+  public restoreSnapshot(snapshot: ISimulationSnapshot) {
+    this.time = snapshot.time;
+    snapshot.cellSnapshots.forEach((cellSnapshot, idx) => {
+      this.cells[idx].restoreSnapshot(cellSnapshot);
+    });
+    this.updateCellsBaseStateFlag();
+    this.updateCellsSimulationStateFlag();
+    this.updateCrossSectionStates();
   }
 }
