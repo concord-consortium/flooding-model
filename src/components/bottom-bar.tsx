@@ -11,8 +11,9 @@ import { IconButton } from "../geohazard-components/icon-button";
 import { Interaction } from "../models/ui";
 import LeveeIcon from "../assets/levee.svg";
 import LeveeHighlightIcon from "../assets/levee_highlight.svg";
-
+import { TimeSlider } from "./time-slider";
 import css from "./bottom-bar.scss";
+
 
 const rainIntensityMarks = [
   { value: RainIntensity.Light, label: "Light" },
@@ -105,6 +106,9 @@ export const BottomBar: React.FC = observer(function WrappedComponent() {
         playing={simulation.simulationRunning}
         startStopDisabled={!simulation.ready}
       />
+      <BottomBarWidgetGroup title="Time (days)" hoverable={true} className={css.timeSlider}>
+        <TimeSlider />
+      </BottomBarWidgetGroup>
     </BottomBarContainer>
   );
 });

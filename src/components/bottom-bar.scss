@@ -35,7 +35,6 @@
   width: 100px;
 }
 
-
 .leveesCount {
   position: absolute;
   top: 4px;
@@ -48,4 +47,8 @@
   text-align: center;
   z-index: 1;
   pointer-events: none;
+}
+
+.timeSlider {
+  width: 320px;
 }

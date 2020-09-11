@@ -4,12 +4,14 @@ import { UIModel } from "./ui";
 import presets from "../presets";
 import { getDefaultConfig, getUrlConfig } from "../config";
 import { GaugeReadingDataset } from "./gauge-reading-dataset";
+import { SnapshotsManager } from "./snapshots-manager";
 
 export interface IStores {
   simulation: SimulationModel;
   ui: UIModel;
   floodAreaDataset: FloodAreaDataset;
   gaugeReadingDataset: GaugeReadingDataset;
+  snapshotsManager: SnapshotsManager;
 }
 
 export const createStores = (): IStores => {
@@ -21,10 +23,13 @@ export const createStores = (): IStores => {
   // })
   const simulation = new SimulationModel(presets[getUrlConfig().preset || getDefaultConfig().preset]);
   (window as any).sim = simulation;
-  return {
+  const stores = {
     simulation,
     ui: new UIModel(),
     floodAreaDataset: new FloodAreaDataset(simulation),
-    gaugeReadingDataset: new GaugeReadingDataset(simulation)
+    gaugeReadingDataset: new GaugeReadingDataset(simulation),
+    snapshotsManager: new SnapshotsManager(simulation)
   };
+  (window as any).stores = stores;
+  return stores;
 };
