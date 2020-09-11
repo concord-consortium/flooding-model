@@ -1,17 +1,14 @@
-import { action, observable } from "mobx";
-import { ICrossSectionConfig } from "../config";
-
 export interface ISimulationModel {
   on: (event: "hourChange" | "restart", callback: () => void) => void;
   timeInHours: number;
   getRiverDepth: (gaugeIdx: number) => number;
-  crossSections: ICrossSectionConfig[];
+  crossSections: any[];
 }
 
-const M_TO_FEET = 3.281;
+export const M_TO_FEET = 3.281;
 
 export class GaugeReadingDataset {
-  @observable public points: {x: number, y: number}[][];
+  public points: {x: number, y: number}[][];
   private simulation: ISimulationModel;
 
   constructor(simulation: ISimulationModel) {
@@ -21,18 +18,25 @@ export class GaugeReadingDataset {
     this.reset();
   }
 
+  public getCurrentPoints(gaugeIdx: number) {
+    // Note that .points array can contain more points than timeInHours value, as user can change current time using
+    // time slider. In this case all the points stay untouched, we just return different array slice.
+    return this.points[gaugeIdx].slice(0, this.simulation.timeInHours + 1);
+  }
+
   public getCurrentPoint(gaugeIdx: number) {
     // Convert area in sq meters to acres.
     return { x: this.simulation.timeInHours / 24, y: this.simulation.getRiverDepth(gaugeIdx) * M_TO_FEET };
   }
 
-  @action.bound public onHourChange() {
+  public onHourChange = () => {
+    const timeInHours = this.simulation.timeInHours;
     this.simulation.crossSections.forEach((g, idx) => {
-      this.points[idx] = this.points[idx].concat(this.getCurrentPoint(idx));
+      this.points[idx][timeInHours] = this.getCurrentPoint(idx);
     });
   }
 
-  @action.bound public reset() {
+  public reset = () => {
     this.points = this.simulation.crossSections.map((g, idx) => []);
   }
 }

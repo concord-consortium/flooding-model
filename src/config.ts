@@ -68,6 +68,8 @@ export interface ISimulationConfig {
   placeLabelsImg: string | null;
   // Optional layer with POIs.
   pointsOfInterestImg: string | null;
+  // Max length of simulation in days.
+  simulationLength: number;
 }
 
 export interface ICoords {
@@ -133,7 +135,8 @@ export const getDefaultConfig: () => IUrlConfig = () => ({
   permeabilityTexture: null,
   scaleImg: null,
   placeLabelsImg: null,
-  pointsOfInterestImg: null
+  pointsOfInterestImg: null,
+  simulationLength: 14 // days
 });
 
 const getURLParam = (name: string) => {

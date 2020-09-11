@@ -1,5 +1,5 @@
 import { action, computed, observable } from "mobx";
-import { Cell } from "./cell";
+import { Cell, ICellSnapshot } from "./cell";
 import { getDefaultConfig, ISimulationConfig, getUrlConfig } from "../config";
 import { cellAtGrid, getCellNeighbors4, getCellNeighbors8 } from "./utils/grid-utils";
 import { FloodingEngine } from "./engine/flooding-engine";
@@ -25,7 +25,7 @@ export enum RiverStage {
 
 export type Weather = "sunny" | "partlyCloudy" | "lightRain" | "mediumRain" | "heavyRain" | "extremeRain";
 
-export type Event = "hourChange" | "restart";
+export type Event = "hourChange" | "restart" | "start";
 
 export interface ICrossSectionState {
   centerCell: Cell;
@@ -33,6 +33,11 @@ export interface ICrossSectionState {
   rightCell: Cell;
   leftLeveeCell: Cell;
   rightLeveeCell: Cell;
+}
+
+export interface ISimulationSnapshot {
+  time: number;
+  cellSnapshots: ICellSnapshot[];
 }
 
 // This class is responsible for data loading and general setup. It's more focused
@@ -247,17 +252,20 @@ export class SimulationModel {
   }
 
   @action.bound public async load(presetConfig: Partial<ISimulationConfig>) {
-    // Configuration are joined together. Default values can be replaced by preset, and preset values can be replaced
-    // by URL parameters.
-    this.config = Object.assign(getDefaultConfig(), presetConfig, getUrlConfig());
-    await this.populateCellsData();
-    this.setDefaultInputs();
-    this.restart();
+    this.dataReadyPromise = (async () => {
+      // Configuration are joined together. Default values can be replaced by preset, and preset values can be replaced
+      // by URL parameters.
+      this.config = Object.assign(getDefaultConfig(), presetConfig, getUrlConfig());
+      await this.populateCellsData();
+      this.setDefaultInputs();
+      this.restart();
+    })();
+    return this.dataReadyPromise;
   }
 
   @action.bound public async populateCellsData() {
     this.dataReady = false;
-    this.dataReadyPromise = populateCellsData(this.config).then(result => {
+    return populateCellsData(this.config).then(result => {
       this.cells = result.cells;
       this.edgeCells = result.edgeCells;
       this.riverCells = result.riverCells;
@@ -268,8 +276,7 @@ export class SimulationModel {
 
       this.updateCellsBaseStateFlag();
       this.updateCellsSimulationStateFlag();
-      });
-    return this.dataReadyPromise;
+    });
   }
 
   @action.bound public start() {
@@ -283,6 +290,8 @@ export class SimulationModel {
     this.simulationRunning = true;
 
     requestAnimationFrame(this.rafCallback);
+
+    this.emit("start");
   }
 
   @action.bound public stop() {
@@ -317,11 +326,18 @@ export class SimulationModel {
   }
 
   @action.bound public rafCallback() {
+    if (this.timeInDays >= this.config.simulationLength) {
+      this.stop();
+    }
     if (!this.simulationRunning) {
       return;
     }
     requestAnimationFrame(this.rafCallback);
 
+    this.tick();
+  }
+
+  @action.bound public tick() {
     if (this.engine) {
       const oldTimeInHours = this.timeInHours;
       if (this.timeInHours === 0) {
@@ -332,7 +348,7 @@ export class SimulationModel {
       for (let i = 0; i < this.config.speedMult; i += 1) {
         this.time += this.config.timeStep;
         if (this.time > this.config.rainStartDay) {
-            // this._riverStage += this.currentRiverWaterIncrement * this.config.riverStageIncreaseSpeed;
+          // this._riverStage += this.currentRiverWaterIncrement * this.config.riverStageIncreaseSpeed;
           this.engine.waterSaturationIncrement = this.currentRiverWaterIncrement;
         }
         this.engine.update(this.config.timeStep);
@@ -358,5 +374,22 @@ export class SimulationModel {
 
   @action.bound public updateCellsSimulationStateFlag() {
     this.cellsSimulationStateFlag += 1;
+  }
+
+  public snapshot(): ISimulationSnapshot {
+    return {
+      time: this.time,
+      cellSnapshots: this.cells.map(c => c.snapshot())
+    };
+  }
+
+  public restoreSnapshot(snapshot: ISimulationSnapshot) {
+    this.time = snapshot.time;
+    snapshot.cellSnapshots.forEach((cellSnapshot, idx) => {
+      this.cells[idx].restoreSnapshot(cellSnapshot);
+    });
+    this.updateCellsBaseStateFlag();
+    this.updateCellsSimulationStateFlag();
+    this.updateCrossSectionStates();
   }
 }
