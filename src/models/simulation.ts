@@ -252,17 +252,20 @@ export class SimulationModel {
   }
 
   @action.bound public async load(presetConfig: Partial<ISimulationConfig>) {
-    // Configuration are joined together. Default values can be replaced by preset, and preset values can be replaced
-    // by URL parameters.
-    this.config = Object.assign(getDefaultConfig(), presetConfig, getUrlConfig());
-    await this.populateCellsData();
-    this.setDefaultInputs();
-    this.restart();
+    this.dataReadyPromise = (async () => {
+      // Configuration are joined together. Default values can be replaced by preset, and preset values can be replaced
+      // by URL parameters.
+      this.config = Object.assign(getDefaultConfig(), presetConfig, getUrlConfig());
+      await this.populateCellsData();
+      this.setDefaultInputs();
+      this.restart();
+    })();
+    return this.dataReadyPromise;
   }
 
   @action.bound public async populateCellsData() {
     this.dataReady = false;
-    this.dataReadyPromise = populateCellsData(this.config).then(result => {
+    return populateCellsData(this.config).then(result => {
       this.cells = result.cells;
       this.edgeCells = result.edgeCells;
       this.riverCells = result.riverCells;
@@ -273,8 +276,7 @@ export class SimulationModel {
 
       this.updateCellsBaseStateFlag();
       this.updateCellsSimulationStateFlag();
-      });
-    return this.dataReadyPromise;
+    });
   }
 
   @action.bound public start() {
@@ -332,6 +334,10 @@ export class SimulationModel {
     }
     requestAnimationFrame(this.rafCallback);
 
+    this.tick();
+  }
+
+  @action.bound public tick() {
     if (this.engine) {
       const oldTimeInHours = this.timeInHours;
       if (this.timeInHours === 0) {
@@ -342,7 +348,7 @@ export class SimulationModel {
       for (let i = 0; i < this.config.speedMult; i += 1) {
         this.time += this.config.timeStep;
         if (this.time > this.config.rainStartDay) {
-            // this._riverStage += this.currentRiverWaterIncrement * this.config.riverStageIncreaseSpeed;
+          // this._riverStage += this.currentRiverWaterIncrement * this.config.riverStageIncreaseSpeed;
           this.engine.waterSaturationIncrement = this.currentRiverWaterIncrement;
         }
         this.engine.update(this.config.timeStep);
