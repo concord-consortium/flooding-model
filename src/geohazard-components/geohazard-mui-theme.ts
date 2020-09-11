@@ -95,7 +95,8 @@ export default createMuiTheme({
       },
       markLabel: {
         fontFamily: "Roboto Condensed",
-        fontSize: "10px"
+        fontSize: "10px",
+        marginLeft: "1px"
       }
     }
   }

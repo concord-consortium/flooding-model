@@ -1,7 +1,7 @@
 import { action, observable } from "mobx";
 import { ISimulationSnapshot, SimulationModel } from "./simulation";
 
-export const SNAPSHOT_INTERVAL = 12; // h
+export const SNAPSHOT_INTERVAL = 6; // h
 
 export interface ISnapshot {
   simulationSnapshot: ISimulationSnapshot
