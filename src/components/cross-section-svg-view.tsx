@@ -33,6 +33,11 @@ const pathTypes = [
   "right_water_line",
   "flood_left_water_line",
   "flood_right_water_line",
+  "left_water_level",
+  "center_water_level",
+  "right_water_level",
+  "flood_left_water_level",
+  "flood_right_water_level",
 ];
 
 const getPath = (type: string, stateName: string) => {
