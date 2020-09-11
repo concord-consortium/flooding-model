@@ -17,6 +17,12 @@ export class FloodAreaDataset {
     this.reset();
   }
 
+  public getCurrentPoints() {
+    // Note that .points array can contain more points than timeInHours value, as user can change current time using
+    // time slider. In this case all the points stay untouched, we just return different array slice.
+    return this.points.slice(0, this.simulation.timeInHours + 1);
+  }
+
   public getCurrentPoint() {
     // Convert area in sq meters to acres.
     return { x: this.simulation.timeInHours / 24, y: this.simulation.floodArea * SQ_M_TO_ACRES };

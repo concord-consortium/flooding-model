@@ -1,13 +1,11 @@
-import { ICrossSectionConfig } from "../config";
-
 export interface ISimulationModel {
   on: (event: "hourChange" | "restart", callback: () => void) => void;
   timeInHours: number;
   getRiverDepth: (gaugeIdx: number) => number;
-  crossSections: ICrossSectionConfig[];
+  crossSections: any[];
 }
 
-const M_TO_FEET = 3.281;
+export const M_TO_FEET = 3.281;
 
 export class GaugeReadingDataset {
   public points: {x: number, y: number}[][];
@@ -18,6 +16,12 @@ export class GaugeReadingDataset {
     simulation.on("hourChange", this.onHourChange);
     simulation.on("restart", this.reset);
     this.reset();
+  }
+
+  public getCurrentPoints(gaugeIdx: number) {
+    // Note that .points array can contain more points than timeInHours value, as user can change current time using
+    // time slider. In this case all the points stay untouched, we just return different array slice.
+    return this.points[gaugeIdx].slice(0, this.simulation.timeInHours + 1);
   }
 
   public getCurrentPoint(gaugeIdx: number) {
