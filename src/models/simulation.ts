@@ -25,7 +25,7 @@ export enum RiverStage {
 
 export type Weather = "sunny" | "partlyCloudy" | "lightRain" | "mediumRain" | "heavyRain" | "extremeRain";
 
-export type Event = "hourChange" | "restart";
+export type Event = "hourChange" | "restart" | "start";
 
 export interface ICrossSectionState {
   centerCell: Cell;
@@ -288,6 +288,8 @@ export class SimulationModel {
     this.simulationRunning = true;
 
     requestAnimationFrame(this.rafCallback);
+
+    this.emit("start");
   }
 
   @action.bound public stop() {

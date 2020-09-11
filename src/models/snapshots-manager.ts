@@ -17,6 +17,7 @@ export class SnapshotsManager {
     this.simulation = simulation;
     simulation.on("hourChange", this.onHourChange);
     simulation.on("restart", this.reset);
+    simulation.on("start", this.start);
     this.reset();
   }
 
@@ -43,5 +44,11 @@ export class SnapshotsManager {
   @action.bound public reset() {
     this.snapshots = [];
     this.maxDay = 0;
+  }
+
+  @action.bound public start() {
+    const arrayIndex = Math.floor(this.simulation.timeInHours / SNAPSHOT_INTERVAL);
+    this.snapshots.length = arrayIndex + 1;
+    this.maxDay = this.simulation.timeInHours / 24;
   }
 }
