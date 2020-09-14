@@ -82,26 +82,26 @@ const presets: {[key: string]: Partial<ISimulationConfig>} = {
       {
         minRiverDepth: 0.5, // m
         maxRiverDepth: 4,
-        maxFloodDepth: 10,
+        maxFloodDepth: 10.2,
         riverGauge: {
           x: 184 / 300,
-          y: 64 / 300
+          y: 63 / 300
         },
         rightLevee: {
-          x: 185 / 300,
-          y: 64 / 300
+          x: 186 / 300,
+          y: 63 / 300
         },
         rightLandGauge: {
-          x: 186 / 300,
-          y: 64 / 300
+          x: 187 / 300,
+          y: 63 / 300
         },
         leftLevee: {
           x: 182 / 300,
-          y: 64 / 300
+          y: 63 / 300
         },
         leftLandGauge: {
           x: 181 / 300,
-          y: 64 / 300
+          y: 63 / 300
         },
         marker: {
           img: "data/model2_marker3.png",
