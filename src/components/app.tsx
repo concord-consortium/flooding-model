@@ -6,10 +6,12 @@ import Shutterbug from "shutterbug";
 import { useCustomCursor } from "./use-custom-cursors";
 import { TimeDisplay } from "./time-display";
 import { SideContainer } from "./side-container";
-
+import { useStores } from "../use-stores";
 import css from "./app.scss";
 
 export const AppComponent = observer(function WrappedComponent() {
+  const { simulation: { config }} = useStores();
+
   useEffect(() => {
     Shutterbug.enable("." + css.app);
     return () => {
@@ -26,9 +28,12 @@ export const AppComponent = observer(function WrappedComponent() {
         <div className={`${css.topView}`}>
           <View3d />
         </div>
-        <div className={`${css.sideContainer}`}>
-          <SideContainer />
-        </div>
+        {
+          config.tabs.length > 0 &&
+          <div className={`${css.sideContainer}`}>
+            <SideContainer />
+          </div>
+        }
       </div>
       <div className={`${css.bottomBar}`}>
         <BottomBar />

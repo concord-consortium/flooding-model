@@ -25,7 +25,7 @@ export const createStores = (): IStores => {
   (window as any).sim = simulation;
   const stores = {
     simulation,
-    ui: new UIModel(),
+    ui: new UIModel(simulation.config),
     floodAreaDataset: new FloodAreaDataset(simulation),
     gaugeReadingDataset: new GaugeReadingDataset(simulation),
     snapshotsManager: new SnapshotsManager(simulation)

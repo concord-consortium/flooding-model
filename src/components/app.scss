@@ -21,7 +21,9 @@
   .topView, .sideContainer {
     flex-grow: 1;
     height: 100%;
-    max-width: 50%;
+  }
+  .sideContainer {
+    min-width: 50%;
   }
 }
 

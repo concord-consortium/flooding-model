@@ -10,17 +10,17 @@ const MIN_RAIN_DURATION_IN_DAYS = 1;
 const MAX_RAIN_DURATION_IN_DAYS = 4;
 
 export enum RainIntensity {
-  Light,
-  Medium,
-  Heavy,
-  Extreme
+  light,
+  medium,
+  heavy,
+  extreme
 }
 
 export enum RiverStage {
-  Low = 0,
-  Medium = 1/3,
-  High = 2/3,
-  Crest = 1
+  low = 0,
+  medium = 1/3,
+  high = 2/3,
+  crest = 1
 }
 
 export type Weather = "sunny" | "partlyCloudy" | "lightRain" | "mediumRain" | "heavyRain" | "extremeRain";
@@ -60,9 +60,9 @@ export class SimulationModel {
   @observable public simulationRunning = false;
 
   // Simulation parameters.
-  @observable public rainIntensity: RainIntensity = RainIntensity.Medium;
+  @observable public rainIntensity: RainIntensity = RainIntensity.medium;
   @observable public rainDurationInDays = 2;
-  @observable public _initialRiverStage: number = RiverStage.Medium;
+  @observable public _initialRiverStage: number = RiverStage.medium;
 
   // Simulation outputs.
   @observable public crossSectionState: ICrossSectionState[] = [];
@@ -156,13 +156,13 @@ export class SimulationModel {
       return "partlyCloudy";
     }
     if (this.timeInDays >= rainStart && this.timeInDays < rainStart + this.rainDurationInDays) {
-      if (this.rainIntensity === RainIntensity.Light) {
+      if (this.rainIntensity === RainIntensity.light) {
         return "lightRain";
       }
-      if (this.rainIntensity === RainIntensity.Medium) {
+      if (this.rainIntensity === RainIntensity.medium) {
         return "mediumRain";
       }
-      if (this.rainIntensity === RainIntensity.Heavy) {
+      if (this.rainIntensity === RainIntensity.heavy) {
         return "heavyRain";
       }
       return "extremeRain";
@@ -299,9 +299,9 @@ export class SimulationModel {
   }
 
   @action.bound public setDefaultInputs() {
-    this.setRainIntensity(RainIntensity.Medium);
-    this.setRainDurationInDays(2);
-    this.setInitialWaterSaturation(RiverStage.Medium);
+    this.setRainIntensity(RainIntensity[this.config.rainIntensity]);
+    this.setRainDurationInDays(this.config.rainDuration);
+    this.setInitialWaterSaturation(RiverStage[this.config.startingWaterLevel]);
     this.cells.forEach(c => {
       c.leveeHeight = 0;
     });

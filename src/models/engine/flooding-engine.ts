@@ -90,7 +90,7 @@ export class FloodingEngine {
         cell.waterSaturation += this.waterSaturationIncrement * dt * this.riverStageIncreaseSpeed;
         cell.waterSaturation = Math.min(1 + 1e-6, cell.waterSaturation);
         if (riverStageDiff < 0) {
-          const finalRiverStage = Math.min(cell.initialWaterSaturation + 0.2, RiverStage.High);
+          const finalRiverStage = Math.min(cell.initialWaterSaturation + 0.2, RiverStage.high);
           cell.waterSaturation = Math.max(cell.waterSaturation, finalRiverStage);
         }
       } else {

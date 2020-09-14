@@ -196,13 +196,13 @@ describe("FloodingEngine", () => {
       engine.addWater(1);
       expect(c1.waterSaturation).toEqual(0.875); // - 1 * 1 * 0.125
       expect(c1.waterDepth).toEqual(0);
-      expect(c2.waterSaturation).toEqual(RiverStage.High); // min waterSaturation is equal to Math.min(initialWaterSaturation + 0.2, RiverStage.High)
+      expect(c2.waterSaturation).toEqual(RiverStage.high); // min waterSaturation is equal to Math.min(initialWaterSaturation + 0.2, RiverStage.high)
       expect(c2.waterDepth).toEqual(0);
 
       engine.addWater(12);
-      expect(c1.waterSaturation).toEqual(RiverStage.High); // min waterSaturation is equal to Math.min(initialWaterSaturation + 0.2, RiverStage.High)
+      expect(c1.waterSaturation).toEqual(RiverStage.high); // min waterSaturation is equal to Math.min(initialWaterSaturation + 0.2, RiverStage.high)
       expect(c1.waterDepth).toEqual(0);
-      expect(c2.waterSaturation).toEqual(RiverStage.High);
+      expect(c2.waterSaturation).toEqual(RiverStage.high);
       expect(c2.waterDepth).toEqual(0);
     });
   });

@@ -1,4 +1,5 @@
 import { observable, action } from "mobx";
+import { ISimulationConfig } from "../config";
 
 export enum Interaction {
   HoverOverDraggable = "HoverOverDraggable",
@@ -6,6 +7,8 @@ export enum Interaction {
 }
 
 export class UIModel {
+  public config: ISimulationConfig;
+
   @observable public interaction: Interaction | null = null;
   @observable public interactionTarget: any = null;
   @observable public dragging = false;
@@ -13,9 +16,14 @@ export class UIModel {
   @observable public tabIndex = 0;
 
   // Main visual layer.
-  @observable public mainLayer: "street" | "topo" | "permeability" = "street";
-  @observable public poiLayerEnabled = true;
-  @observable public placesLayerEnabled = true;
+  @observable public mainLayer: "street" | "topo" | "permeability";
+  @observable public poiLayerEnabled: boolean;
+  @observable public placesLayerEnabled: boolean;
+
+  constructor(config: ISimulationConfig) {
+    this.config = config;
+    this.reload();
+  }
 
   @action.bound public setTabIndex(idx: number) {
     this.tabIndex = idx;
@@ -36,7 +44,7 @@ export class UIModel {
   @action.bound public reload() {
     this.interaction = null;
     this.interactionTarget = null;
-    this.mainLayer = "street";
+    this.mainLayer = this.config.mapType;
     this.poiLayerEnabled = true;
     this.placesLayerEnabled = true;
   }
