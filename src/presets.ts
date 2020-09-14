@@ -82,7 +82,7 @@ const presets: {[key: string]: Partial<ISimulationConfig>} = {
       {
         minRiverDepth: 0.5, // m
         maxRiverDepth: 4,
-        maxFloodDepth: 9,
+        maxFloodDepth: 10,
         riverGauge: {
           x: 184 / 300,
           y: 64 / 300
