@@ -136,8 +136,8 @@ describe("SimulationModel", () => {
       expect(s.cells[0].reset).toHaveBeenCalled();
       expect(s.time).toEqual(0);
       expect(s.rainDurationInDays).toEqual(2);
-      expect(s.rainIntensity).toEqual(RainIntensity.Medium);
-      expect(s.initialWaterSaturation).toEqual(RiverStage.Medium);
+      expect(s.rainIntensity).toEqual(RainIntensity.medium);
+      expect(s.initialWaterSaturation).toEqual(RiverStage.medium);
     });
   });
 

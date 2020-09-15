@@ -70,6 +70,9 @@ export default createMuiTheme({
       }
     },
     MuiSlider: {
+      root: {
+        zIndex: 1
+      },
       thumb: {
         height: 20,
         width: 20,

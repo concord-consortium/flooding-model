@@ -70,6 +70,19 @@ export interface ISimulationConfig {
   pointsOfInterestImg: string | null;
   // Max length of simulation in days.
   simulationLength: number;
+  // UI options below:
+  // Extreme rain option availability.
+  extremeRain: boolean;
+  // List of visible tabs.
+  tabs: ("maps" | "graph" | "gauge1" | "gauge2" | "gauge3")[];
+  // Initial rain intensity.
+  rainIntensity: "light" | "medium" | "heavy" | "extreme";
+  // Initial rain duration.
+  rainDuration: number;
+  // Initial starting water level.
+  startingWaterLevel: "low" | "medium" | "high";
+  // Initial map type.
+  mapType: "street" | "topo" | "permeability";
 }
 
 export interface ICoords {
@@ -136,7 +149,13 @@ export const getDefaultConfig: () => IUrlConfig = () => ({
   scaleImg: null,
   placeLabelsImg: null,
   pointsOfInterestImg: null,
-  simulationLength: 14 // days
+  simulationLength: 14, // days
+  extremeRain: true,
+  tabs: ["maps", "graph", "gauge1", "gauge2", "gauge3"],
+  rainIntensity: "medium",
+  rainDuration: 2,
+  startingWaterLevel: "medium",
+  mapType: "street"
 });
 
 const getURLParam = (name: string) => {

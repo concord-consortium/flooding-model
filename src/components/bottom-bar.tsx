@@ -16,20 +16,23 @@ import css from "./bottom-bar.scss";
 
 
 const rainIntensityMarks = [
-  { value: RainIntensity.Light, label: "Light" },
-  { value: RainIntensity.Medium, label: "Med" },
-  { value: RainIntensity.Heavy, label: "Heavy" },
-  { value: RainIntensity.Extreme, label: "Ext" },
+  { value: RainIntensity.light, label: "Light" },
+  { value: RainIntensity.medium, label: "Med" },
+  { value: RainIntensity.heavy, label: "Heavy" },
+  { value: RainIntensity.extreme, label: "Ext" },
 ];
 
+const rainIntensityMarksWithoutExtreme = rainIntensityMarks.slice(0, -1);
+
 const startingWaterLevelMarks = [
-  { value: RiverStage.Low, label: "Low" },
-  { value: RiverStage.Medium, label: "Med" },
-  { value: RiverStage.High, label: "High" },
+  { value: RiverStage.low, label: "Low" },
+  { value: RiverStage.medium, label: "Med" },
+  { value: RiverStage.high, label: "High" },
 ];
 
 export const BottomBar: React.FC = observer(function WrappedComponent() {
   const { simulation, ui } = useStores();
+  const config = simulation.config;
 
   const handleRainIntensityChange = (event: ChangeEvent, value: number) => {
     simulation.setRainIntensity(value);
@@ -65,10 +68,10 @@ export const BottomBar: React.FC = observer(function WrappedComponent() {
       <BottomBarWidgetGroup title="Amount of Rain" hoverable={true} className={css.amountOfRain}>
         <Slider
           value={simulation.rainIntensity}
-          min={RainIntensity.Light}
-          max={RainIntensity.Extreme}
+          min={RainIntensity.light}
+          max={config.extremeRain ? RainIntensity.extreme : RainIntensity.heavy}
           step={null} // restrict values to marks values
-          marks={rainIntensityMarks}
+          marks={config.extremeRain ? rainIntensityMarks : rainIntensityMarksWithoutExtreme}
           onChange={handleRainIntensityChange}
         />
       </BottomBarWidgetGroup>
@@ -84,20 +87,23 @@ export const BottomBar: React.FC = observer(function WrappedComponent() {
       <BottomBarWidgetGroup title={["Starting", "Water Level"]} hoverable={true} className={css.startingWaterLevel}>
         <Slider
           value={simulation.initialWaterSaturation}
-          min={RiverStage.Low}
-          max={RiverStage.High}
+          min={RiverStage.low}
+          max={RiverStage.high}
           step={null} // restrict values to marks values
           marks={startingWaterLevelMarks}
           onChange={handleStartingWaterLevel}
         />
       </BottomBarWidgetGroup>
-      <BottomBarWidgetGroup hoverable={false}>
-        <div className={css.leveesCount}>{ simulation.remainingLevees }</div>
-        <IconButton
-          icon={<LeveeIcon />} highlightIcon={<LeveeHighlightIcon />}
-          buttonText="Levee" dataTest="levee-button" onClick={handleLeveeMode}
-        />
-      </BottomBarWidgetGroup>
+      {
+        config.maxLevees > 0 &&
+        <BottomBarWidgetGroup hoverable={false}>
+          <div className={css.leveesCount}>{ simulation.remainingLevees }</div>
+          <IconButton
+            icon={<LeveeIcon />} highlightIcon={<LeveeHighlightIcon />}
+            buttonText="Levee" dataTest="levee-button" onClick={handleLeveeMode}
+          />
+        </BottomBarWidgetGroup>
+      }
       <PlaybackControls
         onReload={handleReload}
         onRestart={simulation.restart}
