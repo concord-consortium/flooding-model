@@ -38,8 +38,8 @@ export const CameraControls = observer(function WrappedComponent() {
     zoomSpeed={0.5}
     minDistance={0.8}
     maxDistance={5}
-    // maxPolarAngle={Math.PI * 0.4}
-    // minAzimuthAngle={-Math.PI * 0.25}
-    // maxAzimuthAngle={Math.PI * 0.25}
+    maxPolarAngle={Math.PI * 0.45}
+    minAzimuthAngle={-Math.PI * 0.4}
+    maxAzimuthAngle={Math.PI * 0.4}
   />;
 });
