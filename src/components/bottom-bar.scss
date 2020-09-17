@@ -14,6 +14,10 @@
 
   .rainDurationButtons {
     text-align: center;
+    &.disabled {
+      pointer-events: none;
+      opacity: 0.5;
+    }
     svg {
       width: 20px;
       height: 20px;

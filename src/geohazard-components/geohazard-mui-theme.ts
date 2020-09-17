@@ -71,7 +71,10 @@ export default createMuiTheme({
     },
     MuiSlider: {
       root: {
-        zIndex: 1
+        zIndex: 1,
+        "&$disabled": {
+          opacity: 0.5
+        }
       },
       thumb: {
         height: 20,
@@ -81,6 +84,12 @@ export default createMuiTheme({
         marginLeft: -10,
         "&:hover, &$active": {
           boxShadow: "0 0 0 4px rgba(255,255,255,0.5)"
+        },
+        "&$disabled": {
+          height: 20,
+          width: 20,
+          marginTop: -9,
+          marginLeft: -10
         }
       },
       active: {},

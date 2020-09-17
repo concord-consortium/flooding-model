@@ -72,6 +72,7 @@ export const BottomBar: React.FC = observer(function WrappedComponent() {
           max={config.extremeRain ? RainIntensity.extreme : RainIntensity.heavy}
           step={null} // restrict values to marks values
           marks={config.extremeRain ? rainIntensityMarks : rainIntensityMarksWithoutExtreme}
+          disabled={simulation.simulationStarted}
           onChange={handleRainIntensityChange}
         />
       </BottomBarWidgetGroup>
@@ -79,7 +80,7 @@ export const BottomBar: React.FC = observer(function WrappedComponent() {
         <div className={css.rainDurationValue}>
           { simulation.rainDurationInDays + (simulation.rainDurationInDays === 1 ? " day" : " days") }
         </div>
-        <div className={css.rainDurationButtons}>
+        <div className={`${css.rainDurationButtons} ${simulation.simulationStarted ? css.disabled : ""}`}>
           <LessIcon onClick={handleDecreaseRainDuration}/>
           <MoreIcon onClick={handleIncreaseRainDuration}/>
         </div>
@@ -91,6 +92,7 @@ export const BottomBar: React.FC = observer(function WrappedComponent() {
           max={RiverStage.high}
           step={null} // restrict values to marks values
           marks={startingWaterLevelMarks}
+          disabled={simulation.simulationStarted}
           onChange={handleStartingWaterLevel}
         />
       </BottomBarWidgetGroup>
