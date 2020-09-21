@@ -45,7 +45,6 @@ export class FloodingEngine {
   public riverStageIncreaseSpeed: number;
 
   // Outputs
-  public simulationDidStop = false;
   public waterSum = 0;
   public riverWaterSum = 0;
   public waterSaturationIncrement = 0;

@@ -72,4 +72,24 @@ describe("GaugeReadingDataset", () => {
 
     expect(dataset.points).toEqual([ [], [] ]);
   });
+
+  describe("getCurrentPoints", () => {
+    it("returns slice of the array based on the simulation time", () => {
+      const sim = getSimulation();
+      const dataset = new GaugeReadingDataset(sim);
+      dataset.points = [[{x: 1, y: 1}, {x: 2, y: 2}, {x: 3, y: 3}], [{x: 1, y: 2}, {x: 2, y: 4}, {x: 3, y: 6}]];
+
+      sim.timeInHours = 0;
+      expect(dataset.getCurrentPoints(0)).toEqual([{x: 1, y: 1}]);
+      expect(dataset.getCurrentPoints(1)).toEqual([{x: 1, y: 2}]);
+
+      sim.timeInHours = 1;
+      expect(dataset.getCurrentPoints(0)).toEqual([{x: 1, y: 1}, {x: 2, y: 2}]);
+      expect(dataset.getCurrentPoints(1)).toEqual([{x: 1, y: 2}, {x: 2, y: 4}]);
+
+      sim.timeInHours = 2;
+      expect(dataset.getCurrentPoints(0)).toEqual([{x: 1, y: 1}, {x: 2, y: 2}, {x: 3, y: 3}]);
+      expect(dataset.getCurrentPoints(1)).toEqual([{x: 1, y: 2}, {x: 2, y: 4}, {x: 3, y: 6}]);
+    });
+  });
 });

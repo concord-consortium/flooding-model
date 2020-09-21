@@ -56,4 +56,21 @@ describe("FloodAreaDataset", () => {
 
     expect(dataset.points).toEqual([]);
   });
+
+  describe("getCurrentPoints", () => {
+    it("returns slice of the array based on the simulation time", () => {
+      const sim = getSimulation();
+      const dataset = new FloodAreaDataset(sim);
+      dataset.points.push({x: 1, y: 1}, {x: 2, y: 2}, {x: 3, y: 3});
+
+      sim.timeInHours = 0;
+      expect(dataset.getCurrentPoints()).toEqual([{x: 1, y: 1}]);
+
+      sim.timeInHours = 1;
+      expect(dataset.getCurrentPoints()).toEqual([{x: 1, y: 1}, {x: 2, y: 2}]);
+
+      sim.timeInHours = 2;
+      expect(dataset.getCurrentPoints()).toEqual([{x: 1, y: 1}, {x: 2, y: 2}, {x: 3, y: 3}]);
+    });
+  });
 });

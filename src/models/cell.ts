@@ -16,6 +16,7 @@ export interface ICellSnapshot {
   fluxR: number;
   fluxT: number;
   fluxB: number;
+  leveeHeight: number;
 }
 
 export class Cell {
@@ -75,7 +76,8 @@ export class Cell {
       fluxL: this.fluxL,
       fluxR: this.fluxR,
       fluxT: this.fluxT,
-      fluxB: this.fluxB
+      fluxB: this.fluxB,
+      leveeHeight: this.leveeHeight
     };
   }
 

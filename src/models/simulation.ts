@@ -356,10 +356,6 @@ export class SimulationModel {
         this.engine.update(this.config.timeStep);
       }
 
-      if (this.engine.simulationDidStop) {
-        this.simulationRunning = false;
-      }
-
       if (this.timeInHours !== oldTimeInHours) {
         this.emit("hourChange"); // used by graphs
       }
