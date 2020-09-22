@@ -72,6 +72,7 @@ export default createMuiTheme({
     MuiSlider: {
       root: {
         zIndex: 1,
+        padding: "13px 0 !important", // to overwrite @media (pointer: coarse) styling
         "&$disabled": {
           opacity: 0.5
         }
@@ -108,7 +109,8 @@ export default createMuiTheme({
       markLabel: {
         fontFamily: "Roboto Condensed",
         fontSize: "10px",
-        marginLeft: "1px"
+        marginLeft: "1px",
+        top: "26px !important" // to overwrite @media (pointer: coarse) styling
       }
     }
   }
