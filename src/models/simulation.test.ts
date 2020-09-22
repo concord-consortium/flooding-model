@@ -1,5 +1,5 @@
 import { RainIntensity, RiverStage, SimulationModel } from "./simulation";
-import { FloodingEngine } from "./engine/flooding-engine";
+import { FloodingEngineGPU } from "./engine/flooding-engine-gpu";
 
 const rafMock = jest.fn();
 (window as any).requestAnimationFrame = rafMock;
@@ -8,6 +8,13 @@ const floodingEngineUpdateMock = jest.fn();
 jest.mock("./engine/flooding-engine", () => ({
   FloodingEngine: function FloodingEngineMock() {
     this.update = floodingEngineUpdateMock;
+  }
+}));
+
+const floodingEngineGPUUpdateMock = jest.fn();
+jest.mock("./engine/flooding-engine-gpu", () => ({
+  FloodingEngineGPU: function FloodingEngineGPUMock() {
+    this.update = floodingEngineGPUUpdateMock;
   }
 }));
 
@@ -25,6 +32,7 @@ describe("SimulationModel", () => {
   beforeEach(() => {
     rafMock.mockClear();
     floodingEngineUpdateMock.mockClear();
+    floodingEngineGPUUpdateMock.mockClear();
   });
 
   it("generates cell after being initialized and updates observable flags", async () => {
@@ -43,7 +51,7 @@ describe("SimulationModel", () => {
 
     expect(s.ready).toEqual(true);
 
-    expect(s.engine).toBeInstanceOf(FloodingEngine);
+    expect(s.engine).toBeInstanceOf(FloodingEngineGPU);
   });
 
   describe("cellAt", () => {
@@ -188,7 +196,7 @@ describe("SimulationModel", () => {
 
       s.tick();
 
-      expect(floodingEngineUpdateMock).toHaveBeenCalledTimes(speedMult);
+      expect(floodingEngineGPUUpdateMock).toHaveBeenCalledTimes(speedMult);
       expect(s.cellsSimulationStateFlag).toEqual(oldCellStateFlag + 1);
       expect(s.crossSectionState).not.toBe(oldCrossSectionState);
     });

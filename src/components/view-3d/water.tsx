@@ -1,4 +1,4 @@
-import React, { useMemo, useRef } from "react";
+import React, { useMemo } from "react";
 import { Cell } from "../../models/cell";
 import * as THREE from "three";
 import { BufferAttribute } from "three";
