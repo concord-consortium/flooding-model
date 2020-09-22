@@ -42,9 +42,13 @@ export class UIModel {
   }
 
   @action.bound public reload() {
+    const config = this.config;
+    this.mainLayer = config.mapType;
+    const tabIndex = config.tabs.indexOf(config.activeTab);
+    this.tabIndex = tabIndex !== -1 ? tabIndex : 0;
+
     this.interaction = null;
     this.interactionTarget = null;
-    this.mainLayer = this.config.mapType;
     this.poiLayerEnabled = true;
     this.placesLayerEnabled = true;
   }

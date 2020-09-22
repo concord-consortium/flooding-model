@@ -24,6 +24,7 @@ const getSimpleSimulation = async () => {
 describe("SimulationModel", () => {
   beforeEach(() => {
     rafMock.mockClear();
+    floodingEngineUpdateMock.mockClear();
   });
 
   it("generates cell after being initialized and updates observable flags", async () => {
@@ -135,22 +136,15 @@ describe("SimulationModel", () => {
       expect(s.simulationStarted).toEqual(false);
       expect(s.cells[0].reset).toHaveBeenCalled();
       expect(s.time).toEqual(0);
-      expect(s.rainDurationInDays).toEqual(2);
-      expect(s.rainIntensity).toEqual(RainIntensity.medium);
-      expect(s.initialWaterSaturation).toEqual(RiverStage.medium);
+      expect(s.rainDurationInDays).toEqual(s.config.rainDuration);
+      expect(s.rainIntensity).toEqual(RainIntensity[s.config.rainIntensity]);
+      expect(s.initialWaterSaturation).toEqual(RiverStage[s.config.startingWaterLevel]);
     });
   });
 
   describe("rafCallback", () => {
     it("runs the simulation if the model has been started", async () => {
-      const speedMult = 3;
-      const s = new SimulationModel({
-        elevation: [[0]],
-        riverData: null,
-        gridWidth: 1,
-        speedMult
-      });
-      await s.dataReadyPromise;
+      const s = await getSimpleSimulation();
 
       const oldCellStateFlag = s.cellsSimulationStateFlag;
 
@@ -164,8 +158,39 @@ describe("SimulationModel", () => {
       s.rafCallback();
       // should do nothing unless model is started.
       expect(rafMock).toHaveBeenCalled();
+    });
+
+    it("stops simulation automatically after 14 days", async () => {
+      const s = await getSimpleSimulation();
+      s.start();
+      s.rafCallback();
+      expect(s.simulationRunning).toEqual(true);
+
+      s.time = (1 / s.config.modelTimeToHours) * 24 * s.config.simulationLength;
+      s.rafCallback();
+      expect(s.simulationRunning).toEqual(false);
+    });
+  });
+
+  describe("tick", () => {
+    it("runs the simulation if the model has been started", async () => {
+      const speedMult = 3;
+      const s = new SimulationModel({
+        elevation: [[0]],
+        riverData: null,
+        gridWidth: 1,
+        speedMult
+      });
+      await s.dataReadyPromise;
+
+      const oldCellStateFlag = s.cellsSimulationStateFlag;
+      const oldCrossSectionState = s.crossSectionState;
+
+      s.tick();
+
       expect(floodingEngineUpdateMock).toHaveBeenCalledTimes(speedMult);
       expect(s.cellsSimulationStateFlag).toEqual(oldCellStateFlag + 1);
+      expect(s.crossSectionState).not.toBe(oldCrossSectionState);
     });
 
     it("updates river stage and engine.waterSaturationIncrement based on river stage value", async () => {
@@ -177,8 +202,7 @@ describe("SimulationModel", () => {
       });
       await s.dataReadyPromise;
 
-      s.simulationRunning = true;
-      s.rafCallback();
+      s.tick();
       expect(s.engine?.waterSaturationIncrement).toBeGreaterThan(0);
     });
   });
@@ -211,6 +235,16 @@ describe("SimulationModel", () => {
       const oldcellsSimulationStateFlag = s.cellsSimulationStateFlag;
       s.updateCellsSimulationStateFlag();
       expect(s.cellsSimulationStateFlag).toEqual(oldcellsSimulationStateFlag + 1);
+    });
+  });
+
+  describe("updateCrossSectionStates", () => {
+    it("increases cellsSimulationStateFlag", async () => {
+      const s = await getSimpleSimulation();
+
+      const oldCrossSectionState = s.crossSectionState;
+      s.updateCrossSectionStates();
+      expect(s.cellsSimulationStateFlag).not.toBe(oldCrossSectionState);
     });
   });
 });

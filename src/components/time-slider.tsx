@@ -76,6 +76,7 @@ export const TimeSlider: React.FC = observer(function WrappedComponent() {
     <div className={css.timeSlider}>
       <BorderLinearProgress variant="determinate" value={progress} className={css.progress} />
       <SliderWithoutRail
+        data-test="time-slider"
         value={val}
         min={0}
         max={timeMarks.length - 1}

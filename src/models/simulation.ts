@@ -271,11 +271,13 @@ export class SimulationModel {
       this.riverCells = result.riverCells;
       this.riverBankSegments = result.riverBankSegments;
 
-      this.dataReady = true;
       this.engine = new FloodingEngine(this.cells, this.config);
 
       this.updateCellsBaseStateFlag();
       this.updateCellsSimulationStateFlag();
+      this.updateCrossSectionStates();
+
+      this.dataReady = true;
     });
   }
 
@@ -352,10 +354,6 @@ export class SimulationModel {
           this.engine.waterSaturationIncrement = this.currentRiverWaterIncrement;
         }
         this.engine.update(this.config.timeStep);
-      }
-
-      if (this.engine.simulationDidStop) {
-        this.simulationRunning = false;
       }
 
       if (this.timeInHours !== oldTimeInHours) {

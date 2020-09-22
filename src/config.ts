@@ -83,6 +83,8 @@ export interface ISimulationConfig {
   startingWaterLevel: "low" | "medium" | "high";
   // Initial map type.
   mapType: "street" | "topo" | "permeability";
+  // Initially selected tab.
+  activeTab: "maps" | "graph" | "gauge1" | "gauge2" | "gauge3";
 }
 
 export interface ICoords {
@@ -155,7 +157,8 @@ export const getDefaultConfig: () => IUrlConfig = () => ({
   rainIntensity: "medium",
   rainDuration: 2,
   startingWaterLevel: "medium",
-  mapType: "street"
+  mapType: "street",
+  activeTab: "gauge1"
 });
 
 const getURLParam = (name: string) => {

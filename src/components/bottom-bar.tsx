@@ -67,11 +67,13 @@ export const BottomBar: React.FC = observer(function WrappedComponent() {
     <BottomBarContainer>
       <BottomBarWidgetGroup title="Amount of Rain" hoverable={true} className={css.amountOfRain}>
         <Slider
+          data-test="rain-intensity"
           value={simulation.rainIntensity}
           min={RainIntensity.light}
           max={config.extremeRain ? RainIntensity.extreme : RainIntensity.heavy}
           step={null} // restrict values to marks values
           marks={config.extremeRain ? rainIntensityMarks : rainIntensityMarksWithoutExtreme}
+          disabled={simulation.simulationStarted}
           onChange={handleRainIntensityChange}
         />
       </BottomBarWidgetGroup>
@@ -79,18 +81,20 @@ export const BottomBar: React.FC = observer(function WrappedComponent() {
         <div className={css.rainDurationValue}>
           { simulation.rainDurationInDays + (simulation.rainDurationInDays === 1 ? " day" : " days") }
         </div>
-        <div className={css.rainDurationButtons}>
-          <LessIcon onClick={handleDecreaseRainDuration}/>
-          <MoreIcon onClick={handleIncreaseRainDuration}/>
+        <div className={`${css.rainDurationButtons} ${simulation.simulationStarted ? css.disabled : ""}`} data-test={"rain-duration"}>
+          <LessIcon onClick={handleDecreaseRainDuration} data-test="increase-rain-duration"/>
+          <MoreIcon onClick={handleIncreaseRainDuration} data-test="decrease-rain-duration"/>
         </div>
       </BottomBarWidgetGroup>
       <BottomBarWidgetGroup title={["Starting", "Water Level"]} hoverable={true} className={css.startingWaterLevel}>
         <Slider
+          data-test="starting-water-level"
           value={simulation.initialWaterSaturation}
           min={RiverStage.low}
           max={RiverStage.high}
           step={null} // restrict values to marks values
           marks={startingWaterLevelMarks}
+          disabled={simulation.simulationStarted}
           onChange={handleStartingWaterLevel}
         />
       </BottomBarWidgetGroup>
@@ -100,7 +104,7 @@ export const BottomBar: React.FC = observer(function WrappedComponent() {
           <div className={css.leveesCount}>{ simulation.remainingLevees }</div>
           <IconButton
             icon={<LeveeIcon />} highlightIcon={<LeveeHighlightIcon />}
-            buttonText="Levee" dataTest="levee-button" onClick={handleLeveeMode}
+            buttonText="Levee" dataTest="levees-button" onClick={handleLeveeMode}
           />
         </BottomBarWidgetGroup>
       }
