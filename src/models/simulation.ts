@@ -3,6 +3,7 @@ import { Cell, ICellSnapshot } from "./cell";
 import { getDefaultConfig, ISimulationConfig, getUrlConfig } from "../config";
 import { cellAtGrid, getCellNeighbors4, getCellNeighbors8 } from "./utils/grid-utils";
 import { FloodingEngine } from "./engine/flooding-engine";
+import { FloodingEngineGPU } from "./engine/flooding-engine-gpu";
 import EventEmitter from "eventemitter3";
 import { populateCellsData } from "./utils/load-and-initialize-cells";
 
@@ -46,7 +47,8 @@ export interface ISimulationSnapshot {
 export class SimulationModel {
   public config: ISimulationConfig;
   public dataReadyPromise: Promise<void>;
-  public engine: FloodingEngine | null = null;
+  public engineCPU: FloodingEngine | null = null;
+  public engineGPU: FloodingEngineGPU | null = null;
   // Cells are not directly observable. Changes are broadcasted using cellsSimulationStateFlag and cellsBaseStateFlag.
   public cells: Cell[] = [];
   public riverCells: Cell[] = [];
@@ -109,7 +111,7 @@ export class SimulationModel {
   }
 
   public get floodArea() { // in square meters
-    return this.engine?.floodArea || 0;
+    return this.engineCPU?.floodArea || 0;
   }
 
   public get crossSections() {
@@ -189,6 +191,14 @@ export class SimulationModel {
     }
     // Sunny.
     return -0.0025;
+  }
+
+  public get engine() {
+    return this.engineGPU || this.engineCPU;
+  }
+
+  public get waterDepthTexture() {
+    return this.engineGPU?.getWaterDepthTexture();
   }
 
   public on(event: Event, callback: any) {
@@ -271,7 +281,8 @@ export class SimulationModel {
       this.riverCells = result.riverCells;
       this.riverBankSegments = result.riverBankSegments;
 
-      this.engine = new FloodingEngine(this.cells, this.config);
+      // this.engine = new FloodingEngine(this.cells, this.config);
+      this.engineGPU = new FloodingEngineGPU(this.cells, this.config);
 
       this.updateCellsBaseStateFlag();
       this.updateCellsSimulationStateFlag();
@@ -316,7 +327,8 @@ export class SimulationModel {
     this.simulationStarted = false;
     this.cells.forEach(cell => cell.reset());
     this.time = 0;
-    this.engine = new FloodingEngine(this.cells, this.config);
+    // this.engine = new FloodingEngine(this.cells, this.config);
+    this.engineGPU = new FloodingEngineGPU(this.cells, this.config);
     this.updateCrossSectionStates();
     this.updateCellsSimulationStateFlag();
     this.emit("restart"); // used by graphs

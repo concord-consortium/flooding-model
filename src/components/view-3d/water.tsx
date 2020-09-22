@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo, useRef } from "react";
 import { Cell } from "../../models/cell";
 import * as THREE from "three";
 import { BufferAttribute } from "three";
@@ -46,26 +46,31 @@ export const Water = observer(function WrappedComponent() {
     setupAlpha(geometry, simulation);
   }, [simulation.cellsSimulationStateFlag], geometryRef.current ? geometryRef : undefined);
 
-  const uniforms = {
-    color: {value: WATER_COL}
-  };
+
+  // ShaderMaterial could be theoretically created using JSX, but somehow it doesn't want to update uniforms correctly.
+  // It seems that uniform is cached somewhere. Note that each frame simulation.waterDepthTexture might be different
+  // as GPU computation swaps render targets.
+  const material = useMemo(() => {
+    return new THREE.ShaderMaterial({
+      uniforms: {
+        color: {value: WATER_COL},
+        waterDepth: {value: null}
+      },
+      vertexShader: waterVertexShader,
+      fragmentShader: waterFragmentShader,
+      transparent: true
+    });
+  }, []);
+  material.uniforms.waterDepth.value = simulation.waterDepthTexture;
 
   return (
     // In 2D view per-vertex elevation is never set, so it's necessary to keep this plane a bit higher than terrain plane.
-    <mesh position={[PLANE_WIDTH * 0.5, height * 0.5, simulation.config.view3d ? 0 : 0.001 ]} >
+    <mesh position={[PLANE_WIDTH * 0.5, height * 0.5, simulation.config.view3d ? 0 : 0.001 ]} material={material}>
       <planeBufferGeometry
         attach="geometry"
         ref={geometryRef}
         center-x={0} center-y={0}
         args={[PLANE_WIDTH, height, simulation.gridWidth - 1, simulation.gridHeight - 1]}
-      />
-      {/* Note that standard ThreeJS materials don't let us specify alpha per vertex. That's why it's necessary to use ShaderMaterial and custom shaders. */}
-      <shaderMaterial
-        attach="material"
-        vertexShader={waterVertexShader}
-        fragmentShader={waterFragmentShader}
-        uniforms={uniforms}
-        transparent={true}
       />
     </mesh>
   );

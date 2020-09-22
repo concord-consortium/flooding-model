@@ -131,7 +131,7 @@ export const getDefaultConfig: () => IUrlConfig = () => ({
   riverData: null,
   waterDepth: null,
   waterHeightmapMaxDepth: 10,
-  gridWidth: 300,
+  gridWidth: 256,
   fillTerrainEdges: true,
   showCoordsOnClick: false,
   elevationVerticalTilt: 0,

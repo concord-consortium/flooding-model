@@ -12,6 +12,7 @@ import { InteractionHandler } from "./interaction-handler";
 import { useShowCoordsInteraction } from "./use-show-coords-interaction";
 import { useLeveeInteraction } from "./use-levee-interaction";
 import { observer } from "mobx-react-lite";
+import { ExtractWebGLRenderer } from "./webgl-renderer";
 
 // This needs to be a separate component, as useThree depends on context provided by <Canvas> component.
 const ShutterbugSupport = () => {
@@ -53,6 +54,7 @@ export const View3d = observer(() => {
 
   return (
     <Canvas camera={{ fov: 33, up: DEFAULT_UP, position: cameraPos }} pixelRatio={pixelRatio} >
+      <ExtractWebGLRenderer />
       <CameraControls/>
       {
         config.view3d &&

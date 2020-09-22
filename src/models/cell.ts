@@ -48,8 +48,12 @@ export class Cell {
     this.initialWaterDepth = props.waterDepth || 0;
   }
 
+  public get terrainElevation() {
+    return this.baseElevation + this.leveeHeight;
+  }
+
   public get elevation() {
-    return this.baseElevation + this.waterDepth + this.leveeHeight;
+    return this.terrainElevation + this.waterDepth;
   }
 
   public get fluxOut() {
