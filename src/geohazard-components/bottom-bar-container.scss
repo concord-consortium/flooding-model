@@ -14,7 +14,7 @@ $hoverColor: #dfdfdf;
   display: block;
   position: absolute;
   height: $bottomBarHeight + $bottomBarBorderWidth;
-  width: $bottomBarBorderWidth;
+  width: $bottomBarBorderWidth + 2px; // add a bit of margin to fix issues on touch screens
   bottom: 0;
   background: #fff;
 }
@@ -60,14 +60,14 @@ $hoverColor: #dfdfdf;
     // However, it needs to be mostly covered.
     &:before {
       @extend %borderCover;
-      left: -$bottomBarBorderWidth;
+      left: -$bottomBarBorderWidth - 1px;
     }
     // Right border is necessary so the rounded corner looks good (otherwise, border would end in the middle of curve).
     border-right: $bottomBarBorderStyle;
     // However, it needs to be mostly covered.
     &:after {
       @extend %borderCover;
-      right: -$bottomBarBorderWidth;
+      right: -$bottomBarBorderWidth - 1px;
     }
     margin-left: -$bottomBarBorderWidth;
     margin-right: $bottomBarWidgetGroupSpacing;
