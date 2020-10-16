@@ -50,6 +50,7 @@ $hoverColor: #dfdfdf;
     z-index: 1000;
     background: #fff;
     border-radius: 0;
+    white-space: nowrap;
     border-top: $bottomBarBorderStyle;
     border-top-left-radius: $bottomBarBorderRadius;
     border-top-right-radius: $bottomBarBorderRadius;
@@ -121,12 +122,12 @@ $hoverColor: #dfdfdf;
   }
 }
 
-@media (max-width: 960px) {
+@media (max-width: 1050px) {
   .logo {
     display: none;
   }
 }
-@media (min-width: 960px) {
+@media (min-width: 1050px) {
   .logoSmall {
     display: none;
   }
