@@ -31,56 +31,61 @@ export const Graph: React.FC<IProps> = ({ points, yLabel, maxX = 14, maxY = 100 
   }
 
   return (
-    <Scatter
-      key={key} // used to force re-render graph after fonts are loaded
-      data={{
-        datasets: [
-          {
-            borderColor: LINE_COLOR,
-            pointBorderColor: LINE_COLOR,
-            pointBackgroundColor: LINE_COLOR,
-            pointRadius: 0,
-            lineTension: 0.2,
-            showLine: true,
-            fill: false,
-            data: points
-          }
-        ]
-      }}
-      options={{
-        responsive: true,
-        maintainAspectRatio: false,
-        legend: {
-          display: false
-        },
-        animation: {
-          duration: 0
-        },
-        scales: {
-          yAxes: [{
-            scaleLabel: {
-              display: true,
-              labelString: yLabel
-            },
-            ticks: {
-              min: 0,
-              max: maxY,
-              maxTicksLimit: 20
+    // Note that responsive: true option (that ensures that graph fills its container) requires the container to
+    // have position: relative. See: https://www.chartjs.org/docs/latest/general/responsive.html#important-note
+    <div style={{width: "100%", height: "100%", position: "relative"}}>
+      <Scatter
+        key={key} // used to force re-render graph after fonts are loaded
+        data={{
+          datasets: [
+            {
+              borderColor: LINE_COLOR,
+              pointBorderColor: LINE_COLOR,
+              pointBackgroundColor: LINE_COLOR,
+              pointRadius: 0,
+              lineTension: 0.2,
+              showLine: true,
+              fill: false,
+              data: points
             }
-          }],
-          xAxes: [{
-            ticks: {
-              min: 0,
-              max: currentMaxX,
-              maxTicksLimit: 20
-            },
-            scaleLabel: {
-              display: true,
-              labelString: "Time (days)"
-            },
-          }]
-        },
-      }}
-    />
+          ]
+        }}
+        options={{
+          responsive: true,
+          maintainAspectRatio: false,
+          responsiveAnimationDuration: 0,
+          legend: {
+            display: false
+          },
+          animation: {
+            duration: 0
+          },
+          scales: {
+            yAxes: [{
+              scaleLabel: {
+                display: true,
+                labelString: yLabel
+              },
+              ticks: {
+                min: 0,
+                max: maxY,
+                maxTicksLimit: 20
+              }
+            }],
+            xAxes: [{
+              ticks: {
+                min: 0,
+                max: currentMaxX,
+                maxTicksLimit: 20
+              },
+              scaleLabel: {
+                display: true,
+                labelString: "Time (days)"
+              },
+            }]
+          },
+        }}
+      />
+    </div>
   );
 };
