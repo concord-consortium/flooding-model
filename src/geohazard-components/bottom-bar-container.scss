@@ -14,7 +14,7 @@ $hoverColor: #dfdfdf;
   display: block;
   position: absolute;
   height: $bottomBarHeight + $bottomBarBorderWidth;
-  width: $bottomBarBorderWidth;
+  width: $bottomBarBorderWidth + 2px; // add a bit of margin to fix issues on touch screens
   bottom: 0;
   background: #fff;
 }
@@ -50,6 +50,7 @@ $hoverColor: #dfdfdf;
     z-index: 1000;
     background: #fff;
     border-radius: 0;
+    white-space: nowrap;
     border-top: $bottomBarBorderStyle;
     border-top-left-radius: $bottomBarBorderRadius;
     border-top-right-radius: $bottomBarBorderRadius;
@@ -59,14 +60,14 @@ $hoverColor: #dfdfdf;
     // However, it needs to be mostly covered.
     &:before {
       @extend %borderCover;
-      left: -$bottomBarBorderWidth;
+      left: -$bottomBarBorderWidth - 1px;
     }
     // Right border is necessary so the rounded corner looks good (otherwise, border would end in the middle of curve).
     border-right: $bottomBarBorderStyle;
     // However, it needs to be mostly covered.
     &:after {
       @extend %borderCover;
-      right: -$bottomBarBorderWidth;
+      right: -$bottomBarBorderWidth - 1px;
     }
     margin-left: -$bottomBarBorderWidth;
     margin-right: $bottomBarWidgetGroupSpacing;
@@ -121,12 +122,12 @@ $hoverColor: #dfdfdf;
   }
 }
 
-@media (max-width: 960px) {
+@media (max-width: 1050px) {
   .logo {
     display: none;
   }
 }
-@media (min-width: 960px) {
+@media (min-width: 1050px) {
   .logoSmall {
     display: none;
   }
