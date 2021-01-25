@@ -85,6 +85,7 @@ export interface ISimulationConfig {
   mapType: "street" | "topo" | "permeability";
   // Initially selected tab.
   activeTab: "maps" | "graph" | "gauge1" | "gauge2" | "gauge3";
+  useGPU: boolean;
 }
 
 export interface ICoords {
@@ -158,7 +159,8 @@ export const getDefaultConfig: () => IUrlConfig = () => ({
   rainDuration: 2,
   startingWaterLevel: "medium",
   mapType: "street",
-  activeTab: "gauge1"
+  activeTab: "gauge1",
+  useGPU: true
 });
 
 const getURLParam = (name: string) => {

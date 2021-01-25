@@ -19,6 +19,7 @@ export interface IFloodingEngineConfig {
   floodPermeabilityMult?: number;
   dampingFactor?: number;
   riverStageIncreaseSpeed?: number;
+  timeStep: number;
 }
 
 const GRAVITY = 9.81;
@@ -42,12 +43,14 @@ export class FloodingEngine {
   public cellSize: number;
   public dampingFactor: number;
   public floodPermeabilityMult: number;
+  public dt: number;
   public riverStageIncreaseSpeed: number;
+
+  public waterSaturationIncrement = 0;
 
   // Outputs
   public waterSum = 0;
   public riverWaterSum = 0;
-  public waterSaturationIncrement = 0;
   public floodArea = 0; // in square meters
 
   constructor(cells: Cell[], config: IFloodingEngineConfig) {
@@ -57,6 +60,7 @@ export class FloodingEngine {
     this.dampingFactor = config.dampingFactor !== undefined ? config.dampingFactor : 0.99;
     this.floodPermeabilityMult = config.floodPermeabilityMult !== undefined ? config.floodPermeabilityMult : 1;
     this.riverStageIncreaseSpeed = config.riverStageIncreaseSpeed !== undefined ? config.riverStageIncreaseSpeed : 0.125;
+    this.dt = config.timeStep || 1;
 
     this.cells = cells;
     // "Edge" cells exist only to make rendering a bit simpler. Skip them entirely in the simulation.
@@ -72,7 +76,7 @@ export class FloodingEngine {
     return this.cells[getGridIndexForLocation(x, y, this.gridWidth)];
   }
 
-  public update(dt: number) {
+  public update(dt = this.dt) {
     this.removeWater(dt);
     this.addWater(dt);
     this.updateFlux(dt);
@@ -86,7 +90,7 @@ export class FloodingEngine {
       // calculations in other steps.
       if (cell.waterSaturation <= 1) {
         const riverStageDiff = this.waterSaturationIncrement * dt * this.riverStageIncreaseSpeed;
-        cell.waterSaturation += this.waterSaturationIncrement * dt * this.riverStageIncreaseSpeed;
+        cell.waterSaturation += riverStageDiff;
         cell.waterSaturation = Math.min(1 + 1e-6, cell.waterSaturation);
         if (riverStageDiff < 0) {
           const finalRiverStage = Math.min(cell.initialWaterSaturation + 0.2, RiverStage.high);

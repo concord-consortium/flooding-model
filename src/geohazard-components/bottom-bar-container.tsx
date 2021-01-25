@@ -81,4 +81,3 @@ export const BottomBarWidgetGroup: React.FC<BottomBarWidgetGroupProps> = ({ chil
     </div>
   );
 };
-

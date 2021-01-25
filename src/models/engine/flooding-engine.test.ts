@@ -13,7 +13,8 @@ describe("FloodingEngine", () => {
     const engine = new FloodingEngine(cells, {
       gridWidth: 2,
       gridHeight: 2,
-      cellSize: 1
+      cellSize: 1,
+      timeStep: 1
     });
 
     expect(engine.cells).toEqual(cells);
@@ -31,13 +32,14 @@ describe("FloodingEngine", () => {
       gridWidth: 2,
       gridHeight: 2,
       cellSize: 1,
-      dampingFactor: 0.97 // to stabilize fluid faster
+      dampingFactor: 0.97, // to stabilize fluid faster
+      timeStep: 0.1
     });
 
     // Why 300 steps and 0.1 timestep? It's been adjusted based on experiments for this particular setup.
     // It's important that model conserves water mass and ends up in the equilibrum state.
     for (let i = 0; i < 300; i += 1) {
-      engine.update(0.1);
+      engine.update();
       expect(engine.waterSum).toBeCloseTo(1, 5);
     }
     expect(c1.waterDepth).toBeCloseTo(0.25);
@@ -56,7 +58,8 @@ describe("FloodingEngine", () => {
       const engine = new FloodingEngine(cells, {
         gridWidth: 2,
         gridHeight: 2,
-        cellSize: 1
+        cellSize: 1,
+        timeStep: 1
       });
       expect(engine.getCellAt(0, 0)).toEqual(c1);
       expect(engine.getCellAt(1, 0)).toEqual(c2);
@@ -75,7 +78,8 @@ describe("FloodingEngine", () => {
       const engine = new FloodingEngine(cells, {
         gridWidth: 2,
         gridHeight: 2,
-        cellSize: 1
+        cellSize: 1,
+        timeStep: 1
       });
       engine.updateFlux(1);
       expect(c1.fluxOut).toBeGreaterThan(0);
@@ -103,7 +107,8 @@ describe("FloodingEngine", () => {
       const engine = new FloodingEngine(cells, {
         gridWidth: 2,
         gridHeight: 2,
-        cellSize: 1
+        cellSize: 1,
+        timeStep: 1
       });
       engine.updateFlux(1);
       expect(c1.fluxOut).toBeGreaterThan(0);
@@ -129,7 +134,8 @@ describe("FloodingEngine", () => {
       const engine = new FloodingEngine(cells, {
         gridWidth: 2,
         gridHeight: 2,
-        cellSize: 1
+        cellSize: 1,
+        timeStep: 1
       });
 
       c1.fluxR = 1;
@@ -151,7 +157,8 @@ describe("FloodingEngine", () => {
       const engine = new FloodingEngine(cells, {
         gridWidth: 2,
         gridHeight: 1,
-        cellSize: 1
+        cellSize: 1,
+        timeStep: 1
       });
 
       c1.initialWaterSaturation = 0.5;
@@ -215,7 +222,8 @@ describe("FloodingEngine", () => {
       const engine = new FloodingEngine(cells, {
         gridWidth: 2,
         gridHeight: 1,
-        cellSize: 1
+        cellSize: 1,
+        timeStep: 1
       });
 
       engine.removeWater(2);

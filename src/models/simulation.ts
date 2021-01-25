@@ -281,8 +281,11 @@ export class SimulationModel {
       this.riverCells = result.riverCells;
       this.riverBankSegments = result.riverBankSegments;
 
-      // this.engine = new FloodingEngine(this.cells, this.config);
-      this.engineGPU = new FloodingEngineGPU(this.cells, this.config);
+      if (this.config.useGPU) {
+        this.engineGPU = new FloodingEngineGPU(this.cells, this.config);
+      } else {
+        this.engineCPU = new FloodingEngine(this.cells, this.config);
+      }
 
       this.updateCellsBaseStateFlag();
       this.updateCellsSimulationStateFlag();
@@ -327,8 +330,11 @@ export class SimulationModel {
     this.simulationStarted = false;
     this.cells.forEach(cell => cell.reset());
     this.time = 0;
-    // this.engine = new FloodingEngine(this.cells, this.config);
-    this.engineGPU = new FloodingEngineGPU(this.cells, this.config);
+    if (this.config.useGPU) {
+      this.engineGPU = new FloodingEngineGPU(this.cells, this.config);
+    } else {
+      this.engineCPU = new FloodingEngine(this.cells, this.config);
+    }
     this.updateCrossSectionStates();
     this.updateCellsSimulationStateFlag();
     this.emit("restart"); // used by graphs
@@ -365,7 +371,7 @@ export class SimulationModel {
           // this._riverStage += this.currentRiverWaterIncrement * this.config.riverStageIncreaseSpeed;
           this.engine.waterSaturationIncrement = this.currentRiverWaterIncrement;
         }
-        this.engine.update(this.config.timeStep);
+        this.engine.update();
       }
 
       if (this.timeInHours !== oldTimeInHours) {

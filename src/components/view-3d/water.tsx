@@ -12,6 +12,7 @@ import { useElevation } from "./use-elevation";
 // for tests models at the moment. If 3D view ever gets more useful, these shaders should be updated to include
 // some light calculations / reflections.
 import waterVertexShader from "./water-vertex.glsl";
+import waterVertexFromGPGPUShader from "./water-vertex-from-gpgpu.glsl";
 import waterFragmentShader from "./water-fragment.glsl";
 
 const vertexIdx = (cell: Cell, gridWidth: number, gridHeight: number) => (gridHeight - 1 - cell.y) * gridWidth + cell.x;
@@ -56,7 +57,7 @@ export const Water = observer(function WrappedComponent() {
         color: {value: WATER_COL},
         waterDepth: {value: null}
       },
-      vertexShader: waterVertexShader,
+      vertexShader: simulation.config.useGPU ? waterVertexFromGPGPUShader : waterVertexShader,
       fragmentShader: waterFragmentShader,
       transparent: true
     });
