@@ -11,7 +11,7 @@ jest.mock("react-chartjs-2", () => ({
 }));
 
 describe("Graph", () => {
-  let fontsResolve: () => void;
+  let fontsResolve: (val?: unknown) => void;
 
   beforeEach(() => {
     (document as any).fonts = {
