@@ -42,13 +42,14 @@ void main() {
   vec2 cellSize = 1.0 / resolution.xy;
 
   float waterLevel = texture2D(levelTexture, point1).x;
+  float waterSaturation = texture2D(levelTexture, point1).y;
 
   if (gl_FragCoord.x < 1.5) {
     gl_FragColor = encode_float(waterLevel);
   } else if (gl_FragCoord.x < 2.5) {
-    gl_FragColor = encode_float(1.123);
+    gl_FragColor = encode_float(waterSaturation);
   } else if (gl_FragCoord.x < 3.5) {
-    gl_FragColor = encode_float(3.321);
+    gl_FragColor = encode_float(0.0);
   } else {
     gl_FragColor = encode_float(0.0);
   }

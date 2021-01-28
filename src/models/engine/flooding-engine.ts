@@ -8,6 +8,10 @@
 // United States. pp.47-56, ff10.1109/PG.2007.15ff. ffinria-00402079
 //
 // Example implementation (although GPU-based): https://github.com/skeelogy/skunami.js
+// More resources:
+// - https://web.archive.org/web/20080618181901/http://freespace.virgin.net/hugo.elias/graphics/x_water.htm
+// - https://profs.etsmtl.ca/epaquette/Research/Papers/Dagenais.2018/Dagenais-2018.pdf
+
 import { Cell } from "../cell";
 import { getGridIndexForLocation } from "../utils/grid-utils";
 import { RiverStage } from "../simulation";
@@ -79,8 +83,8 @@ export class FloodingEngine {
   public update(dt = this.dt) {
     this.removeWater(dt);
     this.addWater(dt);
-    this.updateFlux(dt);
     this.updateWaterDepth(dt);
+    this.updateFlux(dt);
   }
 
   public addWater(dt: number) {

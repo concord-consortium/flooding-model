@@ -2,6 +2,7 @@ import { GPUComputationRenderer, Variable } from 'three/examples/jsm/misc/GPUCom
 import * as THREE from "three";
 import { ShaderMaterial, WebGLRenderTarget } from "three";
 import CalcWaterDepthShader from "./calc-water-depth-shader.glsl";
+import CalcFluxShader from "./calc-flux-shader.glsl";
 import ReadWaterLevelShader from "./read-water-level-shader.glsl";
 import { onWebGLRendererAvailable } from "../../components/view-3d/webgl-renderer";
 import { Cell } from "../cell";
@@ -45,6 +46,7 @@ export class FloodingEngineGPU {
 
   public set cellSize(value: number) {
     this.waterOutputVariable.material.uniforms["cellSize"] = { value };
+    this.fluxVariable.material.uniforms["cellSize"] = { value };
   }
   public get cellSize() {
     return this.waterOutputVariable.material.uniforms["cellSize"].value;
@@ -52,6 +54,7 @@ export class FloodingEngineGPU {
 
   public set dampingFactor(value: number) {
     this.waterOutputVariable.material.uniforms["dampingFactor"] = { value };
+    this.fluxVariable.material.uniforms["dampingFactor"] = { value };
   }
   public get dampingFactor() {
     return this.waterOutputVariable.material.uniforms["dampingFactor"].value;
@@ -73,6 +76,7 @@ export class FloodingEngineGPU {
 
   public set dt(value: number) {
     this.waterOutputVariable.material.uniforms["dt"] = { value };
+    this.fluxVariable.material.uniforms["dt"] = { value };
   }
   public get dt() {
     return this.waterOutputVariable.material.uniforms["dt"].value;
@@ -107,6 +111,11 @@ export class FloodingEngineGPU {
     // .x => waterDepth
     // .y => waterSaturation
     const waterOutput0 = this.gpuCompute.createTexture();
+    // .x => flux left
+    // .y => flux top
+    // .z => flux right
+    // .w => flux bottom
+    const fluxOutput0 = this.gpuCompute.createTexture();
 
     // Set initial values.
     this.cells.forEach((cell, idx) => {
@@ -118,12 +127,29 @@ export class FloodingEngineGPU {
 
       waterOutput0.image.data[i] = 0;
       waterOutput0.image.data[i + 1] = cell.initialWaterSaturation;
-    });
 
-    this.waterOutputVariable = this.gpuCompute.addVariable("waterOutput", CalcWaterDepthShader, waterOutput0);
-    this.gpuCompute.setVariableDependencies(this.waterOutputVariable, [this.waterOutputVariable]);
-    this.waterOutputVariable.material.uniforms["waterSaturationIncrement"] = { value: 0 };
+      fluxOutput0.image.data[i] = 0;
+      fluxOutput0.image.data[i + 1] = 0;
+      fluxOutput0.image.data[i + 2] = 0;
+      fluxOutput0.image.data[i + 3] = 0;
+    });
+    // Setup variables.
+    this.fluxVariable = this.gpuCompute.addVariable("textureFlux", CalcFluxShader, fluxOutput0);
+    this.waterOutputVariable = this.gpuCompute.addVariable("textureWaterOutput", CalcWaterDepthShader, waterOutput0);
+    // Setup variable dependencies.
+    this.gpuCompute.setVariableDependencies(this.fluxVariable, [this.fluxVariable, this.waterOutputVariable]);
+    this.gpuCompute.setVariableDependencies(this.waterOutputVariable, [ this.waterOutputVariable, this.fluxVariable ]);
+    // Additional data used by variables.
     this.waterOutputVariable.material.uniforms["cellProps"] = { value: cellPropsTexture };
+    this.fluxVariable.material.uniforms["cellProps"] = { value: cellPropsTexture };
+
+    this.cellSize = 0;
+    this.dampingFactor = 0;
+    this.floodPermeabilityMult = 0;
+    this.riverStageIncreaseSpeed = 0;
+    this.dt = 0;
+    this.RiverStageHigh = 0;
+    this.waterSaturationIncrement = 0;
 
     const error = this.gpuCompute.init();
     if (error !== null) {
@@ -154,26 +180,16 @@ export class FloodingEngineGPU {
 
   public update() {
     // Do the gpu computation
-    console.time("compute");
     this.gpuCompute.compute();
-    console.timeEnd("compute");
 
-    console.time("read");
-    const currentRenderTarget = this.gpuCompute.getCurrentRenderTarget(this.waterOutputVariable) as WebGLRenderTarget;
-    this.readWaterLevelShader.uniforms["levelTexture"].value = currentRenderTarget.texture;
-    //
-    this.readWaterLevelShader.uniforms["point1"].value.set(0.5, 0.5);
-    this.gpuCompute.doRenderTarget(this.readWaterLevelShader, this.readWaterLevelRenderTarget);
-    this.renderer.readRenderTargetPixels(this.readWaterLevelRenderTarget, 0, 0, 4, 1, this.readWaterLevelImage);
-    let pixels = new Float32Array(this.readWaterLevelImage.buffer);
+    // Read data:
+    // const currentRenderTarget = this.gpuCompute.getCurrentRenderTarget(this.waterOutputVariable) as WebGLRenderTarget;
+    // this.readWaterLevelShader.uniforms["levelTexture"].value = currentRenderTarget.texture;
     
-    this.readWaterLevelShader.uniforms["point1"].value.set(0.25, 0.25);
-    this.gpuCompute.doRenderTarget(this.readWaterLevelShader, this.readWaterLevelRenderTarget);
-    this.renderer.readRenderTargetPixels(this.readWaterLevelRenderTarget, 0, 0, 4, 1, this.readWaterLevelImage);
-    pixels = new Float32Array(this.readWaterLevelImage.buffer);
-    console.timeEnd("read");
-    
-    // Get orientation
+    // this.readWaterLevelShader.uniforms["point1"].value.set(104 / this.config.gridWidth, 104 / this.config.gridHeight);
+    // this.gpuCompute.doRenderTarget(this.readWaterLevelShader, this.readWaterLevelRenderTarget);
+    // this.renderer.readRenderTargetPixels(this.readWaterLevelRenderTarget, 0, 0, 4, 1, this.readWaterLevelImage);
+    // const pixels = new Float32Array(this.readWaterLevelImage.buffer);  
     // console.log(pixels);
   }
 

@@ -1,4 +1,5 @@
 uniform float waterSaturationIncrement;
+uniform float cellSize;
 uniform float riverStageIncreaseSpeed;
 uniform float dt;
 uniform float floodPermeabilityMult;
@@ -6,13 +7,12 @@ uniform float RiverStageHigh;
 uniform sampler2D cellProps;
 
 void main() {
-  vec2 cellSize = 1.0 / resolution.xy;
-
-  vec2 uv = gl_FragCoord.xy * cellSize;
+  vec2 renderingCellSize = 1.0 / resolution.xy;
+  vec2 uv = gl_FragCoord.xy * renderingCellSize;
 
   // .x => waterDepth
   // .y => waterSaturation
-  vec4 waterOutput = texture2D(waterOutput, uv);
+  vec4 waterOutput = texture2D(textureWaterOutput, uv);
   float waterDepth = waterOutput.x;
   float waterSaturation = waterOutput.y;
   // .x => isRiver
@@ -25,13 +25,9 @@ void main() {
   float initialWaterSaturation = cellProps.z;
   float permeability = cellProps.w;
 
-  // Get neighbours
-  //  vec4 north = texture2D(heightmap, uv + vec2(0.0, cellSize.y));
-  //  vec4 south = texture2D(heightmap, uv + vec2(0.0, - cellSize.y));
-  //  vec4 east = texture2D(heightmap, uv + vec2(cellSize.x, 0.0));
-  //  vec4 west = texture2D(heightmap, uv + vec2(- cellSize.x, 0.0));
-
-  // https://web.archive.org/web/20080618181901/http://freespace.virgin.net/hugo.elias/graphics/x_water.htm
+  // .x => flux left
+  vec4 flux = texture2D(textureFlux, uv);
+  float fluxLeft = flux.x;
 
   // flood-engine#removeWater
   bool flood = waterSaturationIncrement > 0.0;
@@ -59,8 +55,21 @@ void main() {
     }
   }
 
-  // Simplest version for testing:
-  // waterDepth += waterSaturationIncrement;
+  // flood-engine#updateWaterDepth
+  // .x => flux left
+  // .y => flux top
+  // .z => flux right
+  // .w => flux bottom
+  float fluxInLeft = texture2D(textureFlux, uv + vec2(-renderingCellSize.x, 0.0)).z; // flux right from left neighbor
+  float fluxInRight = texture2D(textureFlux, uv + vec2(renderingCellSize.x, 0.0)).x; // flux left from right neighbor
+  float fluxInTop = texture2D(textureFlux, uv + vec2(0.0, renderingCellSize.y)).w; // flux bottom from top neighbor
+  float fluxInBottom = texture2D(textureFlux, uv + vec2(0.0, -renderingCellSize.y)).y; // flux top from bottom neighbor
+  
+  float fluxIn = fluxInLeft + fluxInRight + fluxInTop + fluxInBottom;
+
+  vec4 cellFlux = texture2D(textureFlux, uv);
+  float fluxOut = cellFlux.x + cellFlux.y + cellFlux.z + cellFlux.w;
+  waterDepth = max(0.0, waterDepth + (fluxIn - fluxOut) * dt / (cellSize * cellSize));
 
   gl_FragColor = vec4(waterDepth, waterSaturation, 0, 0);
 }
