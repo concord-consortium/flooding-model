@@ -44,8 +44,11 @@ export const Water = observer(function WrappedComponent() {
   useElevation({ includeWaterDepth: true, geometryRef });
 
   useUpdate<THREE.PlaneBufferGeometry>(geometry => {
+    if (simulation.config.useGPU) {
+      return;
+    }
     setupAlpha(geometry, simulation);
-  }, [simulation.cellsSimulationStateFlag], geometryRef.current ? geometryRef : undefined);
+  }, [simulation.cellsSimulationStateFlag, simulation.config.useGPU], geometryRef.current ? geometryRef : undefined);
 
 
   // ShaderMaterial could be theoretically created using JSX, but somehow it doesn't want to update uniforms correctly.
@@ -61,7 +64,7 @@ export const Water = observer(function WrappedComponent() {
       fragmentShader: waterFragmentShader,
       transparent: true
     });
-  }, []);
+  }, [simulation.config.useGPU]);
   material.uniforms.waterDepth.value = simulation.waterDepthTexture;
 
   return (
