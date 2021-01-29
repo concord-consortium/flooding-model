@@ -1,5 +1,5 @@
 import { RainIntensity, RiverStage, SimulationModel } from "./simulation";
-import { FloodingEngineGPU } from "./engine/flooding-engine-gpu";
+import { FloodingEngine } from "./engine/flooding-engine";
 
 const rafMock = jest.fn();
 (window as any).requestAnimationFrame = rafMock;
@@ -51,7 +51,7 @@ describe("SimulationModel", () => {
 
     expect(s.ready).toEqual(true);
 
-    expect(s.engine).toBeInstanceOf(FloodingEngineGPU);
+    expect(s.engine).toBeInstanceOf(FloodingEngine);
   });
 
   describe("cellAt", () => {
@@ -196,7 +196,7 @@ describe("SimulationModel", () => {
 
       s.tick();
 
-      expect(floodingEngineGPUUpdateMock).toHaveBeenCalledTimes(speedMult);
+      expect(floodingEngineUpdateMock).toHaveBeenCalledTimes(speedMult);
       expect(s.cellsSimulationStateFlag).toEqual(oldCellStateFlag + 1);
       expect(s.crossSectionState).not.toBe(oldCrossSectionState);
     });
