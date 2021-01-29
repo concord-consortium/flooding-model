@@ -3,12 +3,15 @@ uniform float cellSize;
 uniform float dampingFactor;
 uniform sampler2D cellProps;
 
-const float GRAVITY = 9.81;
-// PIPE_FACTOR can help with instabilities. Might need to be adjusted for different grid sizes and timesteps.
-const float PIPE_FACTOR = 0.025;
+const float GRAVITY = 0.25;
 
-float getNewFlux(float dt, float oldFlux, float heightDiff, float cellArea) {
-  return max(0.0, oldFlux + GRAVITY * PIPE_FACTOR * cellArea * dt * heightDiff);
+float getNewFlux(float dt, float oldFlux, float heightDiff, float cellSize) {
+  // original equation: max(0.0, pow(DAMPING_FACTOR, dt) * oldFlux + dt * A * GRAVITY * heightDiff / l)
+  // where:
+  // float A = cellSize * cellSize;
+  // float l = cellSize;
+  // so it can be reduced to:
+  return max(0.0, oldFlux + dt * cellSize * GRAVITY * heightDiff);
 }
 
 void main() {
@@ -41,17 +44,32 @@ void main() {
   float cellRightWaterDepth = texture2D(textureWaterOutput, uv + vec2(renderingCellSize.x, 0.0)).x;
   float cellLeftWaterDepth = texture2D(textureWaterOutput, uv + vec2(-renderingCellSize.x, 0.0)).x;
 
-  float nFluxLeft = getNewFlux(dt, fluxLeft, (cellTerrainElev + cellWaterDepth) - (cellLeftTerrainElev + cellLeftWaterDepth), cellArea) * dampingFactor;
-  float nFluxTop = getNewFlux(dt, fluxTop, (cellTerrainElev + cellWaterDepth) - (cellTopTerrainElev + cellTopWaterDepth), cellArea) * dampingFactor;
-  float nFluxRight = getNewFlux(dt, fluxRight, (cellTerrainElev + cellWaterDepth) - (cellRightTerrainElev + cellRightWaterDepth), cellArea) * dampingFactor;
-  float nFluxBottom = getNewFlux(dt, fluxBottom, (cellTerrainElev + cellWaterDepth) - (cellBottomTerrainElev + cellBottomWaterDepth), cellArea) * dampingFactor;
+  float nFluxLeft = getNewFlux(dt, fluxLeft, (cellTerrainElev + cellWaterDepth) - (cellLeftTerrainElev + cellLeftWaterDepth), cellSize);
+  float nFluxTop = getNewFlux(dt, fluxTop, (cellTerrainElev + cellWaterDepth) - (cellTopTerrainElev + cellTopWaterDepth), cellSize);
+  float nFluxRight = getNewFlux(dt, fluxRight, (cellTerrainElev + cellWaterDepth) - (cellRightTerrainElev + cellRightWaterDepth), cellSize);
+  float nFluxBottom = getNewFlux(dt, fluxBottom, (cellTerrainElev + cellWaterDepth) - (cellBottomTerrainElev + cellBottomWaterDepth), cellSize);
 
   // Scaling factor. Scale down outflow if it is more than available volume in the column.
   float currentVolume = cellWaterDepth * cellArea;
   float outVolume = (nFluxLeft + nFluxRight + nFluxTop + nFluxBottom) * dt;
-  float k = outVolume > 0.0 ? min(1.0, currentVolume / outVolume) : 1.0;
+  float k = (outVolume > 0.0 ? min(1.0, currentVolume / outVolume) : 1.0) * dampingFactor;
 
   vec4 newFlux = vec4(k * nFluxLeft, k * nFluxTop, k * nFluxRight, k * nFluxBottom);
+
+  // Boundary conditions, half-correct.
+  // Also, it could be optimized. Probably we could create a boundary texture and multiply flux by it.
+  if (gl_FragCoord.x <= 1.0) {
+    newFlux = vec4(0.0, 0.0, 0.0, 0.0);
+  }
+  if (gl_FragCoord.y >= resolution.y - 1.0) {
+    newFlux = vec4(0.0, 0.0, 0.0, 0.0);
+  }
+  if (gl_FragCoord.x >= resolution.x - 1.0) {
+    newFlux = vec4(0.0, 0.0, 0.0, 0.0);
+  }
+  if (gl_FragCoord.y <= 1.0) {
+    newFlux = vec4(0.0, 0.0, 0.0, 0.0);
+  }
 
   gl_FragColor = newFlux;
 }

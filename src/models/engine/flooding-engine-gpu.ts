@@ -3,7 +3,7 @@ import * as THREE from "three";
 import { ShaderMaterial, WebGLRenderTarget } from "three";
 import CalcWaterDepthShader from "./calc-water-depth-shader.glsl";
 import CalcFluxShader from "./calc-flux-shader.glsl";
-import ReadWaterLevelShader from "./read-water-level-shader.glsl";
+import readWaterOutputShader from "./read-water-output-shader.glsl";
 import { onWebGLRendererAvailable } from "../../components/view-3d/webgl-renderer";
 import { Cell } from "../cell";
 import { IFloodingEngineConfig } from "./flooding-engine";
@@ -23,9 +23,10 @@ export class FloodingEngineGPU {
   public waterOutputVariable: Variable;
   public fluxVariable: Variable;
 
-  public readWaterLevelShader: ShaderMaterial;
-  public readWaterLevelImage: Uint8Array;
-  public readWaterLevelRenderTarget: THREE.WebGLRenderTarget;
+  public readWaterOutputShader: ShaderMaterial;
+  public readWaterDepthImage: Uint8Array;
+  public readWaterSaturationImage: Uint8Array;
+  public readWaterOutputRenderTarget: THREE.WebGLRenderTarget;
 
   constructor(cells: Cell[], config: IFloodingEngineConfig) {
     this.cells = cells;
@@ -156,16 +157,17 @@ export class FloodingEngineGPU {
       console.error(error);
     }
 
-    // Create compute shader to read water level
-    this.readWaterLevelShader = (this.gpuCompute as any).createShaderMaterial(ReadWaterLevelShader, {
-      point1: {value: new THREE.Vector2()},
-      levelTexture: {value: null}
+    // Create compute shader to read water output.
+    this.readWaterOutputShader = (this.gpuCompute as any).createShaderMaterial(readWaterOutputShader, {
+      valueIdx: {value: 0},
+      textureWaterOutput: {value: null}
     });
 
-    // Create a 4x1 pixel image and a render target (Uint8, 4 channels, 1 byte per channel) to read water height and orientation.
-    this.readWaterLevelImage = new Uint8Array(4 * 1 * 4);
+    // Create an image and a render target (Uint8, 4 channels, 1 byte per channel) to read water output.
+    this.readWaterDepthImage = new Uint8Array(this.config.gridWidth * this.config.gridHeight * 4);
+    this.readWaterSaturationImage = new Uint8Array(this.config.gridWidth * this.config.gridHeight * 4);
 
-    this.readWaterLevelRenderTarget = new THREE.WebGLRenderTarget(4, 1, {
+    this.readWaterOutputRenderTarget = new THREE.WebGLRenderTarget(this.config.gridWidth, this.config.gridHeight, {
       wrapS: THREE.ClampToEdgeWrapping,
       wrapT: THREE.ClampToEdgeWrapping,
       minFilter: THREE.NearestFilter,
@@ -181,16 +183,26 @@ export class FloodingEngineGPU {
   public update() {
     // Do the gpu computation
     this.gpuCompute.compute();
+  }
 
+  public readWaterOutput() {
     // Read data:
-    // const currentRenderTarget = this.gpuCompute.getCurrentRenderTarget(this.waterOutputVariable) as WebGLRenderTarget;
-    // this.readWaterLevelShader.uniforms["levelTexture"].value = currentRenderTarget.texture;
+    const currentRenderTarget = this.gpuCompute.getCurrentRenderTarget(this.waterOutputVariable) as WebGLRenderTarget;
+    this.readWaterOutputShader.uniforms["textureWaterOutput"].value = currentRenderTarget.texture;
+
+    // Read .x component (water depth).
+    this.readWaterOutputShader.uniforms["valueIdx"].value = 0; // ==> .x
+    this.gpuCompute.doRenderTarget(this.readWaterOutputShader, this.readWaterOutputRenderTarget);
+    this.renderer.readRenderTargetPixels(this.readWaterOutputRenderTarget, 0, 0, this.config.gridWidth, this.config.gridHeight, this.readWaterDepthImage);
+    const waterDepth = new Float32Array(this.readWaterDepthImage.buffer);
     
-    // this.readWaterLevelShader.uniforms["point1"].value.set(104 / this.config.gridWidth, 104 / this.config.gridHeight);
-    // this.gpuCompute.doRenderTarget(this.readWaterLevelShader, this.readWaterLevelRenderTarget);
-    // this.renderer.readRenderTargetPixels(this.readWaterLevelRenderTarget, 0, 0, 4, 1, this.readWaterLevelImage);
-    // const pixels = new Float32Array(this.readWaterLevelImage.buffer);  
-    // console.log(pixels);
+    // Read .y component (water saturation).
+    this.readWaterOutputShader.uniforms["valueIdx"].value = 1; // ==> .y
+    this.gpuCompute.doRenderTarget(this.readWaterOutputShader, this.readWaterOutputRenderTarget);
+    this.renderer.readRenderTargetPixels(this.readWaterOutputRenderTarget, 0, 0, this.config.gridWidth, this.config.gridHeight, this.readWaterSaturationImage);
+    const waterSaturation = new Float32Array(this.readWaterSaturationImage.buffer);
+
+    return { waterDepth, waterSaturation };
   }
 
   public getWaterDepthTexture() {

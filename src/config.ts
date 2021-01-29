@@ -85,6 +85,8 @@ export interface ISimulationConfig {
   mapType: "street" | "topo" | "permeability";
   // Initially selected tab.
   activeTab: "maps" | "graph" | "gauge1" | "gauge2" | "gauge3";
+  // Experimental. Some features are not working. timeStep and speedMult need adjustment. Sample config:
+  // - ?useGPU=true&timeStep=0.4&speedMult=40
   useGPU: boolean;
 }
 
@@ -132,14 +134,14 @@ export const getDefaultConfig: () => IUrlConfig = () => ({
   riverData: null,
   waterDepth: null,
   waterHeightmapMaxDepth: 10,
-  gridWidth: 256,
+  gridWidth: 250,
   fillTerrainEdges: true,
   showCoordsOnClick: false,
   elevationVerticalTilt: 0,
   floodPermeabilityMult: 0.1,
   riverStageIncreaseSpeed: 0.125,
   rainStrength: [0.0025, 0.005, 0.0075, 0.02],
-  modelTimeToHours: 0.066,
+  modelTimeToHours: 0.05,
   rainStartDay: 1,
   view3d: false,
   crossSections: [],
@@ -160,7 +162,7 @@ export const getDefaultConfig: () => IUrlConfig = () => ({
   startingWaterLevel: "medium",
   mapType: "street",
   activeTab: "gauge1",
-  useGPU: true
+  useGPU: false
 });
 
 const getURLParam = (name: string) => {

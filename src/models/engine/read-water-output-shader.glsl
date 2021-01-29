@@ -1,5 +1,5 @@
-uniform vec2 point1;
-uniform sampler2D levelTexture;
+uniform int valueIdx;
+uniform sampler2D textureWaterOutput;
 
 // Integer to float conversion from https://stackoverflow.com/questions/17981163/webgl-read-pixels-from-floating-point-render-target
 
@@ -39,18 +39,11 @@ vec4 encode_float(float val) {
 }
 
 void main() {
-  vec2 cellSize = 1.0 / resolution.xy;
-
-  float waterLevel = texture2D(levelTexture, point1).x;
-  float waterSaturation = texture2D(levelTexture, point1).y;
-
-  if (gl_FragCoord.x < 1.5) {
-    gl_FragColor = encode_float(waterLevel);
-  } else if (gl_FragCoord.x < 2.5) {
-    gl_FragColor = encode_float(waterSaturation);
-  } else if (gl_FragCoord.x < 3.5) {
-    gl_FragColor = encode_float(0.0);
-  } else {
-    gl_FragColor = encode_float(0.0);
+  vec2 renderingCellSize = 1.0 / resolution.xy;
+  vec2 uv = gl_FragCoord.xy * renderingCellSize;
+  if (valueIdx == 0) {
+    gl_FragColor = encode_float(texture2D(textureWaterOutput, uv).x);
+  } else if (valueIdx == 1) {
+    gl_FragColor = encode_float(texture2D(textureWaterOutput, uv).y);
   }
 }
