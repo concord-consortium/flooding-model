@@ -131,7 +131,8 @@ const presets: {[key: string]: Partial<ISimulationConfig>} = {
     maxElevation: 250, // m
     modelHeight: 10, // m
     modelWidth: 10, // m
-    view3d: true
+    view3d: true,
+    timeStep: 0.125
   },
   waterfall: {
     elevation: "data/waterfall_elevation.png",
@@ -141,7 +142,8 @@ const presets: {[key: string]: Partial<ISimulationConfig>} = {
     maxElevation: 30, // m
     modelHeight: 100, // m
     modelWidth: 100, // m
-    view3d: true
+    view3d: true,
+    timeStep: 0.5
   }
 };
 
