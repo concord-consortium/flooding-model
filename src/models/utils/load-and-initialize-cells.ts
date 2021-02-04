@@ -102,6 +102,9 @@ export const markShoreIndices = (edgeCells: Cell[], cells: Cell[], config: ISimu
 };
 
 export const markRiverBanks = (edgeCells: Cell[], cells: Cell[], shoreIdx: {[key: number]: number}, config: ISimulationConfig) => {
+  const expectedSegmentLength = Math.round(config.riverBankSegmentLength / config.cellSize);
+  const riverBankSegments: Cell[][] = [];
+
   const isRiverBank = (cell: Cell) => {
     if (cell.isRiver) {
       return false;
@@ -115,53 +118,83 @@ export const markRiverBanks = (edgeCells: Cell[], cells: Cell[], shoreIdx: {[key
     return result;
   };
 
-  const expectedSegmentLength = Math.round(config.riverBankSegmentLength / config.cellSize);
-  const riverBankSegments: Cell[][] = [];
-  const queue = [];
+  const processRiverBank = (startCell: Cell) => { 
+    const queue = [ startCell ];
+    const neighborsCount: { [key: number]: number } = {};
+    const processed: { [key: number]: boolean } = {};
 
-  for (const cell of edgeCells) {
-    if (isRiverBank(cell)) {
+    while (queue.length > 0) {
+      const cell = queue.pop() as Cell;
+      // Divide river banks into segments. Note that new segments are created by splitting the previous one into
+      // two pieces. Why? Otherwise, we would end up with some very short segments when two segments approach
+      // each other from two different directions. Creating too long segments and dividing them into two ensures
+      // that segments will be always as long as we expect, and sometimes they can be even longer (what looks
+      // better than too short ones).
+      const prevSegment = riverBankSegments[riverBankSegments.length - 1];
+      // * 2 ensures that we'll split a segment only when we can create two new ones that will have length
+      // close to the desired segment length.
+      if (prevSegment.length < expectedSegmentLength * 2) {
+        prevSegment.push(cell);
+        const lastSegmentIdx = riverBankSegments.length - 1;
+        cell.riverBankSegmentIdx = lastSegmentIdx;
+      } else {
+        // `expectedSegmentLength - 1` => note that the last point of the previous segment is copied to the new one.
+        // It ensures that there are no gaps between segments.
+        const newSegment = prevSegment.slice(expectedSegmentLength - 1);
+        // Limit length of the previous segment.
+        prevSegment.length = expectedSegmentLength;
+        newSegment.push(cell);
+        riverBankSegments.push(newSegment);
+        const lastSegmentIdx = riverBankSegments.length - 1;
+        newSegment.forEach(c => { c.riverBankSegmentIdx = lastSegmentIdx; });
+      }
       cell.isRiverBank = true;
-      const segment = [cell];
-      riverBankSegments.push(segment);
-      cell.riverBankSegmentIdx = riverBankSegments.length - 1;
-      queue.push(cell);
-    }
-  }
 
-  while (queue.length > 0) {
-    const cell = queue.shift() as Cell;
-    const neighbors = getCellNeighbors8(cell, cells, config.gridWidth, config.gridHeight);
-    let foundNeigh = false;
-    for (const n of neighbors) {
-      // A few conditions here:
-      // - follow just one neighbor, don't add more than one to the queue. It ensures that segments don't have forks.
-      // - check if shoreIdx properties are equal. It ensures that one segment won't cross the river.
-      if (!foundNeigh && n && !n.isRiverBank && shoreIdx[n.id] === shoreIdx[cell.id] && !n.isRiver && isRiverBank(n)) {
-        foundNeigh = true;
-        queue.push(n);
-        n.isRiverBank = true;
-        // Divide river banks into segments. Note that new segments are created by splitting the previous one into
-        // two pieces. Why? Otherwise, we would end up with some very short segments when two segments approach
-        // each other from two different directions. Creating too long segments and dividing them into two ensures
-        // that segments will be always as long as we expect, and sometimes they can be even longer (what looks
-        // better than too short ones).
-        const prevSegment = riverBankSegments[cell.riverBankSegmentIdx];
-        // * 2 ensures that we'll split a segment only when we can create two new ones that will have length
-        // close to the desired segment length.
-        if (prevSegment.length < expectedSegmentLength * 2) {
-          prevSegment.push(n);
-          n.riverBankSegmentIdx = cell.riverBankSegmentIdx;
-        } else {
-          const newSegment = prevSegment.slice(expectedSegmentLength);
-          newSegment.push(n);
-          riverBankSegments.push(newSegment);
-          newSegment.forEach(c => { c.riverBankSegmentIdx = riverBankSegments.length - 1; });
-          // Limit length of the previous segment.
-          prevSegment.length = Math.min(expectedSegmentLength, prevSegment.length);
+      const neighbors = getCellNeighbors8(cell, cells, config.gridWidth, config.gridHeight);
+      neighborsCount[cell.id] = 0;
+      for (const n of neighbors) {
+        // Check if shoreIdx properties are equal. It ensures that one segment won't cross the river.
+        if (n && !processed[n.id] && shoreIdx[n.id] === shoreIdx[cell.id] && !n.isRiver && isRiverBank(n)) {
+          neighborsCount[cell.id] += 1;
+          queue.push(n);
+          processed[n.id] = true;
         }
       }
+      // Handle special cases.
+      // 1. Dead end. No way to continue river bank, but it's not edge of the map yet. 
+      //    Remove this path unless the path fork is reached. Algorithm will continue from this fork.
+      if (neighborsCount[cell.id] === 0 && !cell.isEdge) {
+        const lastSegment = riverBankSegments[riverBankSegments.length - 1];
+        while (lastSegment[lastSegment.length - 1] && neighborsCount[lastSegment[lastSegment.length - 1].id] <= 1) {
+          const removedCell = lastSegment.pop();
+          if (removedCell) {
+            removedCell.isRiverBank = false;
+            removedCell.riverBankSegmentIdx = undefined;
+          }
+        }
+        if (lastSegment[lastSegment.length - 1]) {
+          // One less neighbor, as one path has just been removed.
+          neighborsCount[lastSegment[lastSegment.length - 1].id] -= 1;
+        }
+      }
+      // 2. DFS reached the other end of the map. Finish DFS, remove everything from the queue.
+      if (cell.isEdge && cell.id !== startCell.id) {
+        queue.length = 0;
+      }
+    }
+  };  
+
+  const shoreProcessed: {[key: number]: boolean} = {};
+  for (const cell of edgeCells) {
+    if (isRiverBank(cell) && !shoreProcessed[shoreIdx[cell.id]]) {
+      cell.isRiverBank = true;
+      riverBankSegments.push([]);
+      processRiverBank(cell);
+      // Mark shore area as processed so the algorithm doesn't start again in the same area. This will ensure
+      // that river banks will start in one map edge and finish in the other.
+      shoreProcessed[shoreIdx[cell.id]] = true;
     }
   }
+
   return riverBankSegments;
 };
