@@ -255,7 +255,8 @@ export class SimulationModel {
     this.riverBankSegments[riverBankIdx].forEach(cell => {
       cell.leveeHeight = cell.isLevee ? 0 : leveeHeight;
     });
-    const isLevee = this.riverBankSegments[riverBankIdx][0].isLevee;
+    // Don't use first or last one cell in segment, as they are shared between segments.
+    const isLevee = this.riverBankSegments[riverBankIdx][1]?.isLevee;
     this.leveesCount += isLevee ? 1 : -1;
     this.updateCellsBaseStateFlag();
     this.updateCrossSectionStates();
