@@ -1,7 +1,7 @@
 {
   "name": "flooding-model",
-  "version": "0.2.0",
-  "description": "Concord Consortium starter projects",
+  "version": "2.0.0",
+  "description": "Concord Consortium Flooding Model",
   "main": "index.js",
   "jest": {
     "testURL": "https://flooding-model.unexisting.url.com",
