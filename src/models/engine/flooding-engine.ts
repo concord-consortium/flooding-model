@@ -8,6 +8,10 @@
 // United States. pp.47-56, ff10.1109/PG.2007.15ff. ffinria-00402079
 //
 // Example implementation (although GPU-based): https://github.com/skeelogy/skunami.js
+// More resources:
+// - https://web.archive.org/web/20080618181901/http://freespace.virgin.net/hugo.elias/graphics/x_water.htm
+// - https://profs.etsmtl.ca/epaquette/Research/Papers/Dagenais.2018/Dagenais-2018.pdf
+
 import { Cell } from "../cell";
 import { getGridIndexForLocation } from "../utils/grid-utils";
 import { RiverStage } from "../simulation";
@@ -19,17 +23,15 @@ export interface IFloodingEngineConfig {
   floodPermeabilityMult?: number;
   dampingFactor?: number;
   riverStageIncreaseSpeed?: number;
+  timeStep: number;
 }
 
-const GRAVITY = 9.81;
-// PIPE_FACTOR can help with instabilities. Might need to be adjusted for different grid sizes and timesteps.
-const PIPE_FACTOR = 0.025;
-
+const GRAVITY = 0.25;
 const EDGE_CELL = new Cell({ x: -1, y: -1, isEdge: true });
 EDGE_CELL.fluxL = EDGE_CELL.fluxR = EDGE_CELL.fluxT = EDGE_CELL.fluxB = 0;
 
-const getNewFlux = (dt: number, oldFlux: number, heightDiff: number, cellArea: number) => {
-  return Math.max(0, oldFlux + GRAVITY * PIPE_FACTOR * cellArea * dt * heightDiff);
+const getNewFlux = (dt: number, oldFlux: number, heightDiff: number, cellSize: number) => {
+  return Math.max(0, oldFlux + dt * cellSize * GRAVITY * heightDiff);
 };
 
 export class FloodingEngine {
@@ -42,12 +44,14 @@ export class FloodingEngine {
   public cellSize: number;
   public dampingFactor: number;
   public floodPermeabilityMult: number;
+  public dt: number;
   public riverStageIncreaseSpeed: number;
+
+  public waterSaturationIncrement = 0;
 
   // Outputs
   public waterSum = 0;
   public riverWaterSum = 0;
-  public waterSaturationIncrement = 0;
   public floodArea = 0; // in square meters
 
   constructor(cells: Cell[], config: IFloodingEngineConfig) {
@@ -57,6 +61,7 @@ export class FloodingEngine {
     this.dampingFactor = config.dampingFactor !== undefined ? config.dampingFactor : 0.99;
     this.floodPermeabilityMult = config.floodPermeabilityMult !== undefined ? config.floodPermeabilityMult : 1;
     this.riverStageIncreaseSpeed = config.riverStageIncreaseSpeed !== undefined ? config.riverStageIncreaseSpeed : 0.125;
+    this.dt = config.timeStep || 1;
 
     this.cells = cells;
     // "Edge" cells exist only to make rendering a bit simpler. Skip them entirely in the simulation.
@@ -72,11 +77,11 @@ export class FloodingEngine {
     return this.cells[getGridIndexForLocation(x, y, this.gridWidth)];
   }
 
-  public update(dt: number) {
+  public update(dt = this.dt) {
     this.removeWater(dt);
     this.addWater(dt);
-    this.updateFlux(dt);
     this.updateWaterDepth(dt);
+    this.updateFlux(dt);
   }
 
   public addWater(dt: number) {
@@ -86,7 +91,7 @@ export class FloodingEngine {
       // calculations in other steps.
       if (cell.waterSaturation <= 1) {
         const riverStageDiff = this.waterSaturationIncrement * dt * this.riverStageIncreaseSpeed;
-        cell.waterSaturation += this.waterSaturationIncrement * dt * this.riverStageIncreaseSpeed;
+        cell.waterSaturation += riverStageDiff;
         cell.waterSaturation = Math.min(1 + 1e-6, cell.waterSaturation);
         if (riverStageDiff < 0) {
           const finalRiverStage = Math.min(cell.initialWaterSaturation + 0.2, RiverStage.high);
@@ -129,21 +134,21 @@ export class FloodingEngine {
 
       // fluxL
       nCell = this.getCellAt(x - 1, y);
-      nFluxL = !nCell.isEdge ? getNewFlux(dt, cell.fluxL, cell.elevation - nCell.elevation, cellArea) * this.dampingFactor : 0;
+      nFluxL = !nCell.isEdge ? getNewFlux(dt, cell.fluxL, cell.elevation - nCell.elevation, this.cellSize) : 0;
       // fluxR
       nCell = this.getCellAt(x + 1, y);
-      nFluxR = !nCell.isEdge ? getNewFlux(dt, cell.fluxR, cell.elevation - nCell.elevation, cellArea) * this.dampingFactor : 0;
+      nFluxR = !nCell.isEdge ? getNewFlux(dt, cell.fluxR, cell.elevation - nCell.elevation, this.cellSize) : 0;
       // fluxB
       nCell = this.getCellAt(x, y - 1);
-      nFluxB = !nCell.isEdge ? getNewFlux(dt, cell.fluxB, cell.elevation - nCell.elevation, cellArea) * this.dampingFactor : 0;
+      nFluxB = !nCell.isEdge ? getNewFlux(dt, cell.fluxB, cell.elevation - nCell.elevation, this.cellSize) : 0;
       // fluxT
       nCell = this.getCellAt(x, y + 1);
-      nFluxT = !nCell.isEdge ? getNewFlux(dt, cell.fluxT, cell.elevation - nCell.elevation, cellArea) * this.dampingFactor : 0;
+      nFluxT = !nCell.isEdge ? getNewFlux(dt, cell.fluxT, cell.elevation - nCell.elevation, this.cellSize) : 0;
 
       // Scaling factor. Scale down outflow if it is more than available volume in the column.
       const currentVolume = cell.waterDepth * cellArea;
       const outVolume = (nFluxL + nFluxR + nFluxT + nFluxB) * dt;
-      const k = outVolume > 0 ? Math.min(1,  currentVolume / outVolume) : 1;
+      const k = (outVolume > 0 ? Math.min(1, currentVolume / outVolume) : 1) * this.dampingFactor;
 
       cell.fluxL = k * nFluxL;
       cell.fluxR = k * nFluxR;
@@ -172,7 +177,7 @@ export class FloodingEngine {
 
       const fluxIn = fluxInLeft + fluxInRight + fluxInTop + fluxInBottom;
 
-      cell.waterDepth = Math.max(0, cell.waterDepth + (fluxIn - cell.fluxOut) * dt / (cellArea));
+      cell.waterDepth = Math.max(0, cell.waterDepth + (fluxIn - cell.fluxOut) * dt / cellArea);
 
       this.waterSum += cell.waterDepth;
       if (cell.isRiver) {

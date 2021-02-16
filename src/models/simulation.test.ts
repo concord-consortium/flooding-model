@@ -11,6 +11,13 @@ jest.mock("./engine/flooding-engine", () => ({
   }
 }));
 
+const floodingEngineGPUUpdateMock = jest.fn();
+jest.mock("./engine/flooding-engine-gpu", () => ({
+  FloodingEngineGPU: function FloodingEngineGPUMock() {
+    this.update = floodingEngineGPUUpdateMock;
+  }
+}));
+
 const getSimpleSimulation = async () => {
   const s = new SimulationModel({
     elevation: [[0]],
@@ -25,6 +32,7 @@ describe("SimulationModel", () => {
   beforeEach(() => {
     rafMock.mockClear();
     floodingEngineUpdateMock.mockClear();
+    floodingEngineGPUUpdateMock.mockClear();
   });
 
   it("generates cell after being initialized and updates observable flags", async () => {

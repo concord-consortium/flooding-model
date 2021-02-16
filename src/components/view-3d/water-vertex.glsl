@@ -1,5 +1,5 @@
-uniform vec3 color;
 attribute float alpha;
+uniform vec3 color;
 varying vec4 vColor;
 
 void main() {

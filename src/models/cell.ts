@@ -33,7 +33,7 @@ export class Cell {
   public isEdge = false;
   public isRiver = false;
   public isRiverBank = false;
-  public riverBankSegmentIdx: number;
+  public riverBankSegmentIdx: number | undefined;
   public permeability = 0;
   public waterSaturation = 0;
   public initialWaterSaturation = 0;
@@ -48,8 +48,12 @@ export class Cell {
     this.initialWaterDepth = props.waterDepth || 0;
   }
 
+  public get terrainElevation() {
+    return this.baseElevation + this.leveeHeight;
+  }
+
   public get elevation() {
-    return this.baseElevation + this.waterDepth + this.leveeHeight;
+    return this.terrainElevation + this.waterDepth;
   }
 
   public get fluxOut() {

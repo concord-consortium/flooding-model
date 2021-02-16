@@ -5,3 +5,6 @@ const enzyme = require("enzyme");
 const Adapter = require("enzyme-adapter-react-16");
 
 enzyme.configure({ adapter: new Adapter() });
+
+// Mock flooding-engine-gpu by default.
+jest.mock("./models/engine/flooding-engine-gpu");

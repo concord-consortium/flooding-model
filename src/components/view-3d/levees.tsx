@@ -87,6 +87,8 @@ export const Levees: React.FC = observer(function WrappedComponent() {
         const curveInterpolator = new THREE.CatmullRomCurve3(pos, false);
         // Limit number of output points to make lines more straight / smooth.
         result.push(curveInterpolator.getPoints(Math.round(pos.length * SMOOTHING_RATIO)));
+      } else {
+        result.push([]);
       }
     }
     return result;
@@ -98,7 +100,8 @@ export const Levees: React.FC = observer(function WrappedComponent() {
     // complaining about unnecessary variable in the dependencies array.
     simulation.cellsBaseStateFlag;
     // If one cell in the river bank segment is levee, then the whole segment is a levee. No need to check other cells.
-    return riverBankSegments.map(segment => segment[0].isLevee);
+    // Don't check first or the last one cell, as these can be shared between two segments.
+    return riverBankSegments.map(segment => segment[1]?.isLevee);
 
   }, [riverBankSegments, simulation.cellsBaseStateFlag]);
 

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { Cell } from "../../models/cell";
 import * as THREE from "three";
 import { BufferAttribute } from "three";
@@ -12,6 +12,7 @@ import { useElevation } from "./use-elevation";
 // for tests models at the moment. If 3D view ever gets more useful, these shaders should be updated to include
 // some light calculations / reflections.
 import waterVertexShader from "./water-vertex.glsl";
+import waterVertexFromGPGPUShader from "./water-vertex-from-gpgpu.glsl";
 import waterFragmentShader from "./water-fragment.glsl";
 
 const vertexIdx = (cell: Cell, gridWidth: number, gridHeight: number) => (gridHeight - 1 - cell.y) * gridWidth + cell.x;
@@ -43,29 +44,37 @@ export const Water = observer(function WrappedComponent() {
   useElevation({ includeWaterDepth: true, geometryRef });
 
   useUpdate<THREE.PlaneBufferGeometry>(geometry => {
+    if (simulation.config.useGPU) {
+      return;
+    }
     setupAlpha(geometry, simulation);
-  }, [simulation.cellsSimulationStateFlag], geometryRef.current ? geometryRef : undefined);
+  }, [simulation.cellsSimulationStateFlag, simulation.config.useGPU], geometryRef.current ? geometryRef : undefined);
 
-  const uniforms = {
-    color: {value: WATER_COL}
-  };
+
+  // ShaderMaterial could be theoretically created using JSX, but somehow it doesn't want to update uniforms correctly.
+  // It seems that uniform is cached somewhere. Note that each frame simulation.waterDepthTexture might be different
+  // as GPU computation swaps render targets.
+  const material = useMemo(() => {
+    return new THREE.ShaderMaterial({
+      uniforms: {
+        color: {value: WATER_COL},
+        waterDepth: {value: null}
+      },
+      vertexShader: simulation.config.useGPU ? waterVertexFromGPGPUShader : waterVertexShader,
+      fragmentShader: waterFragmentShader,
+      transparent: true
+    });
+  }, [simulation.config.useGPU]);
+  material.uniforms.waterDepth.value = simulation.waterDepthTexture;
 
   return (
     // In 2D view per-vertex elevation is never set, so it's necessary to keep this plane a bit higher than terrain plane.
-    <mesh position={[PLANE_WIDTH * 0.5, height * 0.5, simulation.config.view3d ? 0 : 0.001 ]} >
+    <mesh position={[PLANE_WIDTH * 0.5, height * 0.5, simulation.config.view3d ? 0 : 0.001 ]} material={material}>
       <planeBufferGeometry
         attach="geometry"
         ref={geometryRef}
         center-x={0} center-y={0}
         args={[PLANE_WIDTH, height, simulation.gridWidth - 1, simulation.gridHeight - 1]}
-      />
-      {/* Note that standard ThreeJS materials don't let us specify alpha per vertex. That's why it's necessary to use ShaderMaterial and custom shaders. */}
-      <shaderMaterial
-        attach="material"
-        vertexShader={waterVertexShader}
-        fragmentShader={waterFragmentShader}
-        uniforms={uniforms}
-        transparent={true}
       />
     </mesh>
   );
