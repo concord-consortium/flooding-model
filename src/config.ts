@@ -50,7 +50,10 @@ export interface ISimulationConfig {
   modelTimeToHours: number;
   // Rain starts with small delay, it's sunny at the beginning of the simulation.
   rainStartDay: number;
+  // Enables 3D rendering of elevation data.
   view3d: boolean;
+  // This value can be used to make elevation more pronounced, but only during rendering.
+  view3dElevationMult: number;
   crossSections: ICrossSectionConfig[];
   // Length of the river bank segment that is used to construct levees (in meters).
   riverBankSegmentLength: number;
@@ -144,6 +147,7 @@ export const getDefaultConfig: () => IUrlConfig = () => ({
   modelTimeToHours: 0.05,
   rainStartDay: 1,
   view3d: false,
+  view3dElevationMult: 1,
   crossSections: [],
   riverBankSegmentLength: 700, // m
   leveeHeight: 4, // m

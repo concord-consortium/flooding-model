@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from "react";
 import { observer } from "mobx-react-lite";
-import { mToViewUnit, getTexture } from "./helpers";
+import { mToViewUnitRatio, mToViewElevationUnit, getTexture } from "./helpers";
 import { useStores } from "../../use-stores";
 import { PointerEvent } from "react-three-fiber/canvas";
 
@@ -32,10 +32,10 @@ export const Marker: React.FC<IProps> = observer(function WrappedComponent({
     return null;
   }
 
-  const ratio = mToViewUnit(simulation);
+  const ratio = mToViewUnitRatio(simulation);
   const x = position.x * ratio + (0.5 - anchorX) * width;
   const y = position.y * ratio + (0.5 - anchorY) * height;
-  const z = simulation.config.view3d ? (simulation.cellAt(position.x, position.y)?.elevation || 0) * ratio : 0;
+  const z = simulation.config.view3d ? mToViewElevationUnit(simulation, simulation.cellAt(position.x, position.y)?.elevation || 0) : 0;
 
   const texture = (hovered || active) && highlightTexture ? highlightTexture : defTexture;
 

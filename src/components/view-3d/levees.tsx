@@ -1,7 +1,7 @@
 import React, { useMemo } from "react";
 import { observer } from "mobx-react-lite";
 import { useStores } from "../../use-stores";
-import { mToViewUnit } from "./helpers";
+import { mToViewUnitRatio, mToViewElevationUnit } from "./helpers";
 import * as THREE from "three";
 import * as meshline from "threejs-meshline";
 import { Interaction } from "../../models/ui";
@@ -66,7 +66,7 @@ export const LeveeSegment: React.FC<ILeveeSegmentProps> = ({ vertices, visible, 
 
 export const Levees: React.FC = observer(function WrappedComponent() {
   const { simulation, ui } = useStores();
-  const unitConversionFactor = mToViewUnit(simulation);
+  const unitConversionFactor = mToViewUnitRatio(simulation);
   const riverBankSegments = simulation.riverBankSegments;
   const cellSize = simulation.config.cellSize;
   const view3d = simulation.config.view3d;
@@ -80,7 +80,7 @@ export const Levees: React.FC = observer(function WrappedComponent() {
         pos.push(new THREE.Vector3(
           cell.x * cellSize * unitConversionFactor + halfCell,
           cell.y * cellSize * unitConversionFactor + halfCell,
-          (view3d ? cell.baseElevation * unitConversionFactor : 0) + Z_SHIFT
+          (view3d ? mToViewElevationUnit(simulation, cell.baseElevation) : 0) + Z_SHIFT
         ));
       }
       if (pos.length > 1) {
@@ -92,7 +92,7 @@ export const Levees: React.FC = observer(function WrappedComponent() {
       }
     }
     return result;
-  }, [cellSize, unitConversionFactor, riverBankSegments, view3d]);
+  }, [cellSize, unitConversionFactor, simulation, riverBankSegments, view3d]);
 
   const isLevee = useMemo(() => {
     // cellsBaseStateFlag flag marks that some changes have been made to cells (for performance reasons the whole cells

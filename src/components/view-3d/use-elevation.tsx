@@ -2,7 +2,7 @@ import * as THREE from "three";
 import { useStores } from "../../use-stores";
 import { useUpdate } from "react-three-fiber";
 import { Cell } from "../../models/cell";
-import { mToViewUnit } from "./helpers";
+import { mToViewElevationUnit } from "./helpers";
 import { BufferAttribute } from "three";
 
 const vertexIdx = (cell: Cell, gridWidth: number, gridHeight: number) => (gridHeight - 1 - cell.y) * gridWidth + cell.x;
@@ -18,14 +18,16 @@ export const useElevation = ({ includeWaterDepth, geometryRef }: IProps) => {
   return useUpdate<THREE.PlaneBufferGeometry>(geometry => {
       if (simulation.config.view3d) {
         const posArray = geometry.attributes.position.array as number[];
-        const mult = mToViewUnit(simulation);
         // Apply height map to vertices of plane.
         for (const cell of simulation.cells) {
           const zAttrIdx = vertexIdx(cell, simulation.gridWidth, simulation.gridHeight) * 3 + 2;
           // .baseElevation doesn't include water depth.
-          posArray[zAttrIdx] = (includeWaterDepth ? cell.elevation : cell.baseElevation) * mult;
+          posArray[zAttrIdx] = cell.isEdge ? 0 : mToViewElevationUnit(simulation, includeWaterDepth ? cell.elevation : cell.baseElevation);
         }
-        geometry.computeVertexNormals();
+        if (!includeWaterDepth) {
+          // It doesn't make sense to recalculate normals for water surface, as it's pretty much flat.
+          geometry.computeVertexNormals();
+        }
         (geometry.attributes.position as BufferAttribute).needsUpdate = true;
       }
     },

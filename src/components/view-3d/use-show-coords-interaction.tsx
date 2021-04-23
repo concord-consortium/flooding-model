@@ -1,4 +1,4 @@
-import { mToViewUnit } from "./helpers";
+import { mToViewUnitRatio } from "./helpers";
 import { InteractionHandler } from "./interaction-handler";
 import { useStores } from "../../use-stores";
 import { PointerEvent } from "react-three-fiber/canvas";
@@ -8,7 +8,7 @@ export const useShowCoordsInteraction: () => InteractionHandler = () => {
   return {
     active: simulation.config.showCoordsOnClick,
     onPointerUp: (e: PointerEvent) => {
-      const ratio = mToViewUnit(simulation);
+      const ratio = mToViewUnitRatio(simulation);
       const xM = e.point.x / ratio;
       const yM = e.point.y / ratio;
       const cell = simulation.cellAt(xM, yM);
