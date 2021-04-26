@@ -6,14 +6,15 @@ import CS2Background from "../assets/Model 2 Gauge 2 CS Landscape.svg";
 import CS2Water from "../assets/Model 2 Gauge 2 CS Water.svg";
 import CS3Background from "../assets/Model 2 Gauge 3 CS Landscape.svg";
 import CS3Water from "../assets/Model 2 Gauge 3 CS Water.svg";
-import CS1Indicator from "../assets/marker1 CS stream gauge indicator.svg";
-import CS2Indicator from "../assets/marker2 CS stream gauge indicator.svg";
-import CS3Indicator from "../assets/marker3 CS stream gauge indicator.svg";
+import CS1Indicator from "../assets/marker1 CS stream gauge indicator.png";
+import CS2Indicator from "../assets/marker2 CS stream gauge indicator.png";
+import CS3Indicator from "../assets/marker3 CS stream gauge indicator.png";
 import { observer } from "mobx-react-lite";
 import { useStores } from "../use-stores";
 import { ICrossSectionState } from "../models/simulation";
 import { ICrossSectionConfig } from "../config";
 import css from "./cross-section-svg-view.scss";
+import { Header } from "./header";
 
 const CrossSectionBackground: {[key: number]: React.JSXElementConstructor<any>} = {
   0: CS1Background,
@@ -27,7 +28,7 @@ const CrossSectionWater: {[key: number]: React.JSXElementConstructor<any>} = {
   2: CS3Water
 };
 
-const CrossSectionIndicator: { [key: number]: React.JSXElementConstructor<any> } = {
+const CrossSectionIndicatorSrc: { [key: number]: string } = {
   0: CS1Indicator,
   1: CS2Indicator,
   2: CS3Indicator
@@ -128,7 +129,7 @@ interface IProps {
 // water layer and morph between various states using various simulation outputs.
 export const CrossSectionSVGView: React.FC<IProps> = observer(({ gauge}) => {
   const CrossSectionBgComp = CrossSectionBackground[gauge];
-  const CrossSectionGaugeIndicator = CrossSectionIndicator[gauge];
+  const CrossSectionGaugeIndicatorSrc = CrossSectionIndicatorSrc[gauge];
   const CrossSectionWaterComp = CrossSectionWater[gauge];
   const { simulation } = useStores();
   // SVG output paths.
@@ -196,7 +197,8 @@ export const CrossSectionSVGView: React.FC<IProps> = observer(({ gauge}) => {
   return (
     <div className={css.crossSection}>
       <div className={css.gaugeIndicator}>
-        <CrossSectionGaugeIndicator />
+        <div className={css.header}><Header>Stream Gauge {gauge + 1}: Cross-section</Header></div>
+        <img src={CrossSectionGaugeIndicatorSrc} />
       </div>
       <div className={`${css.background} ${css[getLeveesClassName(csState)]}`}>
         {/* Note that background has layers of output paths where interpolated paths are injected */}

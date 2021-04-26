@@ -40,10 +40,24 @@
   .gaugeIndicator {
     position: relative;
     z-index: 1;
-    width: 105%;
-    margin-top: -4%;
-    margin-left: -2%;
+    width: 101%;
+    margin-top: -10px;
+    margin-left: -1%;
     margin-bottom: -3.5%;
+
+    img {
+      width: 100%;
+    }
+
+    .header {
+      position: absolute;
+      left: 0;
+      width: 100%;
+      top: 20%;
+      height: 80%;
+      display: flex;
+      justify-content: center;
+    }
   }
 
   .svgPathSource {
