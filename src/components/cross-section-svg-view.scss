@@ -1,6 +1,7 @@
 .crossSection {
   .background {
-    width: 100%;
+    width: 95.8%;
+    margin-left: 2.5%;
 
     &.zeroL {
       :global(#left_levee), :global(#right_levee) {
@@ -33,6 +34,29 @@
       :global(#hidden_for_right_levee) {
         display: none;
       }
+    }
+  }
+
+  .gaugeIndicator {
+    position: relative;
+    z-index: 1;
+    width: 101%;
+    margin-top: -10px;
+    margin-left: -1%;
+    margin-bottom: -3.5%;
+
+    img {
+      width: 100%;
+    }
+
+    .header {
+      position: absolute;
+      left: 0;
+      width: 100%;
+      top: 20%;
+      height: 80%;
+      display: flex;
+      justify-content: center;
     }
   }
 

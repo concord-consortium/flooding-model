@@ -8,7 +8,6 @@ import Marker2 from "../assets/marker2.svg";
 import Marker3 from "../assets/marker3.svg";
 import { observer } from "mobx-react-lite";
 import { useStores } from "../use-stores";
-import { Header } from "./header";
 
 import "react-tabs/style/react-tabs.css";
 import css from "./side-container.scss";
@@ -87,9 +86,7 @@ export const SideContainer = observer(() => {
           if (!tabEnabled(`gauge${idx + 1}` as "gauge1" | "gauge2" | "gauge3")) {
             return null;
           }
-          const Icon = GaugeMarker[idx];
           return (<TabPanel key={idx} className={`react-tabs__tab-panel ${css.tabPanel} ${gaugeBorderColorCss[idx]}`}>
-              <Header><Icon className={css.icon}/> Stream Gauge {idx + 1}: Cross-section</Header>
               <GaugeTab gauge={idx}/>
             </TabPanel>
           );
