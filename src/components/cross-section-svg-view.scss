@@ -1,6 +1,7 @@
 .crossSection {
   .background {
-    width: 100%;
+    width: 95.8%;
+    margin-left: 2.5%;
 
     &.zeroL {
       :global(#left_levee), :global(#right_levee) {
@@ -34,6 +35,15 @@
         display: none;
       }
     }
+  }
+
+  .gaugeIndicator {
+    position: relative;
+    z-index: 1;
+    width: 105%;
+    margin-top: -4%;
+    margin-left: -2%;
+    margin-bottom: -3.5%;
   }
 
   .svgPathSource {
