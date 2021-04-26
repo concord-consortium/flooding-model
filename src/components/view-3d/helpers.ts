@@ -9,7 +9,11 @@ export const planeHeight = (simulation: SimulationModel) =>
   simulation.config.modelHeight * PLANE_WIDTH / simulation.config.modelWidth;
 
 // Ratio between model unit (meters) and 3D view distance unit (unitless).
-export const mToViewUnit = (simulation: SimulationModel) => PLANE_WIDTH / simulation.config.modelWidth;
+export const mToViewUnitRatio = (simulation: SimulationModel) => PLANE_WIDTH / simulation.config.modelWidth;
+
+// Ratio between model Z axis unit (meters) and 3D elevation (unitless, additionally scaled).
+export const mToViewElevationUnit = (simulation: SimulationModel, elevation: number) => 
+  elevation === 0 ? 0 : (elevation - simulation.config.minElevation) * mToViewUnitRatio(simulation) * simulation.config.view3dElevationMult;
 
 export const getTexture = (imgSrcOrCanvas: string | HTMLCanvasElement) => {
   let source;

@@ -15,6 +15,7 @@ const presets: {[key: string]: Partial<ISimulationConfig>} = {
     maxElevation: 250, // m
     modelHeight: 8000, // m
     modelWidth: 8000, // m
+    view3dElevationMult: 3, // elevation differences are relatively small, so make them more pronounced in 3d rendering
     crossSections: [
       {
         minRiverDepth: 0.5, // m
