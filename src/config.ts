@@ -91,6 +91,10 @@ export interface ISimulationConfig {
   // Experimental. Some features are not working. timeStep and speedMult need adjustment. Sample config:
   // - ?useGPU=true&timeStep=0.4&speedMult=40
   useGPU: boolean;
+  // Min zoom level.
+  minCameraDistance: number;
+  // Max zoom level.
+  maxCameraDistance: number;
 }
 
 export interface ICoords {
@@ -166,7 +170,9 @@ export const getDefaultConfig: () => IUrlConfig = () => ({
   startingWaterLevel: "medium",
   mapType: "street",
   activeTab: "gauge1",
-  useGPU: false
+  useGPU: false,
+  minCameraDistance: 0.8,
+  maxCameraDistance: 4
 });
 
 const getURLParam = (name: string) => {
