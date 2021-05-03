@@ -112,6 +112,41 @@ export default createMuiTheme({
         marginLeft: "1px",
         top: "26px !important" // to overwrite @media (pointer: coarse) styling
       }
+    },
+    MuiSelect: {
+      root: {
+        color: "#434343",
+        fontSize: "10px",
+        fontFamily: "Roboto Condensed",
+      },
+      outlined: {
+        paddingTop: 2,
+        paddingBottom: 2,
+        paddingLeft: 5,
+        paddingRight: "24px !important",
+        textAlign: "left"
+      },
+      iconOutlined: {
+        right: 0
+      }
+    },
+    MuiOutlinedInput: {
+      // continuation of the outlined select styles
+      root: {
+        borderRadius: 5,
+        background: "#fff",
+        "& $notchedOutline": {
+          borderColor: "#797979"
+        },
+        "&:hover $notchedOutline": {
+          borderColor: "#797979",
+          boxShadow: "0 0 0 3px rgba(255, 255, 255, 0.5)"
+        },
+        "&$focused $notchedOutline": {
+          borderColor: "#797979",
+          borderWidth: 1
+        }
+      },
     }
   }
 });
