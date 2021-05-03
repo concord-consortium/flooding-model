@@ -131,7 +131,7 @@ export const getDefaultConfig: () => IUrlConfig = () => ({
   get gridHeight() { return Math.ceil(this.modelHeight / this.cellSize); },
   elevation: [[ 0 ]],
   permeability: [[ 0 ]],
-  permeabilityValues: [0.002, 0.001, 0.0007],
+  permeabilityValues: [0.5, 0.05, 0.005],
   minElevation: 0,
   maxElevation: 100,
   riverData: null,
