@@ -171,7 +171,7 @@ export const getDefaultConfig: () => IUrlConfig = () => ({
   mapType: "street",
   activeTab: "gauge1",
   useGPU: false,
-  minCameraDistance: 0.8,
+  minCameraDistance: 1,
   maxCameraDistance: 4
 });
 

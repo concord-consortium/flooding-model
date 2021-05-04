@@ -1,4 +1,4 @@
-import { observable, action, computed } from "mobx";
+import { observable, action } from "mobx";
 import { ISimulationConfig } from "../config";
 import { planeHeightFromConfig, PLANE_WIDTH } from "../components/view-3d/helpers";
 import { Vector3 } from "three";
@@ -7,6 +7,9 @@ export enum Interaction {
   HoverOverDraggable = "HoverOverDraggable",
   AddRemoveLevee = "AddRemoveLevee"
 }
+
+// add some floating point error tolerance
+const kFPZero = 0.0001;
 
 export class UIModel {
   public config: ISimulationConfig;
@@ -23,6 +26,7 @@ export class UIModel {
   @observable public placesLayerEnabled: boolean;
 
   // Camera
+  @observable public defaultCameraPos: Vector3;
   @observable public cameraPos: Vector3;
   @observable public cameraTarget: Vector3;
 
@@ -54,8 +58,21 @@ export class UIModel {
     return this.cameraPos.clone().sub(this.cameraTarget).length();
   }
 
+  public canZoomIn() {
+    return this.getCameraDistance() > this.config.minCameraDistance + kFPZero;
+  }
+
+  public canZoomOut() {
+    return this.getCameraDistance() < this.config.maxCameraDistance - kFPZero;
+  }
+
+  public isCameraPosModified() {
+    return this.cameraPos.clone().sub(this.defaultCameraPos).length() > kFPZero;
+  }
+
   @action.bound public resetCameraPos() {
-    this.cameraPos = new Vector3(PLANE_WIDTH * 0.5, planeHeightFromConfig(this.config) * 0.5, PLANE_WIDTH * 2);
+    this.defaultCameraPos = new Vector3(PLANE_WIDTH * 0.5, planeHeightFromConfig(this.config) * 0.5, PLANE_WIDTH * 2);
+    this.cameraPos = this.defaultCameraPos.clone();
     this.cameraTarget = new Vector3(PLANE_WIDTH * 0.5, planeHeightFromConfig(this.config) * 0.5, 0.0);
   }
 
