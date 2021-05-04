@@ -9,13 +9,30 @@ import permeabilityThumb from "../assets/model2_map_permeability_thumb.png";
 import ViewIcon from "../assets/view_icon.svg";
 import css from "./maps-tab.scss";
 
+type Layer = "street" | "topo" | "permeability";
+
 interface IMapButtonProps {
   title: string;
   background: string;
-  layer: "street" | "topo" | "permeability";
+  layer: Layer;
 }
 
 const checkboxStyle = { color: "#32a447" };
+
+export const Legend = ({ layer }: { layer: Layer }) => {
+  if (layer === "permeability") {
+    return (
+      <div className={css.legend}>
+        <h5>Key</h5>
+        <div><div className={`${css.circle} ${css.green}`} /> High (rural)</div>
+        <div><div className={`${css.circle} ${css.yellow}`} /> Medium (suburban)</div>
+        <div><div className={`${css.circle} ${css.orange}`} /> Low (urban)</div>
+        <hr />
+      </div>
+    );
+  }
+  return null;
+};
 
 export const MapButton: React.FC<IMapButtonProps> = observer(({ title, background, layer }) => {
   const { ui } = useStores();
@@ -32,10 +49,13 @@ export const MapButton: React.FC<IMapButtonProps> = observer(({ title, backgroun
       <div className={css.title}>{ title }</div>
       {
         active &&
-        <div className={css.checkboxes}>
-          <h5>Labels</h5>
-          <div><Checkbox style={checkboxStyle} checked={ui.placesLayerEnabled} onChange={ui.togglePlacesLayer}/> Places</div>
-          <div><Checkbox style={checkboxStyle} checked={ui.poiLayerEnabled} onChange={ui.togglePoiLayer} /> Points of interest</div>
+        <div>
+          <Legend layer={layer} />
+          <div className={css.checkboxes}>
+            <h5>Labels</h5>
+            <div><Checkbox style={checkboxStyle} checked={ui.placesLayerEnabled} onChange={ui.togglePlacesLayer}/> Places</div>
+            <div><Checkbox style={checkboxStyle} checked={ui.poiLayerEnabled} onChange={ui.togglePoiLayer} /> Points of interest</div>
+          </div>
         </div>
       }
     </div>
