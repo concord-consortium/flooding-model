@@ -2,35 +2,20 @@
   width: 100px;
 }
 
-.rainDuration {
-  width: 70px;
+.stormDuration {
+  width: 80px;
 
-  .rainDurationValue {
-    font-family: Roboto Condensed, Arial, sans-serif;
-    font-size: 11px;
+  .stormDurationSelect {
     text-align: center;
-    margin-top: 4px;
-  }
+    margin-top: 9px;
 
-  .rainDurationButtons {
-    text-align: center;
+    .selectElement {
+      width: 70px;
+    }
+
     &.disabled {
       pointer-events: none;
       opacity: 0.5;
-    }
-    svg {
-      width: 20px;
-      height: 20px;
-      margin-top: 2px;
-      margin-right: 3px;
-      margin-left: 3px;
-      border-radius: 10px;
-      &:hover {
-        box-shadow: 0 0 0 4px rgba(255,255,255,0.5);
-      }
-      &:active {
-        box-shadow: 0 0 0 4px rgba(255,255,255,1);
-      }
     }
   }
 }

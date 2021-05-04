@@ -2,10 +2,9 @@ import React, { ChangeEvent } from "react";
 import { BottomBarContainer, BottomBarWidgetGroup } from "../geohazard-components/bottom-bar-container";
 import { PlaybackControls } from "../geohazard-components/playback-controls";
 import { Slider } from "../geohazard-components/slider";
+import { FormControl, MenuItem, Select } from "@material-ui/core";
 import { observer } from "mobx-react-lite";
 import { useStores } from "../use-stores";
-import MoreIcon from "../geohazard-components/assets/more.svg";
-import LessIcon from "../geohazard-components/assets/less.svg";
 import { RainIntensity, RiverStage } from "../models/simulation";
 import { IconButton } from "../geohazard-components/icon-button";
 import { Interaction } from "../models/ui";
@@ -42,12 +41,8 @@ export const BottomBar: React.FC = observer(function WrappedComponent() {
     simulation.setInitialWaterSaturation(value);
   };
 
-  const handleIncreaseRainDuration = () => {
-    simulation.setRainDurationInDays(simulation.rainDurationInDays + 1);
-  };
-
-  const handleDecreaseRainDuration = () => {
-    simulation.setRainDurationInDays(simulation.rainDurationInDays - 1);
+  const handleStormDurationChange = (event: ChangeEvent<HTMLSelectElement>) => {
+    simulation.setRainDurationInDays(Number(event.target.value));
   };
 
   const handleReload = () => {
@@ -77,13 +72,16 @@ export const BottomBar: React.FC = observer(function WrappedComponent() {
           onChange={handleRainIntensityChange}
         />
       </BottomBarWidgetGroup>
-      <BottomBarWidgetGroup title={["Rain", "Duration"]} hoverable={true} className={css.rainDuration}>
-        <div className={css.rainDurationValue}>
-          { simulation.rainDurationInDays + (simulation.rainDurationInDays === 1 ? " day" : " days") }
-        </div>
-        <div className={`${css.rainDurationButtons} ${simulation.simulationStarted ? css.disabled : ""}`} data-test={"rain-duration"}>
-          <LessIcon onClick={handleDecreaseRainDuration} data-test="increase-rain-duration"/>
-          <MoreIcon onClick={handleIncreaseRainDuration} data-test="decrease-rain-duration"/>
+      <BottomBarWidgetGroup title={["Storm", "Duration"]} hoverable={true} className={css.stormDuration}>
+        <div className={`${css.stormDurationSelect} ${simulation.simulationStarted ? css.disabled : ""}`} data-test={"rain-duration"}>
+          <FormControl variant="outlined">
+            <Select className={css.selectElement} value={simulation.rainDurationInDays} onChange={handleStormDurationChange} data-test={"rain-duration-select"}>
+              <MenuItem value={1}>Short</MenuItem>
+              <MenuItem value={2}>Medium</MenuItem>
+              <MenuItem value={3}>Long</MenuItem>
+              <MenuItem value={4}>Very Long</MenuItem>
+            </Select>
+          </FormControl>
         </div>
       </BottomBarWidgetGroup>
       <BottomBarWidgetGroup title={["Starting", "Water Level"]} hoverable={true} className={css.startingWaterLevel}>
