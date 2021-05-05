@@ -1,6 +1,6 @@
-import { ISimulationConfig } from "./config";
+import { ISimulationConfig, MainPresetType } from "./config";
 
-const getSilverCityPreset = (time: "present" | "past" | "future"): Partial<ISimulationConfig> => {
+const getSilverCityPreset = (time: MainPresetType): Partial<ISimulationConfig> => {
   const mapPrefix = `data/${time}-maps/${time}`;
   return {
     elevation: `${mapPrefix}_map_07_heightmap_MODIFIED.png`,

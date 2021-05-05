@@ -1,3 +1,5 @@
+// These presets are used in the curriculum and have custom cross-sections.
+export type MainPresetType = "present" | "past" | "future";
 
 export interface ISimulationConfig {
   timeStep: number; // model time
@@ -118,7 +120,7 @@ export interface ICrossSectionConfig {
     anchorY?: number,
     scale?: number
   },
-  backgroundType: "present" | "past" | "future";
+  backgroundType: MainPresetType;
 }
 
 export interface IUrlConfig extends ISimulationConfig {
