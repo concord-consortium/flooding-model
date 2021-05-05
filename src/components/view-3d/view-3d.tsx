@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { Canvas, useThree } from "react-three-fiber";
 import { useStores } from "../../use-stores";
-import { DEFAULT_UP, PLANE_WIDTH, planeHeight } from "./helpers";
+import { DEFAULT_UP } from "./helpers";
 import { CameraControls } from "./camera-controls";
 import { Terrain } from "./terrain";
 import { Water } from "./water";
@@ -30,10 +30,6 @@ const ShutterbugSupport = () => {
 export const View3d = observer(() => {
   const { simulation, ui } = useStores();
   const config = simulation.config;
-  // 0.4999 is used, as 0.5 causes a weird rotation of the camera due to constraints enforced by OrbitControls config.
-  const cameraPos: [number, number, number] = [PLANE_WIDTH * 0.5, planeHeight(simulation) * 0.4999, PLANE_WIDTH * 2];
-  // return <div>Lol</div>;
-
   // If pixelRatio is 2 or more, use a bit reduced value. It seems to be a good compromise between
   // rendering quality and performance (PJ: on my 2017 MacBook Pro 15", pixelRatio = 2 was causing visible FPS drop).
   const pixelRatio = window.devicePixelRatio > 1 ? Math.max(1, window.devicePixelRatio * 0.75) : 1;
@@ -53,7 +49,7 @@ export const View3d = observer(() => {
   }
 
   return (
-    <Canvas camera={{ fov: 33, up: DEFAULT_UP, position: cameraPos }} pixelRatio={pixelRatio} >
+    <Canvas camera={{ fov: 33, up: DEFAULT_UP }} pixelRatio={pixelRatio} >
       <ExtractWebGLRenderer />
       <CameraControls/>
       {

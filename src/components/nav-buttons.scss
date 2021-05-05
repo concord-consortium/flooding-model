@@ -1,0 +1,54 @@
+.navButtons {
+  margin-top: 10px;
+
+  .button {
+    margin-top: 10px;
+    width: 30px;
+    height: 30px;
+    border-radius: 4px;
+    box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.35);
+    border: solid 1px #797979;
+    background-color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    svg {
+      width: 18px;
+      fill: #797979;
+    }
+
+    cursor: pointer;
+
+    &:hover {
+      background: #dfdfdf;
+    }
+
+    &.disabled {
+      pointer-events: none;
+      background: #ececec;
+
+      svg {
+        opacity: 0.5;
+      }
+    }
+  }
+
+  .btnGroup .button {
+    margin-top: 0;
+
+    &:not(:first-child) {
+      margin-top: -1px;
+      border-top-left-radius: 0;
+      border-top-right-radius: 0;
+    }
+
+    &:not(:last-child) {
+      border-bottom-left-radius: 0;
+      border-bottom-right-radius: 0;
+    }
+  }
+}
+
+
+
