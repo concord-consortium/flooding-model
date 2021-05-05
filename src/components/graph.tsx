@@ -12,9 +12,11 @@ interface IProps {
   yLabel?: string;
   maxX?: number;
   maxY?: number;
+  floodStageY?: number;
+  floodStageLineColor?: string;
 }
 
-export const Graph: React.FC<IProps> = ({ points, yLabel, maxX = 14, maxY = 100 }) => {
+export const Graph: React.FC<IProps> = ({ points, yLabel, floodStageY, floodStageLineColor, maxX = 14, maxY = 100 }) => {
   const [currentMaxX, setCurrentMaxX] = useState<number>(maxX);
   const [key, setKey] = useState<number>(0); // used to force re-render graph after fonts are ready.
 
@@ -39,6 +41,7 @@ export const Graph: React.FC<IProps> = ({ points, yLabel, maxX = 14, maxY = 100 
         data={{
           datasets: [
             {
+              label: "gauge points",
               borderColor: LINE_COLOR,
               pointBorderColor: LINE_COLOR,
               pointBackgroundColor: LINE_COLOR,
@@ -47,7 +50,20 @@ export const Graph: React.FC<IProps> = ({ points, yLabel, maxX = 14, maxY = 100 
               showLine: true,
               fill: false,
               data: points
-            }
+            },
+            floodStageY ? 
+              {
+                label: "flood stage",
+                borderColor: floodStageLineColor,
+                pointBorderColor: floodStageLineColor,
+                pointBackgroundColor: floodStageLineColor,
+                pointRadius: 0,
+                lineTension: 0.2,
+                showLine: true,
+                fill: false,
+                data: [{ x: 0, y: floodStageY }, { x: maxX, y: floodStageY }]
+              } : 
+              {},
           ]
         }}
         options={{
