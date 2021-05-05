@@ -16,6 +16,8 @@ const getSilverCityPreset = (time: "present" | "past" | "future"): Partial<ISimu
     maxElevation: 250, // m
     modelHeight: 8000, // m
     modelWidth: 8000, // m
+    // Disable levees in the past config.
+    maxLevees: time === "past" ? 0 : 10,
     view3dElevationMult: 3, // elevation differences are relatively small, so make them more pronounced in 3d rendering
     crossSections: [
       {
