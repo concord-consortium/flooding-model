@@ -4,20 +4,20 @@
 	 x="0px" y="0px" viewBox="0 0 402 157" enable-background="new 0 0 402 157" xml:space="preserve">
 	 
 
-	<path id="flood_right_water_level_CREST" data-name="flood_right_water_level_CREST" style="fill:#67A5D9;opacity:0.4;" d="M401,70.90607v24.40308H284.60339V70.90607H401z"/>
-	<path id="flood_right_water_level_FLOOD4" data-name="flood_right_water_level_FLOOD4" style="fill:#67A5D9;opacity:0.4;" d="M401,53.95477v41.35437H284.60339V53.95477H401z"/>
-	<path id="center_water_level_LOW" data-name="center_water_level_LOW" style="fill:#67A5D9;opacity:0.4;" d="M284.60339,90.46631v4.84283H119.65491v-4.84283H284.60339z"/>
-	<path id="center_water_level_MED" data-name="center_water_level_MED" style="fill:#67A5D9;opacity:0.4;" d="M284.60339,83.7951v11.51404H119.65491V83.7951H284.60339z"/>
-	<path id="center_water_level_HI" data-name="center_water_level_HI" style="fill:#67A5D9;opacity:0.4;" d="M284.60339,77.49518v17.81396H119.65491V77.49518H284.60339z"/>
-	<path id="center_water_level_CREST" data-name="center_water_level_CREST" style="fill:#67A5D9;opacity:0.4;" d="M284.60339,70.90607v24.40308H119.65491V70.90607
+	<path id="flood_right_water_level_CREST" data-name="flood_right_water_level_CREST" style="fill:#50ACFF;opacity:0.4;" d="M401,70.90607v24.40308H284.60339V70.90607H401z"/>
+	<path id="flood_right_water_level_FLOOD4" data-name="flood_right_water_level_FLOOD4" style="fill:#50ACFF;opacity:0.4;" d="M401,53.95477v41.35437H284.60339V53.95477H401z"/>
+	<path id="center_water_level_LOW" data-name="center_water_level_LOW" style="fill:#50ACFF;opacity:0.4;" d="M284.60339,90.46631v4.84283H119.65491v-4.84283H284.60339z"/>
+	<path id="center_water_level_MED" data-name="center_water_level_MED" style="fill:#50ACFF;opacity:0.4;" d="M284.60339,83.7951v11.51404H119.65491V83.7951H284.60339z"/>
+	<path id="center_water_level_HI" data-name="center_water_level_HI" style="fill:#50ACFF;opacity:0.4;" d="M284.60339,77.49518v17.81396H119.65491V77.49518H284.60339z"/>
+	<path id="center_water_level_CREST" data-name="center_water_level_CREST" style="fill:#50ACFF;opacity:0.4;" d="M284.60339,70.90607v24.40308H119.65491V70.90607
 			H284.60339z"/>
-	<path id="center_water_level_FLOOD4" data-name="center_water_level_FLOOD4" style="fill:#67A5D9;opacity:0.4;" d="M284.60339,53.95477v41.35437H119.65491V53.95477
+	<path id="center_water_level_FLOOD4" data-name="center_water_level_FLOOD4" style="fill:#50ACFF;opacity:0.4;" d="M284.60339,53.95477v41.35437H119.65491V53.95477
 			H284.60339z"/>
-	<path id="flood_left_water_level_CREST" data-name="flood_left_water_level_CREST" style="fill:#67A5D9;opacity:0.4;" d="M119.65491,70.90607v24.40308H1V70.90607H119.65491z"/>
-	<path id="flood_left_water_level_FLOOD4" data-name="flood_left_water_level_FLOOD4" style="fill:#67A5D9;opacity:0.4;" d="M119.65491,53.95477v41.35437H1V53.95477H119.65491z"/>
+	<path id="flood_left_water_level_CREST" data-name="flood_left_water_level_CREST" style="fill:#50ACFF;opacity:0.4;" d="M119.65491,70.90607v24.40308H1V70.90607H119.65491z"/>
+	<path id="flood_left_water_level_FLOOD4" data-name="flood_left_water_level_FLOOD4" style="fill:#50ACFF;opacity:0.4;" d="M119.65491,53.95477v41.35437H1V53.95477H119.65491z"/>
 
 
-	<path id="right_water_level_LOW" data-name="right_water_level_LOW" style="fill:#67A5D9;opacity:0.4;" d="M401,156H201V94.22792c0,0,0.22966-0.00221,0.34229-0.00331
+	<path id="right_water_level_LOW" data-name="right_water_level_LOW" style="fill:#50ACFF;opacity:0.4;" d="M401,156H201V94.22792c0,0,0.22966-0.00221,0.34229-0.00331
 			c3.31299-0.03174,6.17285-0.05908,7.49365-0.01611c3.11426,0.10449,11.8335-0.03027,14.19922-0.42432
 			c0.55908-0.09326,1.52588-0.22754,2.7251-0.39404c3.98145-0.55273,10.64551-1.47803,13.09521-2.40527
 			c0.38422-0.14558,0.77795-0.33525,1.19469-0.5313c0.76863-0.3616,1.57413,0.00631,3.01402,0.03623
@@ -26,7 +26,7 @@
 			c11.23474,0.77264,56.08005,2.93792,59.87122,2.93792c3.25076,0,13.68546,0.30831,23.14722,0.40062
 			C389.42252,97.66328,399.33008,98.0391,401,98.0391V156z"/>
 		
-	<path id="right_water_level_MED" data-name="right_water_level_MED" style="fill:#67A5D9;opacity:0.4;" d="M401,156H201V94.22792c0,0,0.22966-0.00221,0.34229-0.00331
+	<path id="right_water_level_MED" data-name="right_water_level_MED" style="fill:#50ACFF;opacity:0.4;" d="M401,156H201V94.22792c0,0,0.22966-0.00221,0.34229-0.00331
 			c3.31299-0.03174,6.17285-0.05908,7.49365-0.01611c3.11426,0.10449,11.8335-0.03027,14.19922-0.42432
 			c0.55908-0.09326,1.52588-0.22754,2.7251-0.39404c3.98145-0.55273,10.64551-1.47803,13.09521-2.40527
 			c0.38422-0.14558,0.78342-0.32404,1.19469-0.5313c2.70563-1.36359,5.94301-4.00523,8.84938-6.67358
@@ -35,7 +35,7 @@
 			c6.46182,0.40811,57.0661,0.45374,60.85724,0.45374c3.25079,0,13.03961,0.11872,22.50137,0.21104
 			c7.10599,0.06932,17.00912,0.3088,18.67905,0.3088V156z"/>
 		
-	<path id="right_water_level_HI" data-name="right_water_level_HI" style="fill:#67A5D9;opacity:0.4;" d="M401,156H201V94.22792c0,0,0.22966-0.00221,0.34229-0.00331
+	<path id="right_water_level_HI" data-name="right_water_level_HI" style="fill:#50ACFF;opacity:0.4;" d="M401,156H201V94.22792c0,0,0.22966-0.00221,0.34229-0.00331
 			c3.31299-0.03174,6.17285-0.05908,7.49365-0.01611c3.11426,0.10449,11.8335-0.03027,14.19922-0.42432
 			c0.55908-0.09326,1.52588-0.22754,2.7251-0.39404c3.98145-0.55273,10.64551-1.47803,13.09521-2.40527
 			c0.38422-0.14558,0.78342-0.32404,1.19469-0.5313c2.70563-1.36359,5.93333-3.9743,8.84938-6.67358
@@ -44,7 +44,7 @@
 			c4.76321,0.0527,66.43472,0.13743,70.22589,0.13743c3.25076,0,12.97519,0.08385,22.43369-0.18129
 			c7.0835-0.19873,13.35739-0.15862,15.02731-0.15862V156z"/>
 		
-	<path id="right_water_level_CREST" data-name="right_water_level_CREST" style="fill:#67A5D9;opacity:0.4;" d="M401,156H201V94.22792c0,0,0.22966-0.00221,0.34229-0.00331
+	<path id="right_water_level_CREST" data-name="right_water_level_CREST" style="fill:#50ACFF;opacity:0.4;" d="M401,156H201V94.22792c0,0,0.22966-0.00221,0.34229-0.00331
 			c3.31299-0.03174,6.17285-0.05908,7.49365-0.01611c3.11426,0.10449,11.8335-0.03027,14.19922-0.42432
 			c0.55908-0.09326,1.52588-0.22754,2.7251-0.39404c3.98145-0.55273,10.64551-1.47803,13.09521-2.40527
 			c0.38422-0.14558,0.78342-0.32404,1.19469-0.5313c2.70563-1.36359,5.93333-3.9743,8.84938-6.67358
@@ -53,7 +53,7 @@
 			c4.76321,0.0527,66.31329,0,70.10443,0c3.25079,0,12.9379-0.24387,22.39639-0.509
 			c7.0835-0.19873,13.39539-0.41647,15.06531-0.41647V156z"/>
 		
-	<path id="right_water_level_FLOOD4" data-name="right_water_level_FLOOD4" style="fill:#67A5D9;opacity:0.4;" d="M401,156H201V94.22792c0,0,0.22966-0.00221,0.34229-0.00331
+	<path id="right_water_level_FLOOD4" data-name="right_water_level_FLOOD4" style="fill:#50ACFF;opacity:0.4;" d="M401,156H201V94.22792c0,0,0.22966-0.00221,0.34229-0.00331
 			c3.31299-0.03174,6.17285-0.05908,7.49365-0.01611c3.11426,0.10449,11.8335-0.03027,14.19922-0.42432
 			c0.55908-0.09326,1.52588-0.22754,2.7251-0.39404c3.98145-0.55273,10.64551-1.47803,13.09521-2.40527
 			c0.38422-0.14558,0.78342-0.32404,1.19469-0.5313c2.70563-1.36359,5.93333-3.9743,8.84938-6.67358
@@ -62,7 +62,7 @@
 			c4.76321,0.0527,66.31329,0,70.10443,0c3.25079,0,12.9379-0.24387,22.39639-0.509
 			c7.0835-0.19873,13.39539-0.41647,15.06531-0.41647V156z"/>
 		
-	<path id="left_water_level_LOW" data-name="left_water_level_LOW" style="fill:#67A5D9;opacity:0.4;" d="M201,156H4c-1.65685,0-3-1.34314-3-3V98.27219
+	<path id="left_water_level_LOW" data-name="left_water_level_LOW" style="fill:#50ACFF;opacity:0.4;" d="M201,156H4c-1.65685,0-3-1.34314-3-3V98.27219
 			c4.99786,0.2445,22.01488-0.06642,26.46496,0c3.2763,0.0489,12.29694-0.15469,20.1468-1.0269
 			c6.6015-0.7335,10.56625-1.09814,13.05629-1.1736c4.8411-0.1467,9.86283-0.46507,15.4035-0.3912
 			c3.6675,0.0489,17.23055-0.45114,19.2177-0.4401c8.80199,0.0489,21.96527-0.43443,27.82409-1.2714
@@ -72,7 +72,7 @@
 			c0.27167,0.00906,0.36328-0.15118,0.74933,0.07462c3.60889,2.11086,10.74387,3.46686,13.10197,3.46686
 			c2.79688,0,16.00732,0.21826,19.36328,0.32031C191.6665,94.31631,201,94.22792,201,94.22792V156z"/>
 		
-	<path id="left_water_level_MED" data-name="left_water_level_MED" style="fill:#67A5D9;opacity:0.4;" d="M201,156H4c-1.65685,0-3-1.34314-3-3V80.55556
+	<path id="left_water_level_MED" data-name="left_water_level_MED" style="fill:#50ACFF;opacity:0.4;" d="M201,156H4c-1.65685,0-3-1.34314-3-3V80.55556
 			c4.94163,0.49689,20.34324,1.25294,24.76659,1.74443c3.03869,0.33763,11.07893,0.62876,18.96369,0.16882
 			c6.75265-0.39391,12.92999-0.3395,15.41855-0.22509c4.89567,0.22509,8.46159,0.67824,13.89921,1.74444
 			c3.35918,0.65866,12.42881,1.37317,14.40565,1.57561c8.84946,0.90627,27.40451-0.16882,33.30009-0.68683
@@ -82,7 +82,7 @@
 			c0.29518,0.24234,0.64088,0.47678,1.02693,0.70258c3.60889,2.11086,10.74387,3.46686,13.10197,3.46686
 			c2.79688,0,16.00732,0.21826,19.36328,0.32031C191.6665,94.31631,201,94.22792,201,94.22792V156z"/>
 		
-	<path id="left_water_level_HI" data-name="left_water_level_HI" style="fill:#67A5D9;opacity:0.4;" d="M201,156H4c-1.65685,0-3-1.34314-3-3V66.00765
+	<path id="left_water_level_HI" data-name="left_water_level_HI" style="fill:#50ACFF;opacity:0.4;" d="M201,156H4c-1.65685,0-3-1.34314-3-3V66.00765
 			c4.94163,0.49689,18.59153,1.25684,23.03432,1.5199c3.02055,0.17885,11.91545,0.67511,19.6126,0.64304
 			c7.01494-0.02923,12.83023,0.60867,15.28672,1.02302c4.852,0.81841,9.92854,1.64108,15.36617,2.70728
 			c3.35918,0.65866,11.29735,1.66341,13.27419,1.86585c8.84946,0.90627,28.6657,0.13609,33.33329-0.15005
@@ -92,7 +92,7 @@
 			c0.29518,0.24234,0.64088,0.47678,1.02693,0.70258c3.60889,2.11086,10.74387,3.46686,13.10197,3.46686
 			c2.79688,0,16.00732,0.21826,19.36328,0.32031C191.6665,94.31631,201,94.22792,201,94.22792V156z"/>
 		
-	<path id="left_water_level_CREST" data-name="left_water_level_CREST" style="fill:#67A5D9;opacity:0.4;" d="M201,156H4c-1.65685,0-3-1.34314-3-3V60.18581
+	<path id="left_water_level_CREST" data-name="left_water_level_CREST" style="fill:#50ACFF;opacity:0.4;" d="M201,156H4c-1.65685,0-3-1.34314-3-3V60.18581
 			c3.10255-0.46656,18.05201,1.13089,22.50577,1.6326c3.00682,0.33871,12.33922,0.84837,20.03638,0.8163
 			c7.01494-0.02923,13.15645,0.42588,15.63332,0.69262c4.82357,0.51946,9.56734,1.49137,14.94071,2.84467
 			c3.33939,0.84103,10.38923,2.27574,13.33285,2.34995c8.89291,0.2242,27.13452,0.10825,31.81084,0.12368
@@ -102,7 +102,7 @@
 			c0.29518,0.24234,0.64088,0.47678,1.02693,0.70258c3.60889,2.11086,10.74387,3.46686,13.10197,3.46686
 			c2.79688,0,16.00732,0.21826,19.36328,0.32031C191.6665,94.31631,201,94.22792,201,94.22792V156z"/>
 		
-	<path id="left_water_level_FLOOD4" data-name="left_water_level_FLOOD4" style="fill:#67A5D9;opacity:0.4;" d="M201,156H4c-1.65685,0-3-1.34314-3-3V60.18581
+	<path id="left_water_level_FLOOD4" data-name="left_water_level_FLOOD4" style="fill:#50ACFF;opacity:0.4;" d="M201,156H4c-1.65685,0-3-1.34314-3-3V60.18581
 			c3.10255-0.46656,18.05201,1.13089,22.50577,1.6326c3.00682,0.33871,12.33922,0.84837,20.03638,0.8163
 			c7.01494-0.02923,13.15645,0.42588,15.63332,0.69262c4.82357,0.51946,9.56734,1.49137,14.94071,2.84467
 			c3.33939,0.84103,10.38923,2.27574,13.33285,2.34995c8.89291,0.2242,27.13452,0.10825,31.81084,0.12368
@@ -114,60 +114,60 @@
 
 
 
-	<path id="right_water_line_LOW" data-name="right_water_line_LOW" style="fill:none;stroke:#2D95D2;stroke-miterlimit:10;" d="M241.5,90.5c5,0,21.1,1.8,28,2.1
+	<path id="right_water_line_LOW" data-name="right_water_line_LOW" style="fill:none;stroke:#1B96DB;stroke-miterlimit:10;" d="M241.5,90.5c5,0,21.1,1.8,28,2.1
 		c4.5,0.2,11.8,0.6,20.1,1.1c7.9,0.4,16.7,1,25.1,1.5c14.9,0.9,37.6,1.9,52.1,2.2C381.3,97.6,401,98,401,98"/>
 		
-	<path id="center_water_line_LOW" data-name="center_water_line_LOW" style="fill:none;stroke:#2D95D2;stroke-miterlimit:10;" d="M119.7,90.5c12.7,0,152.9,0,164.9,0"/>
+	<path id="center_water_line_LOW" data-name="center_water_line_LOW" style="fill:none;stroke:#1B96DB;stroke-miterlimit:10;" d="M119.7,90.5c12.7,0,152.9,0,164.9,0"/>
 	
-	<path id="left_water_line_LOW" data-name="left_water_line_LOW" style="fill:none;stroke:#2D95D2;stroke-miterlimit:10;" d="M1,98.3c0,0,5.2,0.1,13.2,0.1
+	<path id="left_water_line_LOW" data-name="left_water_line_LOW" style="fill:none;stroke:#1B96DB;stroke-miterlimit:10;" d="M1,98.3c0,0,5.2,0.1,13.2,0.1
 		c4.2,0,9.2,0,14.7-0.1c12.1-0.1,19.8-1.3,29.2-2c2.9-0.2,6-0.4,9.4-0.4c12.3-0.2,34.6-0.6,45.6-1.1c1.1,0,2-0.1,2.8-0.1
 		c9.3-0.5,31.5-4.2,38.3-4.2"/>
 		
-	<path id="right_water_line_MED" data-name="right_water_line_MED" style="fill:none;stroke:#2D95D2;stroke-miterlimit:10;" d="M249.9,83.8c5,0,14.2-0.1,21.2,0.2
+	<path id="right_water_line_MED" data-name="right_water_line_MED" style="fill:none;stroke:#1B96DB;stroke-miterlimit:10;" d="M249.9,83.8c5,0,14.2-0.1,21.2,0.2
 		c4.3,0.2,10.3,0.6,17.3,1c7.1,0.4,15.2,0.7,23.9,0.9c16,0.3,32.9,0.4,47.4,0.2c13.1-0.1,41.4,0.4,41.4,0.4"/>
 		
-	<path id="center_water_line_MED" data-name="center_water_line_MED" style="fill:none;stroke:#2D95D2;stroke-miterlimit:10;" d="M119.7,83.8c12.7,0,152.9,0,164.9,0"/>
+	<path id="center_water_line_MED" data-name="center_water_line_MED" style="fill:none;stroke:#1B96DB;stroke-miterlimit:10;" d="M119.7,83.8c12.7,0,152.9,0,164.9,0"/>
 	
-	<path id="left_water_line_MED" data-name="left_water_line_MED" style="fill:none;stroke:#2D95D2;stroke-miterlimit:10;" d="M1,80.6c0,0,4.8,0.2,12.3,0.7
+	<path id="left_water_line_MED" data-name="left_water_line_MED" style="fill:none;stroke:#1B96DB;stroke-miterlimit:10;" d="M1,80.6c0,0,4.8,0.2,12.3,0.7
 		c4.4,0.3,9.8,0.7,15.6,1.1c13.7,1.1,24-1,35.2,0c1.9,0.2,3.9,0.4,5.9,0.8c19.1,3.6,34.7,2.8,44.9,2.1c2.4-0.2,4.5-0.3,6.3-0.4
 		c9.3-0.5,20.3-1.1,27.1-1.1"/>
 		
-	<path id="right_water_line_HI" data-name="right_water_line_HI" style="fill:none;stroke:#2D95D2;stroke-miterlimit:10;" d="M256.1,77.5c1,0,6.5-0.2,13.8-0.4
+	<path id="right_water_line_HI" data-name="right_water_line_HI" style="fill:none;stroke:#1B96DB;stroke-miterlimit:10;" d="M256.1,77.5c1,0,6.5-0.2,13.8-0.4
 		c4.2-0.1,12.4,0.2,17.9,0.3c10.3,0.2,20.8,0.2,31.7,0.2c13.9,0,26.9,0.1,43.5,0.1c11.4,0,38.1-0.4,38.1-0.4"/>
 		
-	<path id="center_water_line_HI" data-name="center_water_line_HI" style="fill:none;stroke:#2D95D2;stroke-miterlimit:10;" d="M119.7,77.5c12.7,0,152.9,0,164.9,0"/>
+	<path id="center_water_line_HI" data-name="center_water_line_HI" style="fill:none;stroke:#1B96DB;stroke-miterlimit:10;" d="M119.7,77.5c12.7,0,152.9,0,164.9,0"/>
 	
-	<path id="left_water_line_HI" data-name="left_water_line_HI" style="fill:none;stroke:#2D95D2;stroke-miterlimit:10;" d="M1,66c0,0,6.8,0.6,16.1,1.2
+	<path id="left_water_line_HI" data-name="left_water_line_HI" style="fill:none;stroke:#1B96DB;stroke-miterlimit:10;" d="M1,66c0,0,6.8,0.6,16.1,1.2
 		c8.5,0.5,19.3,1,28.9,1c6.9,0,13.3,1,19.5,2.1c7.2,1.3,14.2,2.8,22,3.4c9.7,0.7,18.3,0.5,26.6,0.2c2.5-0.1,14.4-0.8,16.6-0.8
 		c9,0.3,11.8,4.3,13.5,4.3"/>
 		
-	<path id="right_water_line_CREST" data-name="right_water_line_CREST" style="fill:none;stroke:#2D95D2;stroke-miterlimit:10;" d="M266.7,70.9c1,0,4.2-0.2,8.8-0.2
+	<path id="right_water_line_CREST" data-name="right_water_line_CREST" style="fill:none;stroke:#1B96DB;stroke-miterlimit:10;" d="M266.7,70.9c1,0,4.2-0.2,8.8-0.2
 		c4.6,0,8.5,0,14,0c9.7,0,19.1,0,30,0c13.9,0,33,0,46.6-0.1c3.8,0,34.9-0.9,34.9-0.9"/>
 		
-	<path id="right_water_line_FLOOD4" data-name="right_water_line_FLOOD4" style="fill:none;stroke:#2D95D2;stroke-miterlimit:10;" d="M266.7,70.9c1,0,4.2-0.2,8.8-0.2
+	<path id="right_water_line_FLOOD4" data-name="right_water_line_FLOOD4" style="fill:none;stroke:#1B96DB;stroke-miterlimit:10;" d="M266.7,70.9c1,0,4.2-0.2,8.8-0.2
 		c4.6,0,8.5,0,14,0c9.7,0,19.1,0,30,0c13.9,0,33,0,46.6-0.1c3.8,0,34.9-0.9,34.9-0.9"/>
 		
-	<path id="center_water_line_CREST" data-name="center_water_line_CREST" style="fill:none;stroke:#2D95D2;stroke-miterlimit:10;" d="M119.7,70.9c12.7,0,152.9,0,164.9,0
+	<path id="center_water_line_CREST" data-name="center_water_line_CREST" style="fill:none;stroke:#1B96DB;stroke-miterlimit:10;" d="M119.7,70.9c12.7,0,152.9,0,164.9,0
 		"/>
 		
-	<path id="left_water_line_CREST" data-name="left_water_line_CREST" style="fill:none;stroke:#2D95D2;stroke-miterlimit:10;" d="M1,60.1c0,0,8.3,0.1,16.1,1
+	<path id="left_water_line_CREST" data-name="left_water_line_CREST" style="fill:none;stroke:#1B96DB;stroke-miterlimit:10;" d="M1,60.1c0,0,8.3,0.1,16.1,1
 		c10.2,1.2,23.5,1.5,27.7,1.5c6.9,0.1,12.7,0.1,19,1.2c7.2,1.3,17.7,4.3,21.8,4.4c7.4,0.3,17.8,0.4,26.1,0.4c2.4,0,23.4,0,25.6,0
 		c1.7,0,2.9,2.2,3,2.2"/>
 		
-	<path id="left_water_line_FLOOD4" data-name="left_water_line_FLOOD4" style="fill:none;stroke:#2D95D2;stroke-miterlimit:10;" d="M1,60.1c0,0,8.3,0.1,16.1,1
+	<path id="left_water_line_FLOOD4" data-name="left_water_line_FLOOD4" style="fill:none;stroke:#1B96DB;stroke-miterlimit:10;" d="M1,60.1c0,0,8.3,0.1,16.1,1
 		c10.2,1.2,23.5,1.5,27.7,1.5c6.9,0.1,12.7,0.1,19,1.2c7.2,1.3,17.7,4.3,21.8,4.4c7.4,0.3,17.8,0.4,26.1,0.4c2.4,0,23.4,0,25.6,0
 		c1.7,0,2.9,2.2,3,2.2"/>
 		
-	<path id="flood_right_water_line_CREST" data-name="flood_right_water_line_CREST" style="fill:none;stroke:#2D95D2;stroke-miterlimit:10;" d="M284.6,70.9
+	<path id="flood_right_water_line_CREST" data-name="flood_right_water_line_CREST" style="fill:none;stroke:#1B96DB;stroke-miterlimit:10;" d="M284.6,70.9
 		c1,0,116.4,0,116.4,0"/>
 		
-	<path id="flood_left_water_line_CREST" data-name="flood_left_water_line_CREST" style="fill:none;stroke:#2D95D2;stroke-miterlimit:10;" d="M1,70.9c0,0,117.4,0,118.7,0"/>
+	<path id="flood_left_water_line_CREST" data-name="flood_left_water_line_CREST" style="fill:none;stroke:#1B96DB;stroke-miterlimit:10;" d="M1,70.9c0,0,117.4,0,118.7,0"/>
 	
-	<path id="flood_right_water_line_FLOOD4" data-name="flood_right_water_line_FLOOD4" style="fill:none;stroke:#2D95D2;stroke-miterlimit:10;" d="M284.6,54
+	<path id="flood_right_water_line_FLOOD4" data-name="flood_right_water_line_FLOOD4" style="fill:none;stroke:#1B96DB;stroke-miterlimit:10;" d="M284.6,54
 		c1,0,116.4,0,116.4,0"/>
 		
-	<path id="center_water_line_FLOOD4" data-name="center_water_line_FLOOD4" style="fill:none;stroke:#2D95D2;stroke-miterlimit:10;" d="M119.7,54c12.7,0,161.3,0,164.9,0"/>
+	<path id="center_water_line_FLOOD4" data-name="center_water_line_FLOOD4" style="fill:none;stroke:#1B96DB;stroke-miterlimit:10;" d="M119.7,54c12.7,0,161.3,0,164.9,0"/>
 	
-	<path id="flood_left_water_line_FLOOD4" data-name="flood_left_water_line_FLOOD4" style="fill:none;stroke:#2D95D2;stroke-miterlimit:10;" d="M1,54c0,0,117.4,0,118.7,0"/>
+	<path id="flood_left_water_line_FLOOD4" data-name="flood_left_water_line_FLOOD4" style="fill:none;stroke:#1B96DB;stroke-miterlimit:10;" d="M1,54c0,0,117.4,0,118.7,0"/>
 
 </svg>
