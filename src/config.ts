@@ -125,7 +125,7 @@ export interface IUrlConfig extends ISimulationConfig {
 }
 
 export const getDefaultConfig: () => IUrlConfig = () => ({
-  preset: "RiverCity",
+  preset: "present",
   timeStep: 5,
   speedMult: 2,
   modelWidth: 8000,

@@ -1,16 +1,18 @@
 import { ISimulationConfig } from "./config";
 
-const presets: {[key: string]: Partial<ISimulationConfig>} = {
-  RiverCity: {
-    elevation: "data/model2_map_07_heightmap_v2.png",
-    riverData: "data/model2_map_riverdata.png",
-    permeability: "data/model2_permeability_map.png",
-    topoTexture: "data/model2_map_06b_topographic.png",
-    streetTexture: "data/model2_map_06a_street.png",
-    permeabilityTexture: "data/model2_map_04_permeability.png",
-    scaleImg: "data/model2_map_01_scale.png",
-    placeLabelsImg: "data/model2_map_02_place_labels.png",
-    pointsOfInterestImg: "data/model2_map_03_point_of_interest_labels.png",
+const getSilverCityPreset = (time: "present" | "past" | "future") => {
+  const timeSpecificMapPrefix = `data/${time}-maps/${time}`;
+
+  return {
+    elevation: `${timeSpecificMapPrefix}_map_07_heightmap_MODIFIED.png`,
+    riverData: `${timeSpecificMapPrefix}_map_riverdata.png`,
+    permeability: `${timeSpecificMapPrefix}_map_permeability_map.png`,
+    topoTexture: `${timeSpecificMapPrefix}_map_06b_topographic.png`,
+    streetTexture: `${timeSpecificMapPrefix}_map_06a_street.png`,
+    permeabilityTexture: `${timeSpecificMapPrefix}_map_04_permeability_overlay_COMBINED_WITH_STREET.png`,
+    scaleImg: `${timeSpecificMapPrefix}_map_01_scale.png`,
+    placeLabelsImg: `${timeSpecificMapPrefix}_map_02_place_labels_COMBINED_WITH_HIGHWAYS.png`,
+    pointsOfInterestImg: `${timeSpecificMapPrefix}_map_03_point_of_interest_labels.png`,
     minElevation: 170, // m
     maxElevation: 250, // m
     modelHeight: 8000, // m
@@ -26,8 +28,8 @@ const presets: {[key: string]: Partial<ISimulationConfig>} = {
           y: 223 / 300
         },
         leftLevee: {
-         x: 185 / 300,
-         y: 223 / 300
+          x: 185 / 300,
+          y: 223 / 300
         },
         rightLevee: {
           x: 188 / 300,
@@ -112,7 +114,15 @@ const presets: {[key: string]: Partial<ISimulationConfig>} = {
         }
       }
     ]
-  },
+  };
+};
+
+const presets: {[key: string]: Partial<ISimulationConfig>} = {
+  // Main models:
+  present: getSilverCityPreset("present"),
+  past: getSilverCityPreset("past"),
+  future: getSilverCityPreset("future"),
+  // Test models:
   slope: {
     elevation: [
       [3, 4, 5, 4, 3],
