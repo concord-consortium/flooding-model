@@ -1,18 +1,17 @@
 import { ISimulationConfig } from "./config";
 
-const getSilverCityPreset = (time: "present" | "past" | "future") => {
-  const timeSpecificMapPrefix = `data/${time}-maps/${time}`;
-
+const getSilverCityPreset = (time: "present" | "past" | "future"): Partial<ISimulationConfig> => {
+  const mapPrefix = `data/${time}-maps/${time}`;
   return {
-    elevation: `${timeSpecificMapPrefix}_map_07_heightmap_MODIFIED.png`,
-    riverData: `${timeSpecificMapPrefix}_map_riverdata.png`,
-    permeability: `${timeSpecificMapPrefix}_map_permeability_map.png`,
-    topoTexture: `${timeSpecificMapPrefix}_map_06b_topographic.png`,
-    streetTexture: `${timeSpecificMapPrefix}_map_06a_street.png`,
-    permeabilityTexture: `${timeSpecificMapPrefix}_map_04_permeability_overlay_COMBINED_WITH_STREET.png`,
-    scaleImg: `${timeSpecificMapPrefix}_map_01_scale.png`,
-    placeLabelsImg: `${timeSpecificMapPrefix}_map_02_place_labels_COMBINED_WITH_HIGHWAYS.png`,
-    pointsOfInterestImg: `${timeSpecificMapPrefix}_map_03_point_of_interest_labels.png`,
+    elevation: `${mapPrefix}_map_07_heightmap_MODIFIED.png`,
+    riverData: `${mapPrefix}_map_riverdata.png`,
+    permeability: `${mapPrefix}_map_permeability_map.png`,
+    topoTexture: `${mapPrefix}_map_06b_topographic.png`,
+    streetTexture: `${mapPrefix}_map_06a_street.png`,
+    permeabilityTexture: `${mapPrefix}_map_04_permeability_overlay_COMBINED_WITH_STREET.png`,
+    scaleImg: `${mapPrefix}_map_01_scale.png`,
+    placeLabelsImg: `${mapPrefix}_map_02_place_labels_COMBINED_WITH_HIGHWAYS.png`,
+    pointsOfInterestImg: `${mapPrefix}_map_03_point_of_interest_labels.png`,
     minElevation: 170, // m
     maxElevation: 250, // m
     modelHeight: 8000, // m
@@ -20,6 +19,7 @@ const getSilverCityPreset = (time: "present" | "past" | "future") => {
     view3dElevationMult: 3, // elevation differences are relatively small, so make them more pronounced in 3d rendering
     crossSections: [
       {
+        backgroundType: time,
         minRiverDepth: 0.5, // m
         maxRiverDepth: 4,
         maxFloodDepth: 9,
@@ -51,6 +51,7 @@ const getSilverCityPreset = (time: "present" | "past" | "future") => {
         }
       },
       {
+        backgroundType: time,
         minRiverDepth: 0.5, // m
         maxRiverDepth: 4,
         maxFloodDepth: 8.5,
@@ -83,6 +84,7 @@ const getSilverCityPreset = (time: "present" | "past" | "future") => {
         }
       },
       {
+        backgroundType: time,
         minRiverDepth: 0.5, // m
         maxRiverDepth: 4,
         maxFloodDepth: 10.2,

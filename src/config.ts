@@ -117,7 +117,8 @@ export interface ICrossSectionConfig {
     anchorX?: number,
     anchorY?: number,
     scale?: number
-  }
+  },
+  backgroundType: "present" | "past" | "future";
 }
 
 export interface IUrlConfig extends ISimulationConfig {
