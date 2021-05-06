@@ -22,11 +22,22 @@ const checkboxStyle = { color: "#32a447" };
 export const Legend = ({ layer }: { layer: Layer }) => {
   if (layer === "permeability") {
     return (
-      <div className={css.legend}>
+      <div className={`${css.legend} ${css.permeability}`}>
         <h5>Key</h5>
         <div><div className={`${css.circle} ${css.green}`} /> High (rural)</div>
         <div><div className={`${css.circle} ${css.yellow}`} /> Medium (suburban)</div>
         <div><div className={`${css.circle} ${css.orange}`} /> Low (urban)</div>
+        <hr />
+      </div>
+    );
+  }
+  if (layer === "topo") {
+    return (
+      <div className={css.legend}>
+        <h5>Key</h5>
+        <div><div className={`${css.rect} ${css.flat}`} /> Flat terrain</div>
+        <div><div className={`${css.rect} ${css.hilly}`} /> Hilly terrain</div>
+        <div className={css.comment}>Note: darker shaded areas are steeper</div>
         <hr />
       </div>
     );
