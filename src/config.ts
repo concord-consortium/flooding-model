@@ -78,6 +78,8 @@ export interface ISimulationConfig {
   // UI options below:
   // Extreme rain option availability.
   extremeRain: boolean;
+  // Very Long storm duration option availability.
+  veryLongStorm: boolean;
   // List of visible tabs.
   tabs: ("maps" | "graph" | "gauge1" | "gauge2" | "gauge3")[];
   // Initial rain intensity.
@@ -167,6 +169,7 @@ export const getDefaultConfig: () => IUrlConfig = () => ({
   pointsOfInterestImg: null,
   simulationLength: 14, // days
   extremeRain: true,
+  veryLongStorm: true,
   tabs: ["maps", "graph", "gauge1", "gauge2", "gauge3"],
   rainIntensity: "medium",
   rainDuration: 2,
