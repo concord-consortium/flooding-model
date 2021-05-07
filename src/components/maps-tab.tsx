@@ -6,6 +6,8 @@ import Checkbox from "@material-ui/core/Checkbox";
 import streetThumb from "../assets/model2_map_street_thumb.png";
 import topoThumb from "../assets/model2_map_topographic_thumb.png";
 import permeabilityThumb from "../assets/model2_map_permeability_thumb.png";
+import flatImg from "../assets/map_topographic_key_flat_terrain_4x.png";
+import hillyImg from "../assets/map_topographic_key_hilly_terrain_4x.png";
 import ViewIcon from "../assets/view_icon.svg";
 import css from "./maps-tab.scss";
 
@@ -35,8 +37,8 @@ export const Legend = ({ layer }: { layer: Layer }) => {
     return (
       <div className={css.legend}>
         <h5>Key</h5>
-        <div><div className={`${css.rect} ${css.flat}`} /> Flat terrain</div>
-        <div><div className={`${css.rect} ${css.hilly}`} /> Hilly terrain</div>
+        <div><div className={css.rect} style={{ backgroundImage: `url("${flatImg}")` }} /> Flat terrain</div>
+        <div><div className={css.rect} style={{ backgroundImage: `url("${hillyImg}")` }} /> Hilly terrain</div>
         <div className={css.comment}>Note: darker shaded areas are steeper</div>
         <hr />
       </div>

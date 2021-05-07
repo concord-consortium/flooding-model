@@ -89,13 +89,6 @@
       background-position: center; /* Center the image */
       background-repeat: no-repeat; /* Do not repeat the image */
       background-size: cover; /* Resize the background image to cover the entire container */
-
-      &.flat {
-        background-image: url("../assets/map_topographic_key_flat_terrain_4x.png")
-      }
-      &.hilly {
-        background-image: url("../assets/map_topographic_key_hilly_terrain_4x.png")
-      }
     }
 
     .comment {
