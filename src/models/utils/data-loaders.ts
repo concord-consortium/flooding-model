@@ -71,7 +71,7 @@ export const getPermeabilityData = (config: ISimulationConfig): Promise<number[]
   return getInputData(config.permeability, config.gridWidth, config.gridHeight, true,
     (rgba: [number, number, number, number]) => {
       const hue = rgbToHue(rgba);
-      if (hue >= 89 && hue < 133) { // green, gue ~123
+      if (hue >= 89 && hue < 133) { // green, hue ~123
         return config.permeabilityValues[0] || 0;
       } else if (hue >= 44 && hue < 89) { // yellow, hue ~55
         return config.permeabilityValues[1] || 0;
