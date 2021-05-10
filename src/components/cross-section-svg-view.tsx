@@ -1,25 +1,44 @@
 import React, { useEffect, useRef } from "react";
 import { interpolate, InterpolateOptions } from "polymorph-js";
-import CS1Background from "../assets/Model 2 Gauge 1 CS Landscape.svg";
-import CS1Water from "../assets/Model 2 Gauge 1 CS Water.svg";
-import CS2Background from "../assets/Model 2 Gauge 2 CS Landscape.svg";
-import CS2Water from "../assets/Model 2 Gauge 2 CS Water.svg";
-import CS3Background from "../assets/Model 2 Gauge 3 CS Landscape.svg";
-import CS3Water from "../assets/Model 2 Gauge 3 CS Water.svg";
+import CS1BackgroundPresent from "../assets/Present Map Gauge 1 CS Landscape.svg";
+import CS2BackgroundPresent from "../assets/Present Map Gauge 2 CS Landscape.svg";
+import CS3BackgroundPresent from "../assets/Present Map Gauge 3 CS Landscape.svg";
+import CS1BackgroundFuture from "../assets/Future Map Gauge 1 CS Landscape.svg";
+import CS2BackgroundFuture from "../assets/Future Map Gauge 2 CS Landscape.svg";
+import CS3BackgroundFuture from "../assets/Future Map Gauge 3 CS Landscape.svg";
+import CS1BackgroundPast from "../assets/Past Map Gauge 1 CS Landscape.svg";
+import CS2BackgroundPast from "../assets/Past Map Gauge 2 CS Landscape.svg";
+import CS3BackgroundPast from "../assets/Past Map Gauge 3 CS Landscape.svg";
+import CS1Water from "../assets/Gauge 1 CS Water.svg";
+import CS2Water from "../assets/Gauge 2 CS Water.svg";
+import CS3Water from "../assets/Gauge 3 CS Water.svg";
 import CS1Indicator from "../assets/marker1 CS stream gauge indicator.png";
 import CS2Indicator from "../assets/marker2 CS stream gauge indicator.png";
 import CS3Indicator from "../assets/marker3 CS stream gauge indicator.png";
 import { observer } from "mobx-react-lite";
 import { useStores } from "../use-stores";
 import { ICrossSectionState } from "../models/simulation";
-import { ICrossSectionConfig } from "../config";
-import css from "./cross-section-svg-view.scss";
+import { ICrossSectionConfig, MainPresetType } from "../config";
 import { Header } from "./header";
 
-const CrossSectionBackground: {[key: number]: React.JSXElementConstructor<any>} = {
-  0: CS1Background,
-  1: CS2Background,
-  2: CS3Background
+import css from "./cross-section-svg-view.scss";
+
+const CrossSectionBackground: Record <MainPresetType, Record <number, React.JSXElementConstructor<any>>> = {
+  present: {
+    0: CS1BackgroundPresent,
+    1: CS2BackgroundPresent,
+    2: CS3BackgroundPresent
+  },
+  future: {
+    0: CS1BackgroundFuture,
+    1: CS2BackgroundFuture,
+    2: CS3BackgroundFuture
+  },
+  past: {
+    0: CS1BackgroundPast,
+    1: CS2BackgroundPast,
+    2: CS3BackgroundPast
+  }
 };
 
 const CrossSectionWater: {[key: number]: React.JSXElementConstructor<any>} = {
@@ -128,10 +147,12 @@ interface IProps {
 // JS code below uses polymorph-js to take water line (that consists of white line and dashed line) and transparent
 // water layer and morph between various states using various simulation outputs.
 export const CrossSectionSVGView: React.FC<IProps> = observer(({ gauge}) => {
-  const CrossSectionBgComp = CrossSectionBackground[gauge];
+  const { simulation } = useStores();
+  const bgType = simulation.config.crossSections[gauge].backgroundType;
+  const CrossSectionBgComp = CrossSectionBackground[bgType][gauge];
   const CrossSectionGaugeIndicatorSrc = CrossSectionIndicatorSrc[gauge];
   const CrossSectionWaterComp = CrossSectionWater[gauge];
-  const { simulation } = useStores();
+  
   // SVG output paths.
   const pathOutputRefs = useRef(pathTypes.map(() => useRef<SVGPathElement | null>()));
   // SVG path interpolators used to morph one path into another.

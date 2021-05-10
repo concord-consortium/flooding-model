@@ -79,7 +79,7 @@ export const BottomBar: React.FC = observer(function WrappedComponent() {
               <MenuItem value={1}>Short</MenuItem>
               <MenuItem value={2}>Medium</MenuItem>
               <MenuItem value={3}>Long</MenuItem>
-              <MenuItem value={4}>Very Long</MenuItem>
+              { config.veryLongStorm && <MenuItem value={4}>Very Long</MenuItem> }
             </Select>
           </FormControl>
         </div>

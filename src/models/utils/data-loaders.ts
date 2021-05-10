@@ -40,19 +40,45 @@ export const getWaterDepthData = (config: ISimulationConfig): Promise<number[] |
   );
 };
 
+const rgbToHue = (rgb: number[]) => {
+  const r = rgb[0] / 255;
+  const g = rgb[1] / 255;
+  const b = rgb[2] / 255;
+
+  const max = Math.max(r, g, b);
+  const min = Math.min(r, g, b);
+  let h = 0;
+
+  if (max === min) {
+    h = 0; // achromatic
+  } else {
+    const d = max - min;
+    switch (max) {
+      case r: h = (g - b) / d + (g < b ? 6 : 0); break;
+      case g: h = (b - r) / d + 2; break;
+      case b: h = (r - g) / d + 4; break;
+    }
+    h /= 6;
+  }
+
+  return h * 360;
+};
+
 export const getPermeabilityData = (config: ISimulationConfig): Promise<number[] | undefined> => {
   if (!config.permeability) {
     return Promise.resolve(undefined);
   }
   return getInputData(config.permeability, config.gridWidth, config.gridHeight, true,
     (rgba: [number, number, number, number]) => {
-      // Permeability image will usually have three colors: red, green, blue.
-      if (rgba[0] > 128) { // red
+      const hue = rgbToHue(rgba);
+      if (hue >= 89 && hue < 133) { // green, hue ~123
         return config.permeabilityValues[0] || 0;
-      } else if (rgba[1] > 128) { // green
+      } else if (hue >= 44 && hue < 89) { // yellow, hue ~55
         return config.permeabilityValues[1] || 0;
-      } else { // blue
+      } else if (hue > 23 && hue < 44) { // orange, hue ~33
         return config.permeabilityValues[2] || 0;
+      } else {
+        throw new Error(`Incorrect permeability data image, color ${rgba}, hue: ${hue} is not recognized`);
       }
     }
   );

@@ -1,3 +1,5 @@
+// These presets are used in the curriculum and have custom cross-sections.
+export type MainPresetType = "present" | "past" | "future";
 
 export interface ISimulationConfig {
   timeStep: number; // model time
@@ -76,6 +78,8 @@ export interface ISimulationConfig {
   // UI options below:
   // Extreme rain option availability.
   extremeRain: boolean;
+  // Very Long storm duration option availability.
+  veryLongStorm: boolean;
   // List of visible tabs.
   tabs: ("maps" | "graph" | "gauge1" | "gauge2" | "gauge3")[];
   // Initial rain intensity.
@@ -117,7 +121,8 @@ export interface ICrossSectionConfig {
     anchorX?: number,
     anchorY?: number,
     scale?: number
-  }
+  },
+  backgroundType: MainPresetType;
 }
 
 export interface IUrlConfig extends ISimulationConfig {
@@ -125,7 +130,7 @@ export interface IUrlConfig extends ISimulationConfig {
 }
 
 export const getDefaultConfig: () => IUrlConfig = () => ({
-  preset: "RiverCity",
+  preset: "present",
   timeStep: 5,
   speedMult: 2,
   modelWidth: 8000,
@@ -135,7 +140,7 @@ export const getDefaultConfig: () => IUrlConfig = () => ({
   get gridHeight() { return Math.ceil(this.modelHeight / this.cellSize); },
   elevation: [[ 0 ]],
   permeability: [[ 0 ]],
-  permeabilityValues: [0.5, 0.05, 0.005],
+  permeabilityValues: [0.004, 0.002, 0.0008],
   minElevation: 0,
   maxElevation: 100,
   riverData: null,
@@ -164,6 +169,7 @@ export const getDefaultConfig: () => IUrlConfig = () => ({
   pointsOfInterestImg: null,
   simulationLength: 14, // days
   extremeRain: true,
+  veryLongStorm: true,
   tabs: ["maps", "graph", "gauge1", "gauge2", "gauge3"],
   rainIntensity: "medium",
   rainDuration: 2,

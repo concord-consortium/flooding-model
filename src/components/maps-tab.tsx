@@ -6,6 +6,8 @@ import Checkbox from "@material-ui/core/Checkbox";
 import streetThumb from "../assets/model2_map_street_thumb.png";
 import topoThumb from "../assets/model2_map_topographic_thumb.png";
 import permeabilityThumb from "../assets/model2_map_permeability_thumb.png";
+import flatImg from "../assets/map_topographic_key_flat_terrain_4x.png";
+import hillyImg from "../assets/map_topographic_key_hilly_terrain_4x.png";
 import ViewIcon from "../assets/view_icon.svg";
 import css from "./maps-tab.scss";
 
@@ -22,11 +24,22 @@ const checkboxStyle = { color: "#32a447" };
 export const Legend = ({ layer }: { layer: Layer }) => {
   if (layer === "permeability") {
     return (
-      <div className={css.legend}>
+      <div className={`${css.legend} ${css.permeability}`}>
         <h5>Key</h5>
         <div><div className={`${css.circle} ${css.green}`} /> High (rural)</div>
         <div><div className={`${css.circle} ${css.yellow}`} /> Medium (suburban)</div>
         <div><div className={`${css.circle} ${css.orange}`} /> Low (urban)</div>
+        <hr />
+      </div>
+    );
+  }
+  if (layer === "topo") {
+    return (
+      <div className={css.legend}>
+        <h5>Key</h5>
+        <div><div className={css.rect} style={{ backgroundImage: `url("${flatImg}")` }} /> Flat terrain</div>
+        <div><div className={css.rect} style={{ backgroundImage: `url("${hillyImg}")` }} /> Hilly terrain</div>
+        <div className={css.comment}>Note: darker shaded areas are steeper</div>
         <hr />
       </div>
     );
