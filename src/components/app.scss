@@ -24,6 +24,7 @@
     //min-width: 50%;
   }
 }
+@import "../geohazard-components/common";
 
 .bottomBar {
   width: 100%;
@@ -33,6 +34,6 @@
 
 .topLeftControls {
   position: fixed;
-  top: 12px;
+  top: $topBarHeight + 12px;
   left: 12px;
 }
