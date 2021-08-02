@@ -1,10 +1,10 @@
 import React from "react";
 import { BottomBarWidgetGroup } from "./bottom-bar-container";
 import Button from "@material-ui/core/Button";
-import ReloadIcon from "./assets/reload.svg";
-import RestartIcon from "./assets/restart.svg";
-import PauseIcon from "./assets/pause.svg";
-import StartIcon from "./assets/start.svg";
+import ReloadIcon from "../assets/reload.svg";
+import RestartIcon from "../assets/restart.svg";
+import PauseIcon from "../assets/pause.svg";
+import StartIcon from "../assets/start.svg";
 import css from "./playback-controls.scss";
 
 interface IProps {

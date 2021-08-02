@@ -8,6 +8,9 @@ import { TimeDisplay } from "./time-display";
 import { NavButtons } from "./nav-buttons";
 import { SideContainer } from "./side-container";
 import { useStores } from "../use-stores";
+import { TopBar } from "../geohazard-components/top-bar/top-bar";
+import { AboutDialogContent } from "./about-dialog-content";
+import { ShareDialogContent } from "./share-dialog-content";
 import css from "./app.scss";
 
 export const AppComponent = observer(function WrappedComponent() {
@@ -25,6 +28,7 @@ export const AppComponent = observer(function WrappedComponent() {
 
   return (
     <div className={css.app}>
+      <TopBar projectName="Flood Explorer" aboutContent={<AboutDialogContent />} shareContent={<ShareDialogContent />} />
       <div className={`${css.mainContent}`}>
         <div className={`${css.topView}`}>
           <View3d />

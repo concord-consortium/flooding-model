@@ -1,4 +1,5 @@
-$bottomBarHeight: 65px;
+@import "../common.scss";
+
 $bottomBarBorderWidth: 1px;
 $bottomBarBorderStyle: $bottomBarBorderWidth solid #797979;
 $bottomBarTopPadding: 7px;
@@ -109,14 +110,14 @@ $hoverColor: #dfdfdf;
     width: 50px;
     background-size: 100%;
     cursor: pointer;
-    background-image: url("./assets/fullscreen.svg");
+    background-image: url("../assets/fullscreen.svg");
     &:hover {
-      background-image: url("./assets/fullscreen-dark.svg");
+      background-image: url("../assets/fullscreen-dark.svg");
     }
     &.fullscreen {
-      background-image: url("./assets/fullscreen-exit.svg");
+      background-image: url("../assets/fullscreen-exit.svg");
       &:hover {
-        background-image: url("./assets/fullscreen-exit-dark.svg");
+        background-image: url("../assets/fullscreen-exit-dark.svg");
       }
     }
   }

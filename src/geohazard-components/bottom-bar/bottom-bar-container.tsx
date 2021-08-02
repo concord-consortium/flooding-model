@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import CCLogo from "./assets/cc-logo.svg";
-import CCLogoSmall from "./assets/cc-logo-small.svg";
+import CCLogo from "../assets/cc-logo.svg";
+import CCLogoSmall from "../assets/cc-logo-small.svg";
 import screenfull from "screenfull";
 import css from "./bottom-bar-container.scss";
 

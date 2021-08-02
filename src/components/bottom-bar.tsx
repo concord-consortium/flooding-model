@@ -1,12 +1,12 @@
 import React, { ChangeEvent } from "react";
-import { BottomBarContainer, BottomBarWidgetGroup } from "../geohazard-components/bottom-bar-container";
-import { PlaybackControls } from "../geohazard-components/playback-controls";
+import { BottomBarContainer, BottomBarWidgetGroup } from "../geohazard-components/bottom-bar/bottom-bar-container";
+import { PlaybackControls } from "../geohazard-components/bottom-bar/playback-controls";
 import { Slider } from "../geohazard-components/slider";
 import { FormControl, MenuItem, Select } from "@material-ui/core";
 import { observer } from "mobx-react-lite";
 import { useStores } from "../use-stores";
 import { RainIntensity, RiverStage } from "../models/simulation";
-import { IconButton } from "../geohazard-components/icon-button";
+import { IconButton } from "../geohazard-components/bottom-bar/icon-button";
 import { Interaction } from "../models/ui";
 import LeveeIcon from "../assets/levee.svg";
 import LeveeHighlightIcon from "../assets/levee_highlight.svg";
