@@ -4,28 +4,28 @@ import { Copyright } from "../geohazard-components/top-bar/copyright";
 export const AboutDialogContent = () => (
   <div>
     <p>
-      Scientists use models to explore the occurrence and extent of floods. Use this model to explore factors that affect
-      the severity and conditions of inland flooding such as the amount of rain, storm duration, and starting water level.
-      This model also includes base maps of terrain, street view, and permeability that can further help investigate the
+      Scientists use models to explore the occurrence and extent of floods.. Use this model to investigate factors that
+      affect the location and severity of flooding along an inland river city such as the amount of rain, storm
+      duration, and starting water level. This model also includes a variety of maps that enable investigations of the
       causes and impacts of flooding.
     </p>
     <p>
-      Use the Map tab window to select a basemap:  Street, Topographic, or Permeability.
+      Adjust the starting environmental conditions in the bottom control bar.
     </p>
     <p>
-      Adjust the initial starting environmental conditions in the bottom control bar.
-    </p>
-    <p>
-      Click the play button to see a flood develop in the landscape. In which areas does flooding occur? How is the
+      Click the Play button to see a flood develop in the landscape. In which areas does flooding occur? How is the
       extent of flooding influenced by different environmental conditions?
     </p>
     <p>
       Check out the three different stream gauge cross sections for a view of how the height of the water table is
-      linked to flood occurrence.
+      linked to flooding.
     </p>
     <p>
-      Use levees to try to divert the flood waters and save certain areas of the city from being flooded. Which
-      environmental conditions make it hardest to mitigate flooding?
+      Use the Graph tab to see the number of acres flooded and the speed at which flood waters rise and recede.
+    </p>
+    <p>
+      Place levees along the river to mitigate the risk of flooding. How does the human development of land along the
+      river affect flood risks and impacts for people living and working nearby?
     </p>
     <p>
       Flood Explorer was created
