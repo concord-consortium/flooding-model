@@ -9,6 +9,8 @@ import permeabilityThumb from "../assets/model2_map_permeability_thumb.png";
 import flatImg from "../assets/map_topographic_key_flat_terrain_4x.png";
 import hillyImg from "../assets/map_topographic_key_hilly_terrain_4x.png";
 import ViewIcon from "../assets/view_icon.svg";
+import { log } from "@concord-consortium/lara-interactive-api";
+
 import css from "./maps-tab.scss";
 
 type Layer = "street" | "topo" | "permeability";
@@ -52,7 +54,28 @@ export const MapButton: React.FC<IMapButtonProps> = observer(({ title, backgroun
 
   const active = ui.mainLayer === layer;
   const handleClick = () => {
-    ui.setMainLayer(layer);
+    if (ui.mainLayer !== layer) {
+      ui.setMainLayer(layer);
+      log("MapLayerChanged", { value: layer });
+    }
+  };
+
+  const handleTogglePlacesLayer = () => {
+    ui.togglePlacesLayer();
+    if (ui.placesLayerEnabled) {
+      log("PlacesLayerShow");
+    } else {
+      log("PlacesLayerHidden");
+    }
+  };
+
+  const handleTogglePoiLayer = () => {
+    ui.togglePoiLayer();
+    if (ui.poiLayerEnabled) {
+      log("POILayerShown");
+    } else {
+      log("POILayerHidden");
+    }
   };
 
   return (
@@ -66,8 +89,8 @@ export const MapButton: React.FC<IMapButtonProps> = observer(({ title, backgroun
           <Legend layer={layer} />
           <div className={css.checkboxes}>
             <h5>Labels</h5>
-            <div><Checkbox style={checkboxStyle} checked={ui.placesLayerEnabled} onChange={ui.togglePlacesLayer}/> Places</div>
-            <div><Checkbox style={checkboxStyle} checked={ui.poiLayerEnabled} onChange={ui.togglePoiLayer} /> Points of interest</div>
+            <div><Checkbox style={checkboxStyle} checked={ui.placesLayerEnabled} onChange={handleTogglePlacesLayer}/> Places</div>
+            <div><Checkbox style={checkboxStyle} checked={ui.poiLayerEnabled} onChange={handleTogglePoiLayer} /> Points of interest</div>
           </div>
         </div>
       }

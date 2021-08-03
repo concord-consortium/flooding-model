@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import CCLogo from "../assets/cc-logo.svg";
 import CCLogoSmall from "../assets/cc-logo-small.svg";
 import screenfull from "screenfull";
+import { log } from "@concord-consortium/lara-interactive-api";
 import css from "./bottom-bar-container.scss";
 
 const toggleFullscreen = () => {
@@ -10,8 +11,10 @@ const toggleFullscreen = () => {
   }
   if (!screenfull.isFullscreen) {
     screenfull.request();
+    log("FullscreenEnabled");
   } else {
     screenfull.exit();
+    log("FullscreenDisabled");
   }
 };
 
