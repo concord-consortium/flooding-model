@@ -6,6 +6,7 @@ import { FloodingEngine } from "./engine/flooding-engine";
 import { FloodingEngineGPU } from "./engine/flooding-engine-gpu";
 import EventEmitter from "eventemitter3";
 import { populateCellsData } from "./utils/load-and-initialize-cells";
+import { log } from "@concord-consortium/lara-interactive-api";
 
 const MIN_RAIN_DURATION_IN_DAYS = 1;
 const MAX_RAIN_DURATION_IN_DAYS = 4;
@@ -256,10 +257,17 @@ export class SimulationModel {
       cell.leveeHeight = cell.isLevee ? 0 : leveeHeight;
     });
     // Don't use first or last one cell in segment, as they are shared between segments.
-    const isLevee = this.riverBankSegments[riverBankIdx][1]?.isLevee;
+    const segmentCell = this.riverBankSegments[riverBankIdx][1];
+    const isLevee = segmentCell?.isLevee;
     this.leveesCount += isLevee ? 1 : -1;
     this.updateCellsBaseStateFlag();
     this.updateCrossSectionStates();
+
+    if (isLevee) {
+      log("LeveeAdded", { x: segmentCell.x / this.config.gridWidth, y: segmentCell.y / this.config.gridHeight });
+    } else {
+      log("LeveeRemoved", { x: segmentCell.x / this.config.gridWidth, y: segmentCell.y / this.config.gridHeight });
+    }
   }
 
   @action.bound public async load(presetConfig: Partial<ISimulationConfig>) {

@@ -89,8 +89,10 @@ export const BottomBar: React.FC = observer(function WrappedComponent() {
   const handleLeveeMode = () => {
     if (ui.interaction === Interaction.AddRemoveLevee) {
       ui.interaction = null;
+      log("AddRemoveLeveeModeDisabled");
     } else {
       ui.interaction = Interaction.AddRemoveLevee;
+      log("AddRemoveLeveeModeEnabled");
     }
   };
 
