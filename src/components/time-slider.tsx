@@ -5,6 +5,7 @@ import { useStores } from "../use-stores";
 import { SNAPSHOT_INTERVAL } from "../models/snapshots-manager";
 import { withStyles } from "@material-ui/core/styles";
 import LinearProgress from "@material-ui/core/LinearProgress";
+import { log } from "@concord-consortium/lara-interactive-api";
 import css from "./time-slider.scss";
 
 const BorderLinearProgress = withStyles(() => ({
@@ -59,13 +60,17 @@ export const TimeSlider: React.FC = observer(function WrappedComponent() {
   }, [simulation.timeInDays]);
 
   const handleTimeChange = (event: ChangeEvent, value: number) => {
-    if (value <= snapshotsManager.maxDay) {
-      setVal(value);
-      window.clearTimeout(timeoutId.current);
-      timeoutId.current = window.setTimeout(() => {
-        snapshotsManager.restoreSnapshot(value);
-      }, LOADING_DELAY);
-    }
+    value = Math.min(snapshotsManager.maxDay, value);
+    setVal(value);
+    window.clearTimeout(timeoutId.current);
+    timeoutId.current = window.setTimeout(() => {
+      snapshotsManager.restoreSnapshot(value);
+    }, LOADING_DELAY);
+  };
+
+  const handleTimeChangeCommitted = (event: ChangeEvent, value: number) => {
+    value = Math.min(snapshotsManager.maxDay, value);
+    log("TimeSliderChanged", { day: value });
   };
 
   // this will generate marks array from 0 to config.simulationLength.
@@ -83,6 +88,7 @@ export const TimeSlider: React.FC = observer(function WrappedComponent() {
         step={SNAPSHOT_INTERVAL / 24}
         marks={timeMarks}
         onChange={handleTimeChange}
+        onChangeCommitted={handleTimeChangeCommitted}
       />
     </div>
   );

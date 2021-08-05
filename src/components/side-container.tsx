@@ -8,6 +8,7 @@ import Marker2 from "../assets/marker2.svg";
 import Marker3 from "../assets/marker3.svg";
 import { observer } from "mobx-react-lite";
 import { useStores } from "../use-stores";
+import { log } from "@concord-consortium/lara-interactive-api";
 
 import "react-tabs/style/react-tabs.css";
 import css from "./side-container.scss";
@@ -35,7 +36,10 @@ export const SideContainer = observer(() => {
 
   const tabIndex = ui.tabIndex;
   const tabName = tabs[tabIndex];
-  const handleTabChange = (newTabIndex: number) => ui.setTabIndex(newTabIndex);
+  const handleTabChange = (newTabIndex: number) => {
+    ui.setTabIndex(newTabIndex);
+    log("SidePanelTabChanged", { value: tabs[newTabIndex] });
+  };
   const tabEnabled = (name: "maps" | "graph" | "gauge1" | "gauge2" | "gauge3") => tabs.indexOf(name) !== -1;
 
   return (
