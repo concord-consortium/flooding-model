@@ -88,8 +88,8 @@ const getSilverCityPreset = (time: MainPresetType): Partial<ISimulationConfig> =
       {
         backgroundType: time,
         minRiverDepth: 0.5, // m
-        maxRiverDepth: 4,
-        maxFloodDepth: 10.2,
+        maxRiverDepth: 8,
+        maxFloodDepth: 12.4,
         riverGauge: {
           x: 184 / 300,
           y: 63 / 300

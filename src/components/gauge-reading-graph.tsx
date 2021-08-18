@@ -20,8 +20,14 @@ const floodStageLine: Record<number, {color: string; value: number}> = {
   },
   2: {
     color: "#FF1B00",
-    value: 24
+    value: 28
   }
+};
+
+const graphMaxY: Record<number, number>  = {
+  0: 34,
+  1: 34,
+  2: 40
 };
 
 export const GaugeReadingGraph: React.FC<IProps> = observer(({ gauge }) => {
@@ -30,10 +36,10 @@ export const GaugeReadingGraph: React.FC<IProps> = observer(({ gauge }) => {
     <div className={css.graphContainer}>
       <Header>River Stage vs. Time</Header>
       <div className={css.graph}>
-        <Graph 
-          points={gaugeReadingDataset.getCurrentPoints(gauge)} 
-          yLabel="River Stage (feet)" 
-          maxY={34}
+        <Graph
+          points={gaugeReadingDataset.getCurrentPoints(gauge)}
+          yLabel="River Stage (feet)"
+          maxY={graphMaxY[gauge]}
           floodStageY={floodStageLine[gauge].value}
           floodStageLineColor={floodStageLine[gauge].color}
         />

@@ -152,7 +152,7 @@ export const CrossSectionSVGView: React.FC<IProps> = observer(({ gauge}) => {
   const CrossSectionBgComp = CrossSectionBackground[bgType][gauge];
   const CrossSectionGaugeIndicatorSrc = CrossSectionIndicatorSrc[gauge];
   const CrossSectionWaterComp = CrossSectionWater[gauge];
-  
+
   // SVG output paths.
   const pathOutputRefs = useRef(pathTypes.map(() => useRef<SVGPathElement | null>()));
   // SVG path interpolators used to morph one path into another.
