@@ -11,6 +11,7 @@ interface IProps {
 }
 export const Terrain: React.FC<IProps> = observer(function WrappedComponent({ textureImg, interactions }) {
   const { simulation } = useStores();
+  const config = simulation.config;
   const height = planeHeight(simulation);
   // This hook will setup terrain elevation WITHOUT water depth. Note that in 2D view it won't do anything.
   const geometryRef = useElevation({ includeWaterDepth: false });
@@ -31,9 +32,10 @@ export const Terrain: React.FC<IProps> = observer(function WrappedComponent({ te
   }
 
   const materialProps = { attach: "material", map: texture || null, transparent: true };
+  const textureImgIsLabels = textureImg === config.placeLabelsImg || textureImg === config.pointsOfInterestImg;
 
   return (
-    <mesh position={[PLANE_WIDTH * 0.5, height * 0.5, 0]} {...eventHandlers}>
+    <mesh position={[PLANE_WIDTH * 0.5, height * 0.5, textureImgIsLabels ? .002 : 0]} {...eventHandlers}>
       <planeBufferGeometry
         attach="geometry"
         ref={geometryRef}
