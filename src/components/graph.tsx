@@ -51,7 +51,7 @@ export const Graph: React.FC<IProps> = ({ points, yLabel, floodStageY, floodStag
               fill: false,
               data: points
             },
-            floodStageY ? 
+            floodStageY ?
               {
                 label: "flood stage",
                 borderColor: floodStageLineColor,
@@ -62,7 +62,7 @@ export const Graph: React.FC<IProps> = ({ points, yLabel, floodStageY, floodStag
                 showLine: true,
                 fill: false,
                 data: [{ x: 0, y: floodStageY }, { x: maxX, y: floodStageY }]
-              } : 
+              } :
               {},
           ]
         }}
@@ -70,6 +70,17 @@ export const Graph: React.FC<IProps> = ({ points, yLabel, floodStageY, floodStag
           responsive: true,
           maintainAspectRatio: false,
           responsiveAnimationDuration: 0,
+          tooltips: {
+            displayColors: false,
+            callbacks: {
+              label: (toolTip) => {
+                const roundNum = (num: string | number | undefined) => {
+                  return Math.round((Number(num || 0) + Number.EPSILON) * 100) / 100;
+                };
+                return `Days: ${roundNum(toolTip.xLabel)}, Acres: ${roundNum(toolTip.yLabel)}`;
+              }
+            }
+          },
           legend: {
             display: false
           },
