@@ -2,7 +2,7 @@ import React, { ChangeEvent } from "react";
 import { BottomBarContainer, BottomBarWidgetGroup } from "../geohazard-components/bottom-bar/bottom-bar-container";
 import { PlaybackControls } from "../geohazard-components/bottom-bar/playback-controls";
 import { Slider } from "../geohazard-components/slider";
-import { FormControl } from "@material-ui/core";
+import { FormControl, MenuItem, Select } from "@material-ui/core";
 import { observer } from "mobx-react-lite";
 import { useStores } from "../use-stores";
 import { RainIntensity, RiverStage } from "../models/simulation";
@@ -114,12 +114,18 @@ export const BottomBar: React.FC = observer(function WrappedComponent() {
       <BottomBarWidgetGroup title={["Storm", "Duration"]} hoverable={true} className={css.stormDuration}>
         <div className={`${css.stormDurationSelect} ${simulation.simulationStarted ? css.disabled : ""}`} data-test={"rain-duration"}>
           <FormControl variant="outlined">
-            <select className={css.selectElement} value={simulation.rainDurationInDays} onChange={handleStormDurationChange} data-test={"rain-duration-select"}>
-              <option className={css.optionElement} value={1}>{ stormDurationLabels[1] }</option>
-              <option value={2}>{ stormDurationLabels[2] }</option>
-              <option value={3}>{ stormDurationLabels[3] }</option>
-              {config.veryLongStorm && <option value={4}>{ stormDurationLabels[4] }</option>}
-            </select>
+            <Select
+              MenuProps={{autoFocus: false, disableAutoFocusItem: true, disableEnforceFocus: true, disableAutoFocus: true}}
+              className={css.selectElement}
+              value={simulation.rainDurationInDays}
+              onChange={handleStormDurationChange}
+              data-test={"rain-duration-select"}
+            >
+              <MenuItem value={1}>{ stormDurationLabels[1] }</MenuItem>
+              <MenuItem value={2}>{ stormDurationLabels[2] }</MenuItem>
+              <MenuItem value={3}>{ stormDurationLabels[3] }</MenuItem>
+              { config.veryLongStorm && <MenuItem value={4}>{ stormDurationLabels[4] }</MenuItem> }
+            </Select>
           </FormControl>
         </div>
       </BottomBarWidgetGroup>
