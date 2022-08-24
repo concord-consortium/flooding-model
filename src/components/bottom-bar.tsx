@@ -114,7 +114,13 @@ export const BottomBar: React.FC = observer(function WrappedComponent() {
       <BottomBarWidgetGroup title={["Storm", "Duration"]} hoverable={true} className={css.stormDuration}>
         <div className={`${css.stormDurationSelect} ${simulation.simulationStarted ? css.disabled : ""}`} data-test={"rain-duration"}>
           <FormControl variant="outlined">
-            <Select className={css.selectElement} value={simulation.rainDurationInDays} onChange={handleStormDurationChange} data-test={"rain-duration-select"}>
+            <Select
+              MenuProps={{autoFocus: false, disableAutoFocusItem: true, disableEnforceFocus: true, disableAutoFocus: true}}
+              className={css.selectElement}
+              value={simulation.rainDurationInDays}
+              onChange={handleStormDurationChange}
+              data-test={"rain-duration-select"}
+            >
               <MenuItem value={1}>{ stormDurationLabels[1] }</MenuItem>
               <MenuItem value={2}>{ stormDurationLabels[2] }</MenuItem>
               <MenuItem value={3}>{ stormDurationLabels[3] }</MenuItem>
