@@ -50,7 +50,9 @@
     "test:coverage:watch": "jest --coverage --watch",
     "test:cypress": "cypress run",
     "test:cypress:open": "cypress open",
-    "test:full": "npm-run-all test test:cypress"
+    "test:cypress:snapshot": "cypress open --env failOnSnapshotDiff=false",
+    "test:full": "npm-run-all test test:cypress",
+    "test:open:snapshots": "cypress open --env updateSnapshots=true"
   },
   "repository": {
     "type": "git",
@@ -67,6 +69,7 @@
     "@svgr/webpack": "^5.4.0",
     "@testing-library/react": "^11.0.4",
     "@types/chart.js": "^2.9.23",
+    "@types/cypress-image-snapshot": "^3.1.6",
     "@types/enzyme": "^3.10.5",
     "@types/enzyme-adapter-react-16": "^1.0.6",
     "@types/jest": "^26.0.3",
@@ -81,7 +84,9 @@
     "babel-jest": "^26.1.0",
     "copy-webpack-plugin": "^6.0.3",
     "css-loader": "^3.6.0",
-    "cypress": "^4.9.0",
+    "cypress": "^12.3.0",
+    "cypress-image-snapshot": "^4.0.1",
+    "cypress-terminal-report": "^4.1.2",
     "enzyme": "^3.11.0",
     "enzyme-adapter-react-16": "^1.15.2",
     "eslint": "^7.3.1",
