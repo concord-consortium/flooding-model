@@ -8,7 +8,7 @@ describe("TopBar component", () => {
       const wrapper = shallow(
         <TopBar projectName="Test" />
       );
-      Object.defineProperty(window, 'location', {
+      Object.defineProperty(window, "location", {
         writable: true,
         value: { reload: jest.fn() },
       });

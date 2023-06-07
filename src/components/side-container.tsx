@@ -92,7 +92,7 @@ export const SideContainer = observer(() => {
           }
           return (<TabPanel key={idx} className={`react-tabs__tab-panel ${css.tabPanel} ${gaugeBorderColorCss[idx]}`}>
               <GaugeTab gauge={idx}/>
-            </TabPanel>
+                  </TabPanel>
           );
         }
       )

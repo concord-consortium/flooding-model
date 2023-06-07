@@ -1,4 +1,4 @@
-import { GPUComputationRenderer, Variable } from 'three/examples/jsm/misc/GPUComputationRenderer';
+import { GPUComputationRenderer, Variable } from "three/examples/jsm/misc/GPUComputationRenderer";
 import * as THREE from "three";
 import { ShaderMaterial, WebGLRenderTarget } from "three";
 import CalcWaterDepthShader from "./calc-water-depth-shader.glsl";
@@ -7,7 +7,7 @@ import readWaterOutputShader from "./read-water-output-shader.glsl";
 import { onWebGLRendererAvailable } from "../../components/view-3d/webgl-renderer";
 import { Cell } from "../cell";
 import { IFloodingEngineConfig } from "./flooding-engine";
-import { RiverStage } from '../simulation';
+import { RiverStage } from "../simulation";
 
 const isSafari = () => {
   return !!navigator.userAgent.match(/Safari/i) && !navigator.userAgent.match(/Chrome/i);
@@ -46,55 +46,55 @@ export class FloodingEngineGPU {
   }
 
   public set cellSize(value: number) {
-    this.waterOutputVariable.material.uniforms["cellSize"] = { value };
-    this.fluxVariable.material.uniforms["cellSize"] = { value };
+    this.waterOutputVariable.material.uniforms.cellSize = { value };
+    this.fluxVariable.material.uniforms.cellSize = { value };
   }
   public get cellSize() {
-    return this.waterOutputVariable.material.uniforms["cellSize"].value;
+    return this.waterOutputVariable.material.uniforms.cellSize.value;
   }
 
   public set dampingFactor(value: number) {
-    this.waterOutputVariable.material.uniforms["dampingFactor"] = { value };
-    this.fluxVariable.material.uniforms["dampingFactor"] = { value };
+    this.waterOutputVariable.material.uniforms.dampingFactor = { value };
+    this.fluxVariable.material.uniforms.dampingFactor = { value };
   }
   public get dampingFactor() {
-    return this.waterOutputVariable.material.uniforms["dampingFactor"].value;
+    return this.waterOutputVariable.material.uniforms.dampingFactor.value;
   }
 
   public set floodPermeabilityMult(value: number) {
-    this.waterOutputVariable.material.uniforms["floodPermeabilityMult"] = { value };
+    this.waterOutputVariable.material.uniforms.floodPermeabilityMult = { value };
   }
   public get floodPermeabilityMult() {
-    return this.waterOutputVariable.material.uniforms["floodPermeabilityMult"].value;
+    return this.waterOutputVariable.material.uniforms.floodPermeabilityMult.value;
   }
 
   public set riverStageIncreaseSpeed(value: number) {
-    this.waterOutputVariable.material.uniforms["riverStageIncreaseSpeed"] = { value };
+    this.waterOutputVariable.material.uniforms.riverStageIncreaseSpeed = { value };
   }
   public get riverStageIncreaseSpeed() {
-    return this.waterOutputVariable.material.uniforms["riverStageIncreaseSpeed"].value;
+    return this.waterOutputVariable.material.uniforms.riverStageIncreaseSpeed.value;
   }
 
   public set dt(value: number) {
-    this.waterOutputVariable.material.uniforms["dt"] = { value };
-    this.fluxVariable.material.uniforms["dt"] = { value };
+    this.waterOutputVariable.material.uniforms.dt = { value };
+    this.fluxVariable.material.uniforms.dt = { value };
   }
   public get dt() {
-    return this.waterOutputVariable.material.uniforms["dt"].value;
+    return this.waterOutputVariable.material.uniforms.dt.value;
   }
 
   public set RiverStageHigh(value: number) {
-    this.waterOutputVariable.material.uniforms["RiverStageHigh"] = { value };
+    this.waterOutputVariable.material.uniforms.RiverStageHigh = { value };
   }
   public get RiverStageHigh() {
-    return this.waterOutputVariable.material.uniforms["RiverStageHigh"].value;
+    return this.waterOutputVariable.material.uniforms.RiverStageHigh.value;
   }
 
   public set waterSaturationIncrement(value: number) {
-    this.waterOutputVariable.material.uniforms["waterSaturationIncrement"] = { value };
+    this.waterOutputVariable.material.uniforms.waterSaturationIncrement = { value };
   }
   public get waterSaturationIncrement() {
-    return this.waterOutputVariable.material.uniforms["waterSaturationIncrement"].value;
+    return this.waterOutputVariable.material.uniforms.waterSaturationIncrement.value;
   }
 
   init() {
@@ -141,8 +141,8 @@ export class FloodingEngineGPU {
     this.gpuCompute.setVariableDependencies(this.fluxVariable, [this.fluxVariable, this.waterOutputVariable]);
     this.gpuCompute.setVariableDependencies(this.waterOutputVariable, [ this.waterOutputVariable, this.fluxVariable ]);
     // Additional data used by variables.
-    this.waterOutputVariable.material.uniforms["cellProps"] = { value: cellPropsTexture };
-    this.fluxVariable.material.uniforms["cellProps"] = { value: cellPropsTexture };
+    this.waterOutputVariable.material.uniforms.cellProps = { value: cellPropsTexture };
+    this.fluxVariable.material.uniforms.cellProps = { value: cellPropsTexture };
 
     this.cellSize = 0;
     this.dampingFactor = 0;
@@ -188,16 +188,16 @@ export class FloodingEngineGPU {
   public readWaterOutput() {
     // Read data:
     const currentRenderTarget = this.gpuCompute.getCurrentRenderTarget(this.waterOutputVariable) as WebGLRenderTarget;
-    this.readWaterOutputShader.uniforms["textureWaterOutput"].value = currentRenderTarget.texture;
+    this.readWaterOutputShader.uniforms.textureWaterOutput.value = currentRenderTarget.texture;
 
     // Read .x component (water depth).
-    this.readWaterOutputShader.uniforms["valueIdx"].value = 0; // ==> .x
+    this.readWaterOutputShader.uniforms.valueIdx.value = 0; // ==> .x
     this.gpuCompute.doRenderTarget(this.readWaterOutputShader, this.readWaterOutputRenderTarget);
     this.renderer.readRenderTargetPixels(this.readWaterOutputRenderTarget, 0, 0, this.config.gridWidth, this.config.gridHeight, this.readWaterDepthImage);
     const waterDepth = new Float32Array(this.readWaterDepthImage.buffer);
     
     // Read .y component (water saturation).
-    this.readWaterOutputShader.uniforms["valueIdx"].value = 1; // ==> .y
+    this.readWaterOutputShader.uniforms.valueIdx.value = 1; // ==> .y
     this.gpuCompute.doRenderTarget(this.readWaterOutputShader, this.readWaterOutputRenderTarget);
     this.renderer.readRenderTargetPixels(this.readWaterOutputRenderTarget, 0, 0, this.config.gridWidth, this.config.gridHeight, this.readWaterSaturationImage);
     const waterSaturation = new Float32Array(this.readWaterSaturationImage.buffer);

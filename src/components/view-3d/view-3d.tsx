@@ -1,8 +1,8 @@
-import React, { useEffect } from "react";
-import { Canvas, useThree } from "react-three-fiber";
+import React, { useEffect, useLayoutEffect, useRef } from "react";
+import { Canvas, useThree } from "@react-three/fiber";
 import { useStores } from "../../use-stores";
 import { DEFAULT_UP } from "./helpers";
-import { CameraControls } from "./camera-controls";
+import { CameraControls, PerspectiveCamera } from "@react-three/drei";
 import { Terrain } from "./terrain";
 import { Water } from "./water";
 import { Levees } from "./levees";
@@ -30,9 +30,24 @@ const ShutterbugSupport = () => {
 export const View3d = observer(() => {
   const { simulation, ui } = useStores();
   const config = simulation.config;
-  // If pixelRatio is 2 or more, use a bit reduced value. It seems to be a good compromise between
-  // rendering quality and performance (PJ: on my 2017 MacBook Pro 15", pixelRatio = 2 was causing visible FPS drop).
-  const pixelRatio = window.devicePixelRatio > 1 ? Math.max(1, window.devicePixelRatio * 0.75) : 1;
+  const controlsRef = useRef<CameraControls>(null);
+
+  const handleControlsCreated = (controls: CameraControls) => {
+    controls.setTarget(...ui.cameraTarget.toArray());
+    controls.setPosition(...ui.cameraPos.toArray());
+  };
+
+  const handleCameraPositionUpdated = () => {
+    if (controlsRef.current?.camera.position) {
+      ui.setCameraPos(controlsRef.current?.camera.position.clone());
+    }
+  };
+
+  useLayoutEffect(() => {
+    if (controlsRef.current?.camera.position && !ui.cameraPos.equals(controlsRef.current?.camera.position)) {
+      controlsRef.current?.setPosition(...ui.cameraPos.toArray(), true);
+    }
+  }, [ui.cameraPos]);
 
   const terrainInteractions: InteractionHandler[] = [
     useShowCoordsInteraction(),
@@ -49,9 +64,22 @@ export const View3d = observer(() => {
   }
 
   return (
-    <Canvas camera={{ fov: 33, up: DEFAULT_UP }} pixelRatio={pixelRatio} >
+    /* eslint-disable react/no-unknown-property */
+    // See: https://github.com/jsx-eslint/eslint-plugin-react/issues/3423
+    <Canvas camera={{ manual: true }} flat>
       <ExtractWebGLRenderer />
-      <CameraControls/>
+      <PerspectiveCamera makeDefault={true} fov={33} up={DEFAULT_UP} />
+      <CameraControls
+        ref={controlsRef}
+        onUpdate={handleControlsCreated} // on creation, set initial camera position and target
+        onEnd={handleCameraPositionUpdated} // on end of interaction, update camera position
+        enabled={!ui.dragging} // disable rotation when something is being dragged
+        minDistance={ui.config.minCameraDistance}
+        maxDistance={ui.config.maxCameraDistance}
+        maxPolarAngle={Math.PI * 0.45}
+        minAzimuthAngle={-Math.PI * 0.4}
+        maxAzimuthAngle={Math.PI * 0.4}
+      />
       {
         config.view3d &&
         <>
@@ -68,5 +96,6 @@ export const View3d = observer(() => {
       { ui.poiLayerEnabled && config.pointsOfInterestImg && <Terrain textureImg={config.pointsOfInterestImg} /> }
       <ShutterbugSupport/>
     </Canvas>
+    /* eslint-enable react/no-unknown-property */
   );
 });

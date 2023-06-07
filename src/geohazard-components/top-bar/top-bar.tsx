@@ -2,7 +2,7 @@ import * as React from "react";
 import RefreshIcon from "@material-ui/icons/Refresh";
 import { Dialog } from "./dialog";
 import { log } from "@concord-consortium/lara-interactive-api";
-import * as css from "./top-bar.scss";
+import css from "./top-bar.scss";
 
 interface IProps {
   projectName: string;

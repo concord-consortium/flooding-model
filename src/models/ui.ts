@@ -35,7 +35,7 @@ export class UIModel {
     this.resetCameraPos();
     this.reload();
   }
-  
+
   @action.bound public setTabIndex(idx: number) {
     this.tabIndex = idx;
   }
@@ -71,7 +71,7 @@ export class UIModel {
   }
 
   @action.bound public resetCameraPos() {
-    this.defaultCameraPos = new Vector3(PLANE_WIDTH * 0.5, planeHeightFromConfig(this.config) * 0.5, PLANE_WIDTH * 2);
+    this.defaultCameraPos = new Vector3(PLANE_WIDTH * 0.5, planeHeightFromConfig(this.config) * 0.5, 2);
     this.cameraPos = this.defaultCameraPos.clone();
     this.cameraTarget = new Vector3(PLANE_WIDTH * 0.5, planeHeightFromConfig(this.config) * 0.5, 0.0);
   }

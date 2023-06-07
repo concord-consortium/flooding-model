@@ -1,4 +1,4 @@
 import React from "react";
 import css from "./header.scss";
 
-export const Header: React.FC = ({ children }) => <div className={css.header}>{ children }</div>;
+export const Header: React.FC = ({ children }: { children?: JSX.Element | string }) => <div className={css.header}>{ children }</div>;

@@ -34,9 +34,9 @@ export class GaugeReadingDataset {
     this.simulation.crossSections.forEach((g, idx) => {
       this.points[idx][timeInHours] = this.getCurrentPoint(idx);
     });
-  }
+  };
 
   public reset = () => {
     this.points = this.simulation.crossSections.map((g, idx) => []);
-  }
+  };
 }

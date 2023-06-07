@@ -5,7 +5,7 @@ import css from "./bottom-bar.scss";
 import { storesContext } from "../use-stores";
 import { IStores, createStores } from "../models/stores";
 
-export const StoreProvider = ({ stores, children }: { stores: IStores, children: any }) => {
+const StoreProvider = ({ stores, children }: { stores: IStores, children: any }) => {
   return <storesContext.Provider value={stores}>{children}</storesContext.Provider>;
 };
 

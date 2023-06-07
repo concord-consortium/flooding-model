@@ -386,7 +386,7 @@ export class SimulationModel {
       if (this.timeInHours !== oldTimeInHours) {
         // Copy data from GPU to CPU.
         if (this.engineGPU) {
-          const { waterDepth, waterSaturation } = this.engineGPU?.readWaterOutput();
+          const { waterDepth, waterSaturation } = this.engineGPU.readWaterOutput();
           const cellsCount = waterDepth.length;
           for (let i = 0; i < cellsCount; i += 1) {
             this.cells[i].waterDepth = waterDepth[i];

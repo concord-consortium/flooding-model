@@ -12,7 +12,7 @@ const getSimpleSimulation = async () => {
 };
 
 describe("SnapshotsManager", () => {
-  it("it saves snapshot each 6 hours", async () => {
+  it("saves snapshot each 6 hours", async () => {
     const sim = await getSimpleSimulation();
     const snapManager = new SnapshotsManager(sim);
     expect(snapManager.maxDay).toEqual(0);
@@ -35,7 +35,7 @@ describe("SnapshotsManager", () => {
     expect(snapManager.snapshots.length).toEqual(5);
   });
 
-  it("it restores snapshot correctly", async () => {
+  it("restores snapshot correctly", async () => {
     const sim = await getSimpleSimulation();
     const snapManager = new SnapshotsManager(sim);
     expect(snapManager.maxDay).toEqual(0);
@@ -54,7 +54,7 @@ describe("SnapshotsManager", () => {
     expect(stopSpy).toHaveBeenCalled();
   });
 
-  it("it handles simulation restart", async () => {
+  it("handles simulation restart", async () => {
     const sim = await getSimpleSimulation();
     const snapManager = new SnapshotsManager(sim);
     expect(snapManager.maxDay).toEqual(0);
@@ -71,7 +71,7 @@ describe("SnapshotsManager", () => {
     expect(snapManager.snapshots.length).toEqual(0);
   });
 
-  it("it handles simulation start", async () => {
+  it("handles simulation start", async () => {
     const sim = await getSimpleSimulation();
     const snapManager = new SnapshotsManager(sim);
     expect(snapManager.maxDay).toEqual(0);

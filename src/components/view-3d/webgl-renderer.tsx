@@ -1,5 +1,5 @@
 import React from "react";
-import { useThree } from "react-three-fiber";
+import { useThree } from "@react-three/fiber";
 import EventEmitter from "eventemitter3";
 import * as THREE from "three";
 
@@ -17,7 +17,7 @@ export const onWebGLRendererAvailable = (handler: (renderer: THREE.WebGLRenderer
 
 // Small pseudo-component used to extract the current WebGLRenderer.
 // GPGPU computations need to use the same Renderer instance so it's possible to share textures.
-// See: https://github.com/pmndrs/react-three-fiber/issues/685
+// See: https://github.com/pmndrs/@react-three/fiber/issues/685
 export const ExtractWebGLRenderer: React.FC = () => {
   const { gl } = useThree();
   if (gl && gl !== renderer) {

@@ -39,5 +39,5 @@ export const Gauges: React.FC = observer(function WrappedComponent() {
         />;
       })
     }
-  </>;
+         </>;
 });
