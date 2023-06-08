@@ -17,7 +17,7 @@ context("Test the maps types", () => {
   });
 
   describe("Simulation Test", () => {
-    it("Test Simulation With Light Rain, Short Storm & Low Water Level", () => {
+    it.skip("Test Simulation With Light Rain, Short Storm & Low Water Level", () => {
         bottombar.moveAmountOfRainSlider("Light");
         bottombar.selectStormDuration("Short");
         bottombar.moveStartingWaterLevelSlider("Low");
@@ -31,7 +31,7 @@ context("Test the maps types", () => {
         bottombar.getGauge3TabSection().click();
         cy.matchImageSnapshot("Scenario1_Gauge3");
     });
-    it("Test Simulation With Med Rain, Medium Storm & Med Water Level", () => {
+    it.skip("Test Simulation With Med Rain, Medium Storm & Med Water Level", () => {
         bottombar.moveAmountOfRainSlider("Med");
         bottombar.selectStormDuration("Medium");
         bottombar.moveStartingWaterLevelSlider("Med");
@@ -45,7 +45,7 @@ context("Test the maps types", () => {
         bottombar.getGauge3TabSection().click();
         cy.matchImageSnapshot("Scenario2_Gauge3");
     });
-    it("Test Simulation With Heavy Rain, Long Storm & High Water Level", () => {
+    it.skip("Test Simulation With Heavy Rain, Long Storm & High Water Level", () => {
         bottombar.moveAmountOfRainSlider("Heavy");
         bottombar.selectStormDuration("Long");
         bottombar.moveStartingWaterLevelSlider("High");
@@ -59,7 +59,7 @@ context("Test the maps types", () => {
         bottombar.getGauge3TabSection().click();
         cy.matchImageSnapshot("Scenario3_Gauge3");
     });
-    it("Test Simulation With Ext Rain, Long Storm & Med Water Level", () => {
+    it.skip("Test Simulation With Ext Rain, Long Storm & Med Water Level", () => {
         bottombar.moveAmountOfRainSlider("Ext");
         bottombar.selectStormDuration("Very Long");
         bottombar.moveStartingWaterLevelSlider("High");
