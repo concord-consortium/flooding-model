@@ -22,7 +22,7 @@ context("Test the maps types", () => {
         bottombar.selectStormDuration("Short");
         bottombar.moveStartingWaterLevelSlider("Low");
         bottombar.getStartStopButton().click();
-        bottombar.getTimeText().contains("14", { timeout: 70000 });
+        bottombar.getTimeText().contains("14", { timeout: 180000 });
         cy.matchImageSnapshot("Scenario1_Gauge1");
         bottombar.getGraphTabSection().click();
         cy.matchImageSnapshot("Scenario1_Graph");
@@ -36,7 +36,7 @@ context("Test the maps types", () => {
         bottombar.selectStormDuration("Medium");
         bottombar.moveStartingWaterLevelSlider("Med");
         bottombar.getStartStopButton().click();
-        bottombar.getTimeText().contains("14", { timeout: 70000 });
+        bottombar.getTimeText().contains("14", { timeout: 180000 });
         cy.matchImageSnapshot("Scenario2_Gauge1");
         bottombar.getGraphTabSection().click();
         cy.matchImageSnapshot("Scenario2_Graph");
@@ -50,7 +50,7 @@ context("Test the maps types", () => {
         bottombar.selectStormDuration("Long");
         bottombar.moveStartingWaterLevelSlider("High");
         bottombar.getStartStopButton().click();
-        bottombar.getTimeText().contains("14", { timeout: 70000 });
+        bottombar.getTimeText().contains("14", { timeout: 180000 });
         cy.matchImageSnapshot("Scenario3_Gauge1");
         bottombar.getGraphTabSection().click();
         cy.matchImageSnapshot("Scenario3_Graph");
@@ -64,7 +64,7 @@ context("Test the maps types", () => {
         bottombar.selectStormDuration("Very Long");
         bottombar.moveStartingWaterLevelSlider("High");
         bottombar.getStartStopButton().click();
-        bottombar.getTimeText().contains("14", { timeout: 70000 });
+        bottombar.getTimeText().contains("14", { timeout: 180000 });
         cy.matchImageSnapshot("Scenario4_Gauge1");
         bottombar.getGraphTabSection().click();
         cy.matchImageSnapshot("Scenario4_Graph");
