@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from "react";
-import { observer } from "mobx-react-lite";
+import { observer } from "mobx-react";
 import { mToViewUnitRatio, mToViewElevationUnit, getTexture } from "./helpers";
 import { useStores } from "../../use-stores";
 import { Event } from "three";

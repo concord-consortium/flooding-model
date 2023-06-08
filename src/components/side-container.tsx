@@ -6,7 +6,7 @@ import { MapsTab } from "./maps-tab";
 import Marker1 from "../assets/marker1.svg";
 import Marker2 from "../assets/marker2.svg";
 import Marker3 from "../assets/marker3.svg";
-import { observer } from "mobx-react-lite";
+import { observer } from "mobx-react";
 import { useStores } from "../use-stores";
 import { log } from "@concord-consortium/lara-interactive-api";
 

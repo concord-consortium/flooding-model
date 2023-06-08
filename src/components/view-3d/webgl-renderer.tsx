@@ -1,6 +1,6 @@
 import React from "react";
 import { useThree } from "@react-three/fiber";
-import EventEmitter from "eventemitter3";
+import { EventEmitter } from "eventemitter3";
 import * as THREE from "three";
 
 const emit = new EventEmitter();

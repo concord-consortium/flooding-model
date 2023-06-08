@@ -6,7 +6,7 @@ import { log } from "@concord-consortium/lara-interactive-api";
 import css from "./bottom-bar-container.scss";
 
 const toggleFullscreen = () => {
-  if (!screenfull || !screenfull.isEnabled) {
+  if (!screenfull?.isEnabled) {
     return;
   }
   if (!screenfull.isFullscreen) {
@@ -26,7 +26,7 @@ export const BottomBarContainer: React.FC<BottomBarContainerProps> = ({ children
   const [ fullscreen, setFullscreen ] = useState<boolean>(false);
 
   useEffect(() => {
-    if (screenfull && screenfull.isEnabled) {
+    if (screenfull.isEnabled) {
       const eventName = screenfull.raw.fullscreenchange;
       document.addEventListener(eventName, fullscreenChange);
       return () => {
@@ -55,7 +55,7 @@ export const BottomBarContainer: React.FC<BottomBarContainerProps> = ({ children
       {/* This empty container is necessary so the spacing works correctly */}
       <div className={css.rightContainer}>
         {
-          screenfull && screenfull.isEnabled &&
+          screenfull?.isEnabled &&
           <div className={fullscreenIconStyle()} onClick={toggleFullscreen} title="Toggle Fullscreen" />
         }
       </div>

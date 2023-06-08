@@ -3,9 +3,9 @@ import { BottomBarContainer, BottomBarWidgetGroup } from "../geohazard-component
 import { PlaybackControls } from "../geohazard-components/bottom-bar/playback-controls";
 import { Slider } from "../geohazard-components/slider";
 import { FormControl, MenuItem, Select } from "@material-ui/core";
-import { observer } from "mobx-react-lite";
+import { observer } from "mobx-react";
 import { useStores } from "../use-stores";
-import { RainIntensity, RiverStage } from "../models/simulation";
+import { RainIntensity, RiverStage } from "../types";
 import { IconButton } from "../geohazard-components/bottom-bar/icon-button";
 import { Interaction } from "../models/ui";
 import LeveeIcon from "../assets/levee.svg";

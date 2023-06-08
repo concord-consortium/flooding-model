@@ -4,26 +4,13 @@ import { getDefaultConfig, ISimulationConfig, getUrlConfig } from "../config";
 import { cellAtGrid, getCellNeighbors4, getCellNeighbors8 } from "./utils/grid-utils";
 import { FloodingEngine } from "./engine/flooding-engine";
 import { FloodingEngineGPU } from "./engine/flooding-engine-gpu";
-import EventEmitter from "eventemitter3";
 import { populateCellsData } from "./utils/load-and-initialize-cells";
 import { log } from "@concord-consortium/lara-interactive-api";
+import { EventEmitter } from "eventemitter3";
+import { RainIntensity, RiverStage } from "../types";
 
 const MIN_RAIN_DURATION_IN_DAYS = 1;
 const MAX_RAIN_DURATION_IN_DAYS = 4;
-
-export enum RainIntensity {
-  light,
-  medium,
-  heavy,
-  extreme
-}
-
-export enum RiverStage {
-  low = 0,
-  medium = 1/3,
-  high = 2/3,
-  crest = 1
-}
 
 export type Weather = "sunny" | "partlyCloudy" | "lightRain" | "mediumRain" | "heavyRain" | "extremeRain";
 

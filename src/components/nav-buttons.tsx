@@ -1,5 +1,5 @@
 import React from "react";
-import { observer } from "mobx-react-lite";
+import { observer } from "mobx-react";
 import { useStores } from "../use-stores";
 import ZoomIn from "../assets/zoom-in.svg";
 import ZoomOut from "../assets/zoom-out.svg";

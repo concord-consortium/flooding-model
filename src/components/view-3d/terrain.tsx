@@ -1,6 +1,6 @@
 import React, { useMemo, useRef } from "react";
 import { PLANE_WIDTH, planeHeight, getTexture } from "./helpers";
-import { observer } from "mobx-react-lite";
+import { observer } from "mobx-react";
 import { useStores } from "../../use-stores";
 import { getEventHandlers, InteractionHandler } from "./interaction-handler";
 import { useElevation } from "./use-elevation";

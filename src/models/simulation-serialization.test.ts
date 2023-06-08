@@ -6,7 +6,7 @@ import { Cell } from "./cell";
 declare global {
   // eslint-disable-next-line @typescript-eslint/no-namespace
   namespace jest {
-    interface Matchers<R> {
+    interface Matchers {
       toBeEqualProperty(propName: string, value: any): CustomMatcherResult
     }
   }

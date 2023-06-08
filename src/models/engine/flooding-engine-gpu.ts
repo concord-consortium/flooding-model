@@ -7,7 +7,7 @@ import readWaterOutputShader from "./read-water-output-shader.glsl";
 import { onWebGLRendererAvailable } from "../../components/view-3d/webgl-renderer";
 import { Cell } from "../cell";
 import { IFloodingEngineConfig } from "./flooding-engine";
-import { RiverStage } from "../simulation";
+import { RiverStage } from "../../types";
 
 const isSafari = () => {
   return !!navigator.userAgent.match(/Safari/i) && !navigator.userAgent.match(/Chrome/i);
@@ -195,7 +195,7 @@ export class FloodingEngineGPU {
     this.gpuCompute.doRenderTarget(this.readWaterOutputShader, this.readWaterOutputRenderTarget);
     this.renderer.readRenderTargetPixels(this.readWaterOutputRenderTarget, 0, 0, this.config.gridWidth, this.config.gridHeight, this.readWaterDepthImage);
     const waterDepth = new Float32Array(this.readWaterDepthImage.buffer);
-    
+
     // Read .y component (water saturation).
     this.readWaterOutputShader.uniforms.valueIdx.value = 1; // ==> .y
     this.gpuCompute.doRenderTarget(this.readWaterOutputShader, this.readWaterOutputRenderTarget);

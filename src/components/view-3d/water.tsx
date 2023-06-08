@@ -4,7 +4,7 @@ import * as THREE from "three";
 import { BufferAttribute } from "three";
 import { SimulationModel } from "../../models/simulation";
 import { PLANE_WIDTH, planeHeight } from "./helpers";
-import { observer } from "mobx-react-lite";
+import { observer } from "mobx-react";
 import { useStores } from "../../use-stores";
 import { useElevation } from "./use-elevation";
 // Very simple shaders. They won't work great in 3D view, as there's no lighting there. But 3D view is used only
@@ -48,7 +48,7 @@ export const Water = observer(function WrappedComponent() {
       return;
     }
     setupAlpha(geometryRef.current, simulation);
-  }, [simulation.cellsSimulationStateFlag, simulation.config.useGPU]);
+  }, [simulation, simulation.cellsSimulationStateFlag, simulation.config.useGPU]);
 
 
   // ShaderMaterial could be theoretically created using JSX, but somehow it doesn't want to update uniforms correctly.

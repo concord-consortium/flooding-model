@@ -15,7 +15,9 @@ interface IProps {
 export const useElevation = ({ includeWaterDepth, geometryRef }: IProps) => {
   const { simulation } = useStores();
 
-  return useLayoutEffect(() => {
+  const updateFlag = includeWaterDepth ? simulation.cellsSimulationStateFlag : simulation.cellsBaseStateFlag;
+
+  useLayoutEffect(() => {
     const geometry = geometryRef?.current;
     if (geometry && simulation.config.view3d) {
       const posArray = geometry.attributes.position.array as number[];
@@ -31,6 +33,5 @@ export const useElevation = ({ includeWaterDepth, geometryRef }: IProps) => {
       }
       (geometry.attributes.position as BufferAttribute).needsUpdate = true;
     }
-  }, [simulation.config.view3d, includeWaterDepth, includeWaterDepth ? simulation.cellsSimulationStateFlag : simulation.cellsBaseStateFlag]
-  );
+  }, [simulation, geometryRef, simulation.config.view3d, includeWaterDepth, updateFlag]);
 };

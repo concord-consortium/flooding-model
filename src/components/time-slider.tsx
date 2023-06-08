@@ -1,6 +1,6 @@
 import React, { ChangeEvent, useEffect, useRef, useState } from "react";
 import { Slider } from "../geohazard-components/slider";
-import { observer } from "mobx-react-lite";
+import { observer } from "mobx-react";
 import { useStores } from "../use-stores";
 import { SNAPSHOT_INTERVAL } from "../models/snapshots-manager";
 import { withStyles } from "@material-ui/core/styles";
