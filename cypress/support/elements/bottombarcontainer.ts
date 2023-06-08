@@ -69,16 +69,16 @@ class BottomBarContainer{
   }
 
   getGraphTabSection() {
-    return cy.get('#react-tabs-2');
+    return cy.get("#panel\\:r1\\:1");
   }
   getGauge1TabSection() {
-    return cy.get('#react-tabs-4');
+    return cy.get("#panel\\:r1\\:2");
   }
   getGauge2TabSection() {
-    return cy.get('#react-tabs-6');
+    return cy.get("#panel\\:r1\\:3");
   }
   getGauge3TabSection() {
-    return cy.get('#react-tabs-8');
+    return cy.get("#panel\\:r1\\:4");
   }
 
 }

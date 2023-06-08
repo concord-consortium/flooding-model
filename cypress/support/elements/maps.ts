@@ -1,10 +1,10 @@
 class Maps{
 
   getMapTab() {
-    return cy.get('#react-tabs-0');
+    return cy.get("#tab\\:r1\\:0");
   }
   getMapTabSection() {
-    return cy.get('#react-tabs-1');
+    return cy.get("#panel\\:r1\\:0");
   }
   verifyHeader() {
     this.getMapTabSection().find("[class^='header']").should("have.text", "Maps");
