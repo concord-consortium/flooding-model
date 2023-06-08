@@ -51,7 +51,7 @@
     "test:debug": "node --nolazy --inspect-brk ./node_modules/.bin/jest --runInBand --no-cache",
     "test:watch": "jest --watch",
     "test:coverage:watch": "jest --coverage --watch",
-    "test:cypress": "cypress run",
+    "test:cypress": "cypress run --browser chrome",
     "test:cypress:open": "cypress open",
     "test:cypress:snapshot": "cypress open --env failOnSnapshotDiff=false",
     "test:full": "npm-run-all test test:cypress",
