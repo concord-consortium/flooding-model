@@ -34,7 +34,7 @@ export const PlaybackControls: React.FC<IProps> = ({ onReload, onRestart, onStar
             onReload &&
             <Button
               className={css.playbackButton}
-              data-test="reload-button"
+              data-testid="reload-button"
               onClick={onReload}
               disableRipple={true}
             >
@@ -45,7 +45,7 @@ export const PlaybackControls: React.FC<IProps> = ({ onReload, onRestart, onStar
             onRestart &&
             <Button
               className={css.playbackButton}
-              data-test="restart-button"
+              data-testid="restart-button"
               onClick={onRestart}
               disableRipple={true}
             >
@@ -61,7 +61,7 @@ export const PlaybackControls: React.FC<IProps> = ({ onReload, onRestart, onStar
             onClick={handleStartPause}
             disabled={startStopDisabled}
             className={css.playbackButton}
-            data-test="start-stop-button"
+            data-testid="start-stop-button"
             disableRipple={true}
           >
             { playing ? <span><PauseIcon/> Stop</span> : <span><StartIcon /> Start</span> }

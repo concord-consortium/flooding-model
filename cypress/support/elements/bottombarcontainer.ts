@@ -22,11 +22,11 @@ class BottomBarContainer{
   }
   selectStormDuration(item: any) {
     const option = ["Short", "Medium", "Long", "Very Long"];
-    cy.get("[data-test='rain-duration-select']").click();
+    cy.get("[data-testid='rain-duration-select']").click();
     cy.get("#menu- .MuiListItem-button").eq(option.indexOf(item)).click({ force: true });
   }
   verifyStormDurationDropDown() {
-    cy.get("[data-test='rain-duration-select']").click();
+    cy.get("[data-testid='rain-duration-select']").click();
     cy.get("#menu- .MuiListItem-button")
       .should("contain", "Short")
       .should("contain", "Medium")
@@ -47,16 +47,16 @@ class BottomBarContainer{
       .should("contain", "High");
   }
   getLeevesButton() {
-    return this.getBottomBar().find("[data-test='levees-button']");
+    return this.getBottomBar().find("[data-testid='levees-button']");
   }
   getReloadButton() {
-    return this.getBottomBar().find("[data-test='reload-button']");
+    return this.getBottomBar().find("[data-testid='reload-button']");
   }
   getRestartButton() {
-    return this.getBottomBar().find("[data-test='restart-button']");
+    return this.getBottomBar().find("[data-testid='restart-button']");
   }
   getStartStopButton() {
-    return this.getBottomBar().find("[data-test='start-stop-button']");
+    return this.getBottomBar().find("[data-testid='start-stop-button']");
   }
   getTimeSlider() {
     return this.getBottomBar().find(".bottom-bar--timeSlider--__flooding-v1__");

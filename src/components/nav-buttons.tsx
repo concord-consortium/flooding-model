@@ -32,10 +32,10 @@ export const NavButtons: React.FC = observer(() => {
   return (
     <div className={css.navButtons}>
       <div className={css.btnGroup}>
-        <div className={`${css.button} ${zoomInDisabled ? css.disabled : ""}`} onClick={handleZoomIn} data-test="zoom-in"><ZoomIn /></div>
-        <div className={`${css.button} ${zoomOutDisabled ? css.disabled : ""}`} onClick={handleZoomOut} data-test="zoom-out"><ZoomOut /></div>
+        <div className={`${css.button} ${zoomInDisabled ? css.disabled : ""}`} onClick={handleZoomIn} data-testid="zoom-in"><ZoomIn /></div>
+        <div className={`${css.button} ${zoomOutDisabled ? css.disabled : ""}`} onClick={handleZoomOut} data-testid="zoom-out"><ZoomOut /></div>
       </div>
-      <div className={`${css.button} ${resetCameraDisabled ? css.disabled : ""}`} onClick={handleResetCamera} data-test="reset-camera">
+      <div className={`${css.button} ${resetCameraDisabled ? css.disabled : ""}`} onClick={handleResetCamera} data-testid="reset-camera">
         <ResetCamera />
       </div>
     </div>

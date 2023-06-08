@@ -1,4 +1,4 @@
-import { action, computed, observable } from "mobx";
+import { action, computed, observable, makeObservable } from "mobx";
 import { Cell, ICellSnapshot } from "./cell";
 import { getDefaultConfig, ISimulationConfig, getUrlConfig } from "../config";
 import { cellAtGrid, getCellNeighbors4, getCellNeighbors8 } from "./utils/grid-utils";
@@ -80,6 +80,7 @@ export class SimulationModel {
   private emitter = new EventEmitter();
 
   constructor(presetConfig: Partial<ISimulationConfig>) {
+    makeObservable(this);
     this.load(presetConfig);
   }
 

@@ -1,4 +1,4 @@
-import { observable, action } from "mobx";
+import { observable, action, makeObservable } from "mobx";
 import { ISimulationConfig } from "../config";
 import { planeHeightFromConfig, PLANE_WIDTH } from "../components/view-3d/helpers";
 import { Vector3 } from "three";
@@ -31,6 +31,7 @@ export class UIModel {
   @observable public cameraTarget: Vector3;
 
   constructor(config: ISimulationConfig) {
+    makeObservable(this);
     this.config = config;
     this.resetCameraPos();
     this.reload();

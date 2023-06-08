@@ -1,6 +1,7 @@
-import { useContext, createContext } from "react";
-import { createStores, IStores } from "./models/stores";
+import { useContext } from "react";
+import { MobXProviderContext } from "mobx-react";
+import { IStores } from "./models/stores";
 
-export const storesContext = createContext<IStores>(createStores());
-
-export const useStores = () => useContext(storesContext);
+export const useStores = (): IStores => {
+  return useContext(MobXProviderContext).stores;
+};
