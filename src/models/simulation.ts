@@ -33,7 +33,6 @@ export interface ISimulationSnapshot {
 // on management and interactions handling. Core calculations are delegated to FloodingEngine.
 // Also, all the observable properties should be here, so the view code can observe them.
 export class SimulationModel {
-  public config: ISimulationConfig;
   public dataReadyPromise: Promise<void>;
   public engineCPU: FloodingEngine | null = null;
   public engineGPU: FloodingEngineGPU | null = null;
@@ -42,6 +41,7 @@ export class SimulationModel {
   public riverCells: Cell[] = [];
   public edgeCells: Cell[] = [];
 
+  @observable public config: ISimulationConfig;
   @observable public riverBankSegments: Cell[][] = [];
 
   @observable public time = 0;
@@ -69,6 +69,7 @@ export class SimulationModel {
   constructor(presetConfig: Partial<ISimulationConfig>) {
     makeObservable(this);
     this.load(presetConfig);
+    this.setDefaultInputs();
   }
 
   @computed public get ready() {
@@ -264,7 +265,6 @@ export class SimulationModel {
       // by URL parameters.
       this.config = Object.assign(getDefaultConfig(), presetConfig, getUrlConfig());
       await this.populateCellsData();
-      this.setDefaultInputs();
       this.restart();
     })();
     return this.dataReadyPromise;
@@ -277,6 +277,7 @@ export class SimulationModel {
       this.edgeCells = result.edgeCells;
       this.riverCells = result.riverCells;
       this.riverBankSegments = result.riverBankSegments;
+      this.leveesCount = 0;
 
       if (this.config.useGPU) {
         this.engineGPU = new FloodingEngineGPU(this.cells, this.config);

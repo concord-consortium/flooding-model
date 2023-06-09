@@ -92,6 +92,10 @@ export interface ISimulationConfig {
   mapType: "street" | "topo" | "permeability";
   // Initially selected tab.
   activeTab: "maps" | "graph" | "gauge1" | "gauge2" | "gauge3";
+  // When this option is enabled, time period buttons are visible and user can switch between present, past and future maps.
+  timePeriodButtons: boolean;
+  // Optional label that is used by the time period buttons.
+  timeLabel?: string;
   // Experimental. Some features are not working. timeStep and speedMult need adjustment. Sample config:
   // - ?useGPU=true&timeStep=0.4&speedMult=40
   useGPU: boolean;
@@ -130,7 +134,7 @@ export interface IUrlConfig extends ISimulationConfig {
 }
 
 export const getDefaultConfig: () => IUrlConfig = () => ({
-  preset: "present",
+  preset: "default",
   timeStep: 5,
   speedMult: 2,
   modelWidth: 8000,
@@ -176,6 +180,7 @@ export const getDefaultConfig: () => IUrlConfig = () => ({
   startingWaterLevel: "medium",
   mapType: "street",
   activeTab: "gauge1",
+  timePeriodButtons: true,
   useGPU: false,
   minCameraDistance: 1,
   maxCameraDistance: 4

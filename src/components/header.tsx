@@ -1,4 +1,8 @@
 import React from "react";
 import css from "./header.scss";
 
-export const Header: React.FC = ({ children }: { children?: React.ReactNode }) => <div className={css.header}>{ children }</div>;
+interface IProps {
+  children?: React.ReactNode
+}
+
+export const Header: React.FC<IProps> = ({ children }) => <div className={css.header}>{ children }</div>;

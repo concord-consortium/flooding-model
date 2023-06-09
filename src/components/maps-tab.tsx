@@ -2,14 +2,26 @@ import React from "react";
 import { observer } from "mobx-react";
 import { useStores } from "../use-stores";
 import { Header } from "./header";
+import { MainPresetType } from "../config";
+import { getSilverCityPreset } from "../presets";
+import clsx from "clsx";
 import Checkbox from "@material-ui/core/Checkbox";
+import { log } from "@concord-consortium/lara-interactive-api";
 import streetThumb from "../assets/model2_map_street_thumb.png";
 import topoThumb from "../assets/model2_map_topographic_thumb.png";
 import permeabilityThumb from "../assets/model2_map_permeability_thumb.png";
+import presentTopoThumb from "../assets/map_present_topographic_thumb.png";
+import presentStreetThumb from "../assets/map_present_street_thumb.png";
+import presentPermeabilityThumb from "../assets/map_present_permeability_thumb.png";
+import pastTopoThumb from "../assets/map_past_topographic_thumb.png";
+import pastStreetThumb from "../assets/map_past_street_thumb.png";
+import pastPermeabilityThumb from "../assets/map_past_permeability_thumb.png";
+import futureTopoThumb from "../assets/map_future_topographic_thumb.png";
+import futureStreetThumb from "../assets/map_future_street_thumb.png";
+import futurePermeabilityThumb from "../assets/map_future_permeability_thumb.png";
 import flatImg from "../assets/map_topographic_key_flat_terrain_4x.png";
 import hillyImg from "../assets/map_topographic_key_hilly_terrain_4x.png";
 import ViewIcon from "../assets/view_icon.svg";
-import { log } from "@concord-consortium/lara-interactive-api";
 
 import css from "./maps-tab.scss";
 
@@ -98,17 +110,78 @@ export const MapButton: React.FC<IMapButtonProps> = observer(({ title, backgroun
   );
 });
 
+const timePeriodThumbImage: Record<MainPresetType, Record<Layer, string>> = {
+  present: {
+    street: presentStreetThumb,
+    topo: presentTopoThumb,
+    permeability: presentPermeabilityThumb
+  },
+  past: {
+    street: pastStreetThumb,
+    topo: pastTopoThumb,
+    permeability: pastPermeabilityThumb
+  },
+  future: {
+    street: futureStreetThumb,
+    topo: futureTopoThumb,
+    permeability: futurePermeabilityThumb
+  }
+};
+
+interface ITimePeriodButtonProps {
+  title: string;
+  background: string;
+  preset: MainPresetType;
+}
+
+export const TimePeriodButton: React.FC<ITimePeriodButtonProps> = observer(({ title, background, preset }) => {
+  const { simulation, ui } = useStores();
+
+  const handleClick = () => {
+    const presetConfig = getSilverCityPreset(preset);
+    simulation.load(presetConfig);
+    ui.resetInteraction(); // user could be in levees mode and it's not allowed in the past preset / mode
+    log("TimePeriodChanged", { value: preset });
+  };
+
+  const active = simulation.config.timeLabel === preset;
+  const disabled = !simulation.dataReady || simulation.simulationStarted;
+
+  return (
+    <div className={clsx(css.mapButton, {[css.active]: active, [css.disabled]: disabled })} onClick={handleClick}>
+      { active && <ViewIcon className={css.viewIcon} /> }
+      <div className={css.background} style={{ background: `url("${background}")` }} />
+      <div className={css.title}>{ title }</div>
+    </div>
+  );
+});
+
 export const MapsTab: React.FC = observer(() => {
-  const { simulation } = useStores();
+  const { simulation, ui } = useStores();
   const config = simulation.config;
 
   return (
-    <div>
+    <div className={css.content}>
       <Header>Maps</Header>
-      <div className={css.mapButtons}>
-        { config.streetTexture && <MapButton title={"Street"} background={streetThumb} layer="street"/> }
-        { config.topoTexture && <MapButton title={"Topographic"} background={topoThumb} layer="topo" /> }
-        { config.permeabilityTexture &&  <MapButton title={"Permeability"} background={permeabilityThumb} layer="permeability" /> }
+      <div className={css.content}>
+        <div className={css.mapButtons}>
+          { config.streetTexture && <MapButton title={"Street"} background={streetThumb} layer="street"/> }
+          { config.topoTexture && <MapButton title={"Topographic"} background={topoThumb} layer="topo" /> }
+          { config.permeabilityTexture &&  <MapButton title={"Permeability"} background={permeabilityThumb} layer="permeability" /> }
+        </div>
+        {
+          config.timePeriodButtons &&
+          <div className={css.timePeriodButtons}>
+            <hr />
+            <Header>Time Period</Header>
+            <div className={css.note}><b>Note:</b> The Time Period cannot be changed once a simulation has started.</div>
+            <div className={css.mapButtons}>
+              <TimePeriodButton title={"Past"} background={timePeriodThumbImage.past[ui.mainLayer]} preset="past"/>
+              <TimePeriodButton title={"Present"} background={timePeriodThumbImage.present[ui.mainLayer]} preset="present" />
+              <TimePeriodButton title={"Future"} background={timePeriodThumbImage.future[ui.mainLayer]} preset="future" />
+            </div>
+          </div>
+        }
       </div>
     </div>
   );
