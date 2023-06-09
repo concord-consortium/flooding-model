@@ -1,8 +1,9 @@
-import { ISimulationConfig, MainPresetType } from "./config";
+import { ISimulationConfig, TimePeriod } from "./config";
 
-const getSilverCityPreset = (time: MainPresetType): Partial<ISimulationConfig> => {
+export const getSilverCityPreset = (time: TimePeriod): Partial<ISimulationConfig> => {
   const mapPrefix = `data/${time}-maps/${time}`;
   return {
+    timePeriod: time, // label for the time period button
     elevation: `${mapPrefix}_map_07_heightmap_MODIFIED.png`,
     riverData: `${mapPrefix}_map_riverdata.png`,
     permeability: `${mapPrefix}_map_permeability_map.png`,
@@ -123,9 +124,11 @@ const getSilverCityPreset = (time: MainPresetType): Partial<ISimulationConfig> =
 
 const presets: {[key: string]: Partial<ISimulationConfig>} = {
   // Main models:
-  present: getSilverCityPreset("present"),
-  past: getSilverCityPreset("past"),
-  future: getSilverCityPreset("future"),
+  default: getSilverCityPreset("present"),
+  // Disable time period buttons in the named presets that are used in AP/LARA activities.
+  present: { ...getSilverCityPreset("present"), timePeriodButtons: false },
+  past: { ...getSilverCityPreset("past"), timePeriodButtons: false },
+  future: { ...getSilverCityPreset("future"), timePeriodButtons: false },
   // Test models:
   slope: {
     elevation: [

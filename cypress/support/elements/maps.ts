@@ -7,7 +7,7 @@ class Maps{
     return cy.get("#panel\\:r1\\:0");
   }
   verifyHeader() {
-    this.getMapTabSection().find("[class^='header']").should("have.text", "Maps");
+    this.getMapTabSection().find("[class^='header']").should("have.text", "MapsTime Period");
   }
   clickMapButton(type: any) {
     const option = ["Street", "Topographic", "Permeability"];

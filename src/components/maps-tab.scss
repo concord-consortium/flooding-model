@@ -1,3 +1,17 @@
+.content {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: calc(100% - 35px);
+}
+
+.note {
+  font-size: 12px;
+  margin-top: -3px;
+  margin-bottom: 15px;
+  text-align: center;
+}
+
 .mapButtons {
   display: flex;
   flex-direction: row;
@@ -111,7 +125,14 @@
     }
   }
 
+  &.disabled {
+    opacity: 0.5;
+    pointer-events: none;
+  }
+
   &.active {
+    opacity: 1;
+    cursor: default;
     border: 2px solid #32a447;
     height: auto;
     .title {

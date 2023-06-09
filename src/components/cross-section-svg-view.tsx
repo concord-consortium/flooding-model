@@ -18,12 +18,12 @@ import CS3Indicator from "../assets/marker3 CS stream gauge indicator.png";
 import { observer } from "mobx-react";
 import { useStores } from "../use-stores";
 import { ICrossSectionState } from "../models/simulation";
-import { ICrossSectionConfig, MainPresetType } from "../config";
+import { ICrossSectionConfig, TimePeriod } from "../config";
 import { Header } from "./header";
 
 import css from "./cross-section-svg-view.scss";
 
-const CrossSectionBackground: Record <MainPresetType, Record <number, React.JSXElementConstructor<any>>> = {
+const CrossSectionBackground: Record <TimePeriod, Record <number, React.JSXElementConstructor<any>>> = {
   present: {
     0: CS1BackgroundPresent,
     1: CS2BackgroundPresent,

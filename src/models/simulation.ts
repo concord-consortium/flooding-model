@@ -1,6 +1,6 @@
 import { action, computed, observable, makeObservable } from "mobx";
 import { Cell, ICellSnapshot } from "./cell";
-import { getDefaultConfig, ISimulationConfig, getUrlConfig } from "../config";
+import { getDefaultConfig, ISimulationConfig, getUrlConfig, TimePeriod } from "../config";
 import { cellAtGrid, getCellNeighbors4, getCellNeighbors8 } from "./utils/grid-utils";
 import { FloodingEngine } from "./engine/flooding-engine";
 import { FloodingEngineGPU } from "./engine/flooding-engine-gpu";
@@ -8,6 +8,7 @@ import { populateCellsData } from "./utils/load-and-initialize-cells";
 import { log } from "@concord-consortium/lara-interactive-api";
 import { EventEmitter } from "eventemitter3";
 import { RainIntensity, RiverStage } from "../types";
+import { getSilverCityPreset } from "../presets";
 
 const MIN_RAIN_DURATION_IN_DAYS = 1;
 const MAX_RAIN_DURATION_IN_DAYS = 4;
@@ -33,7 +34,6 @@ export interface ISimulationSnapshot {
 // on management and interactions handling. Core calculations are delegated to FloodingEngine.
 // Also, all the observable properties should be here, so the view code can observe them.
 export class SimulationModel {
-  public config: ISimulationConfig;
   public dataReadyPromise: Promise<void>;
   public engineCPU: FloodingEngine | null = null;
   public engineGPU: FloodingEngineGPU | null = null;
@@ -41,7 +41,9 @@ export class SimulationModel {
   public cells: Cell[] = [];
   public riverCells: Cell[] = [];
   public edgeCells: Cell[] = [];
+  public defaultTimePeriod?: TimePeriod = undefined;
 
+  @observable public config: ISimulationConfig;
   @observable public riverBankSegments: Cell[][] = [];
 
   @observable public time = 0;
@@ -68,7 +70,11 @@ export class SimulationModel {
 
   constructor(presetConfig: Partial<ISimulationConfig>) {
     makeObservable(this);
+    if (presetConfig.timePeriod) {
+      this.defaultTimePeriod = presetConfig.timePeriod;
+    }
     this.load(presetConfig);
+    this.setDefaultInputs();
   }
 
   @computed public get ready() {
@@ -264,7 +270,6 @@ export class SimulationModel {
       // by URL parameters.
       this.config = Object.assign(getDefaultConfig(), presetConfig, getUrlConfig());
       await this.populateCellsData();
-      this.setDefaultInputs();
       this.restart();
     })();
     return this.dataReadyPromise;
@@ -277,6 +282,7 @@ export class SimulationModel {
       this.edgeCells = result.edgeCells;
       this.riverCells = result.riverCells;
       this.riverBankSegments = result.riverBankSegments;
+      this.leveesCount = 0;
 
       if (this.config.useGPU) {
         this.engineGPU = new FloodingEngineGPU(this.cells, this.config);
@@ -338,6 +344,9 @@ export class SimulationModel {
   }
 
   @action.bound public reload() {
+    if (this.defaultTimePeriod && this.defaultTimePeriod !== this.config.timePeriod) {
+      this.load(getSilverCityPreset(this.defaultTimePeriod));
+    }
     this.setDefaultInputs();
     this.restart();
   }

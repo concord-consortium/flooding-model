@@ -91,9 +91,13 @@ export class UIModel {
     const tabIndex = config.tabs.indexOf(config.activeTab);
     this.tabIndex = tabIndex !== -1 ? tabIndex : 0;
 
-    this.interaction = null;
-    this.interactionTarget = null;
+    this.resetInteraction();
     this.poiLayerEnabled = true;
     this.placesLayerEnabled = true;
+  }
+
+  @action.bound public resetInteraction() {
+    this.interaction = null;
+    this.interactionTarget = null;
   }
 }
