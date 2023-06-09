@@ -31,9 +31,9 @@ export class FloodAreaDataset {
   public onHourChange = () => {
     const timeInHours = this.simulation.timeInHours;
     this.points[timeInHours] = this.getCurrentPoint();
-  }
+  };
 
   public reset = () => {
     this.points = [];
-  }
+  };
 }

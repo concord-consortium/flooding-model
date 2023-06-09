@@ -3,9 +3,9 @@ import { BottomBarContainer, BottomBarWidgetGroup } from "../geohazard-component
 import { PlaybackControls } from "../geohazard-components/bottom-bar/playback-controls";
 import { Slider } from "../geohazard-components/slider";
 import { FormControl, MenuItem, Select } from "@material-ui/core";
-import { observer } from "mobx-react-lite";
+import { observer } from "mobx-react";
 import { useStores } from "../use-stores";
-import { RainIntensity, RiverStage } from "../models/simulation";
+import { RainIntensity, RiverStage } from "../types";
 import { IconButton } from "../geohazard-components/bottom-bar/icon-button";
 import { Interaction } from "../models/ui";
 import LeveeIcon from "../assets/levee.svg";
@@ -100,7 +100,7 @@ export const BottomBar: React.FC = observer(function WrappedComponent() {
     <BottomBarContainer>
       <BottomBarWidgetGroup title="Amount of Rain" hoverable={true} className={css.amountOfRain}>
         <Slider
-          data-test="rain-intensity"
+          data-testid="rain-intensity"
           value={simulation.rainIntensity}
           min={RainIntensity.light}
           max={config.extremeRain ? RainIntensity.extreme : RainIntensity.heavy}
@@ -112,14 +112,14 @@ export const BottomBar: React.FC = observer(function WrappedComponent() {
         />
       </BottomBarWidgetGroup>
       <BottomBarWidgetGroup title={["Storm", "Duration"]} hoverable={true} className={css.stormDuration}>
-        <div className={`${css.stormDurationSelect} ${simulation.simulationStarted ? css.disabled : ""}`} data-test={"rain-duration"}>
+        <div className={`${css.stormDurationSelect} ${simulation.simulationStarted ? css.disabled : ""}`} data-testid={"rain-duration"}>
           <FormControl variant="outlined">
             <Select
               MenuProps={{autoFocus: false, disableAutoFocusItem: true, disableEnforceFocus: true, disableAutoFocus: true}}
               className={css.selectElement}
               value={simulation.rainDurationInDays}
               onChange={handleStormDurationChange}
-              data-test={"rain-duration-select"}
+              data-testid={"rain-duration-select"}
             >
               <MenuItem value={1}>{ stormDurationLabels[1] }</MenuItem>
               <MenuItem value={2}>{ stormDurationLabels[2] }</MenuItem>
@@ -131,7 +131,7 @@ export const BottomBar: React.FC = observer(function WrappedComponent() {
       </BottomBarWidgetGroup>
       <BottomBarWidgetGroup title={["Starting", "Water Level"]} hoverable={true} className={css.startingWaterLevel}>
         <Slider
-          data-test="starting-water-level"
+          data-testid="starting-water-level"
           value={simulation.initialWaterSaturation}
           min={RiverStage.low}
           max={RiverStage.high}

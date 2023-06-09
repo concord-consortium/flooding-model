@@ -14,7 +14,7 @@
 
 import { Cell } from "../cell";
 import { getGridIndexForLocation } from "../utils/grid-utils";
-import { RiverStage } from "../simulation";
+import { RiverStage } from "../../types";
 
 export interface IFloodingEngineConfig {
   gridWidth: number;

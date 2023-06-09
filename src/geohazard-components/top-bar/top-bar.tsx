@@ -2,7 +2,7 @@ import * as React from "react";
 import RefreshIcon from "@material-ui/icons/Refresh";
 import { Dialog } from "./dialog";
 import { log } from "@concord-consortium/lara-interactive-api";
-import * as css from "./top-bar.scss";
+import css from "./top-bar.scss";
 
 interface IProps {
   projectName: string;
@@ -33,10 +33,10 @@ export const TopBar: React.FC<IProps> = ({ projectName, aboutContent, shareConte
 
   return (
     <div className={css.topBar}>
-      <span className={css.textButton} data-test="reload" onClick={handleReload}><RefreshIcon /></span>
+      <span className={css.textButton} data-testid="reload" onClick={handleReload}><RefreshIcon /></span>
       <span>
-        <span data-test="share" className={css.textButton} onClick={handleShareOpen}>Share</span>
-        <span data-test="about" className={css.textButton} onClick={handleAboutOpen}>About</span>
+        <span data-testid="share" className={css.textButton} onClick={handleShareOpen}>Share</span>
+        <span data-testid="about" className={css.textButton} onClick={handleAboutOpen}>About</span>
       </span>
       <Dialog
         onClose={handleAboutClose}

@@ -1,6 +1,6 @@
 import React, { ChangeEvent, useEffect, useRef, useState } from "react";
 import { Slider } from "../geohazard-components/slider";
-import { observer } from "mobx-react-lite";
+import { observer } from "mobx-react";
 import { useStores } from "../use-stores";
 import { SNAPSHOT_INTERVAL } from "../models/snapshots-manager";
 import { withStyles } from "@material-ui/core/styles";
@@ -81,7 +81,7 @@ export const TimeSlider: React.FC = observer(function WrappedComponent() {
     <div className={css.timeSlider}>
       <BorderLinearProgress variant="determinate" value={progress} className={css.progress} />
       <SliderWithoutRail
-        data-test="time-slider"
+        data-testid="time-slider"
         value={val}
         min={0}
         max={timeMarks.length - 1}

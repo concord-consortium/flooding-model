@@ -1,4 +1,5 @@
-import { RainIntensity, RiverStage, SimulationModel } from "./simulation";
+import { SimulationModel } from "./simulation";
+import { RainIntensity, RiverStage } from "../types";
 import { FloodingEngine } from "./engine/flooding-engine";
 
 const rafMock = jest.fn();

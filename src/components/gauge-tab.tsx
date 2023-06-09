@@ -1,7 +1,7 @@
 import React from "react";
 import { CrossSectionSVGView } from "./cross-section-svg-view";
 import { GaugeReadingGraph } from "./gauge-reading-graph";
-import {observer} from "mobx-react-lite";
+import {observer} from "mobx-react";
 import css from "./gauge-tab.scss";
 import {useStores} from "../use-stores";
 

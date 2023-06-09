@@ -11,4 +11,3 @@ declare module "*.png" {
   export = value;
 }
 declare module "shutterbug";
-declare module "threejs-meshline";

@@ -1,10 +1,10 @@
 class Maps{
 
   getMapTab() {
-    return cy.get('#react-tabs-0');
+    return cy.get("#tab\\:r1\\:0");
   }
   getMapTabSection() {
-    return cy.get('#react-tabs-1');
+    return cy.get("#panel\\:r1\\:0");
   }
   verifyHeader() {
     this.getMapTabSection().find("[class^='header']").should("have.text", "Maps");
@@ -22,7 +22,7 @@ class Maps{
 
     switch (type) {
         case ("Street"):
-        cy.get("[class^='maps-tab--mapButton--']").eq(0).find("[class^='maps-tab--background']").invoke("attr", "style").should("contain", "dba2a12eb1ed54cc15235cb0037e2cdc.png");
+        cy.get("[class^='maps-tab--mapButton--']").eq(0).find("[class^='maps-tab--background']").invoke("attr", "style").should("contain", "dba2a12eb1ed54cc1523.png");
         cy.get("[class^='maps-tab--mapButton--']").eq(0).find("[class^='maps-tab--title']").should("have.text", "Street");
         cy.get("[class^='maps-tab--mapButton--'] [class^='maps-tab--checkboxes']")
           .should("contain", "Labels")
@@ -30,7 +30,7 @@ class Maps{
           .should("contain", "Points of interest");
             break;
         case ("Topographic"):
-        cy.get("[class^='maps-tab--mapButton--']").eq(1).find("[class^='maps-tab--background']").invoke("attr", "style").should("contain", "b7b081d7d18a4a2ff980a0ba22283775.png");
+        cy.get("[class^='maps-tab--mapButton--']").eq(1).find("[class^='maps-tab--background']").invoke("attr", "style").should("contain", "b7b081d7d18a4a2ff980.png");
         cy.get("[class^='maps-tab--mapButton--']").eq(1).find("[class^='maps-tab--title']").should("have.text", "Topographic");
         cy.get("[class^='maps-tab--mapButton--'] [class^='maps-tab--legend']")
           .should("contain", "Key")
@@ -43,7 +43,7 @@ class Maps{
           .should("contain", "Points of interest");
             break;
         case ("Permeability"):
-        cy.get("[class^='maps-tab--mapButton--']").eq(2).find("[class^='maps-tab--background']").invoke("attr", "style").should("contain", "e73b552e7334a0a32bc93d2d8bddf148.png");
+        cy.get("[class^='maps-tab--mapButton--']").eq(2).find("[class^='maps-tab--background']").invoke("attr", "style").should("contain", "e73b552e7334a0a32bc9.png");
         cy.get("[class^='maps-tab--mapButton--']").eq(2).find("[class^='maps-tab--title']").should("have.text", "Permeability");
         cy.get("[class^='maps-tab--mapButton--'] [class^='maps-tab--legend']").find(".maps-tab--green--__flooding-v1__").should("exist");
         cy.get("[class^='maps-tab--mapButton--'] [class^='maps-tab--legend']").find(".maps-tab--yellow--__flooding-v1__").should("exist");

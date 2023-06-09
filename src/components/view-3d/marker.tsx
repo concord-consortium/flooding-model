@@ -1,8 +1,8 @@
 import React, { useMemo, useState } from "react";
-import { observer } from "mobx-react-lite";
+import { observer } from "mobx-react";
 import { mToViewUnitRatio, mToViewElevationUnit, getTexture } from "./helpers";
 import { useStores } from "../../use-stores";
-import { PointerEvent } from "react-three-fiber/canvas";
+import { Event } from "three";
 
 interface IProps {
   // Image src or HTML Canvas that is going to be used as a texture source.
@@ -40,21 +40,23 @@ export const Marker: React.FC<IProps> = observer(function WrappedComponent({
   const texture = (hovered || active) && highlightTexture ? highlightTexture : defTexture;
 
   const eventHandlers = {
-    onPointerOver: (e: PointerEvent) => {
+    onPointerOver: (e: Event) => {
       setHovered(true);
     },
-    onPointerOut: (e: PointerEvent) => {
+    onPointerOut: (e: Event) => {
       setHovered(false);
     },
-    onPointerUp: (e: PointerEvent) => {
+    onPointerUp: (e: Event) => {
       onClick?.();
     }
   };
   return (
+    /* eslint-disable react/no-unknown-property */
     <mesh position={[x, y, z]} {...eventHandlers} renderOrder={1} >
       <planeGeometry attach="geometry" args={[width, height]}
       />
       <meshBasicMaterial attach="material" map={texture} depthTest={false} transparent={true} />
     </mesh>
+    /* eslint-enable react/no-unknown-property */
   );
 });

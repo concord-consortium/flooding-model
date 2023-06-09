@@ -28,7 +28,7 @@ export const populateCellsData = async (config: ISimulationConfig) => {
         // When fillTerrainEdge is set to true, edges are set to elevation 0.
         const isEdge = config.fillTerrainEdges &&
           (x === 0 || x === config.gridWidth - 1 || y === 0 || y === config.gridHeight - 1);
-        let baseElevation = elevation && elevation[index];
+        let baseElevation = elevation?.[index];
         if (verticalTilt && baseElevation !== undefined) {
           const vertProgress = y / config.gridHeight;
           baseElevation += Math.abs(verticalTilt) * (verticalTilt > 0 ? vertProgress : 1 - vertProgress);
@@ -42,8 +42,8 @@ export const populateCellsData = async (config: ISimulationConfig) => {
           isEdge,
           isRiver,
           baseElevation,
-          waterDepth: waterDepth && waterDepth[index] || 0,
-          permeability: isRiver ? RIVER_PERMEABILITY : (permeability && permeability[index] || 0)
+          waterDepth: waterDepth?.[index] || 0,
+          permeability: isRiver ? RIVER_PERMEABILITY : (permeability?.[index] || 0)
         });
 
         cells.push(cell);
@@ -111,14 +111,14 @@ export const markRiverBanks = (edgeCells: Cell[], cells: Cell[], shoreIdx: {[key
     }
     let result = false;
     getCellNeighbors4(cell, cells, config.gridWidth, config.gridHeight).forEach(n => {
-      if (n && n.isRiver) {
+      if (n?.isRiver) {
         result = true;
       }
     });
     return result;
   };
 
-  const processRiverBank = (startCell: Cell) => { 
+  const processRiverBank = (startCell: Cell) => {
     const queue = [ startCell ];
     const neighborsCount: { [key: number]: number } = {};
     const processed: { [key: number]: boolean } = {};
@@ -161,7 +161,7 @@ export const markRiverBanks = (edgeCells: Cell[], cells: Cell[], shoreIdx: {[key
         }
       }
       // Handle special cases.
-      // 1. Dead end. No way to continue river bank, but it's not edge of the map yet. 
+      // 1. Dead end. No way to continue river bank, but it's not edge of the map yet.
       //    Remove this path unless the path fork is reached. Algorithm will continue from this fork.
       if (neighborsCount[cell.id] === 0 && !cell.isEdge) {
         const lastSegment = riverBankSegments[riverBankSegments.length - 1];
@@ -182,7 +182,7 @@ export const markRiverBanks = (edgeCells: Cell[], cells: Cell[], shoreIdx: {[key
         queue.length = 0;
       }
     }
-  };  
+  };
 
   const shoreProcessed: {[key: number]: boolean} = {};
   for (const cell of edgeCells) {

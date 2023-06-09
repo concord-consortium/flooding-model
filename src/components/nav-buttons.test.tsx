@@ -1,7 +1,8 @@
 import React from "react";
-import { mount } from "enzyme";
+import { render, screen } from "@testing-library/react";
+import { Provider } from "mobx-react";
+import userEvent from "@testing-library/user-event";
 import { createStores } from "../models/stores";
-import { StoreProvider } from "./bottom-bar.test";
 import { NavButtons, zoomDistDiff } from "./nav-buttons";
 
 import css from "./nav-buttons.scss";
@@ -9,58 +10,58 @@ import css from "./nav-buttons.scss";
 describe("NavButtons component", () => {
   it("renders zoom in, zoom out and reset camera buttons", () => {
     const stores = createStores();
-    const wrapper = mount(<StoreProvider stores={stores}><NavButtons /></StoreProvider>);
-    expect(wrapper.find('[data-test="zoom-in"]').hostNodes().length).toEqual(1);
-    expect(wrapper.find('[data-test="zoom-out"]').hostNodes().length).toEqual(1);
-    expect(wrapper.find('[data-test="reset-camera"]').hostNodes().length).toEqual(1);
+    render(<Provider stores={stores}><NavButtons /></Provider>);
+    expect(screen.getByTestId("zoom-in")).toBeInTheDocument();
+    expect(screen.getByTestId("zoom-out")).toBeInTheDocument();
+    expect(screen.getByTestId("reset-camera")).toBeInTheDocument();
   });
 
   describe("zoom in button", () => {
-    it("changes camera distance and gets disabled when user reaches min distance", () => {
+    it("changes camera distance and gets disabled when user reaches min distance", async () => {
       const stores = createStores();
-      const wrapper = mount(<StoreProvider stores={stores}><NavButtons /></StoreProvider>);
+      render(<Provider stores={stores}><NavButtons /></Provider>);
       const initialCameraDist = stores.ui.getCameraDistance();
 
-      wrapper.find('[data-test="zoom-in"]').simulate("click");
+      await userEvent.click(screen.getByTestId("zoom-in"));
       expect(stores.ui.getCameraDistance()).toEqual(initialCameraDist - zoomDistDiff);
       for (let i = 0; i <= 10; i++) {
-        wrapper.find('[data-test="zoom-in"]').simulate("click");
+        await userEvent.click(screen.getByTestId("zoom-in"));
       }
-      expect(wrapper.find('[data-test="zoom-in"]').at(0).hasClass(css.disabled)).toEqual(true);
+      expect(stores.ui.canZoomIn()).toEqual(false);
+      expect(screen.getByTestId("zoom-in")).toHaveClass(css.disabled);
     });
   });
 
   describe("zoom out button", () => {
-    it("changes camera distance and gets disabled when user reaches max distance", () => {
+    it("changes camera distance and gets disabled when user reaches max distance", async () => {
       const stores = createStores();
-      const wrapper = mount(<StoreProvider stores={stores}><NavButtons /></StoreProvider>);
+      render(<Provider stores={stores}><NavButtons /></Provider>);
       const initialCameraDist = stores.ui.getCameraDistance();
 
-      wrapper.find('[data-test="zoom-out"]').simulate("click");
+      await userEvent.click(screen.getByTestId("zoom-out"));
       expect(stores.ui.getCameraDistance()).toEqual(initialCameraDist + zoomDistDiff);
       for (let i = 0; i <= 10; i++) {
-
-        wrapper.find('[data-test="zoom-out"]').simulate("click");
+        await userEvent.click(screen.getByTestId("zoom-out"));
       }
-      expect(wrapper.find('[data-test="zoom-out"]').at(0).hasClass(css.disabled)).toEqual(true);
+      expect(screen.getByTestId("zoom-out")).toHaveClass(css.disabled);
     });
   });
 
   describe("reset camera button", () => {
-    it("is initially disabled and restores initial camera position", () => {
+    it("is initially disabled and restores initial camera position", async () => {
       const stores = createStores();
-      const wrapper = mount(<StoreProvider stores={stores}><NavButtons /></StoreProvider>);
+      render(<Provider stores={stores}><NavButtons /></Provider>);
 
       expect(stores.ui.isCameraPosModified()).toEqual(false);
-      expect(wrapper.find('[data-test="reset-camera"]').at(0).hasClass(css.disabled)).toEqual(true);
+      expect(screen.getByTestId("reset-camera")).toHaveClass(css.disabled);
 
-      wrapper.find('[data-test="zoom-out"]').simulate("click");
+      await userEvent.click(screen.getByTestId("zoom-out"));
       expect(stores.ui.isCameraPosModified()).toEqual(true);
-      expect(wrapper.find('[data-test="reset-camera"]').at(0).hasClass(css.disabled)).toEqual(false);
+      expect(screen.getByTestId("reset-camera")).not.toHaveClass(css.disabled);
 
-      wrapper.find('[data-test="reset-camera"]').simulate("click");
+      await userEvent.click(screen.getByTestId("reset-camera"));
       expect(stores.ui.isCameraPosModified()).toEqual(false);
-      expect(wrapper.find('[data-test="reset-camera"]').at(0).hasClass(css.disabled)).toEqual(true);
+      expect(screen.getByTestId("reset-camera")).toHaveClass(css.disabled);
     });
   });
 });

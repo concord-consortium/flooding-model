@@ -1,7 +1,7 @@
 import { mToViewUnitRatio } from "./helpers";
 import { InteractionHandler } from "./interaction-handler";
 import { useStores } from "../../use-stores";
-import { PointerEvent } from "react-three-fiber/canvas";
+import { Event } from "three";
 import { Interaction } from "../../models/ui";
 import { Cell } from "../../models/cell";
 
@@ -11,7 +11,7 @@ export const useLeveeInteraction: () => InteractionHandler = () => {
   const { simulation, ui } = useStores();
   return {
     active: ui.interaction === Interaction.AddRemoveLevee,
-    onPointerMove: (e: PointerEvent) => {
+    onPointerMove: (e: Event) => {
       const ratio = mToViewUnitRatio(simulation);
       const xM = e.point.x / ratio;
       const yM = e.point.y / ratio;

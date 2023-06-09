@@ -1,15 +1,14 @@
 import React, { useMemo } from "react";
-import { observer } from "mobx-react-lite";
+import { observer } from "mobx-react";
 import { useStores } from "../../use-stores";
 import { mToViewUnitRatio, mToViewElevationUnit } from "./helpers";
 import * as THREE from "three";
-import * as meshline from "threejs-meshline";
+import { MeshLineMaterial, MeshLineGeometry } from "meshline";
 import { Interaction } from "../../models/ui";
-// ESLint doesn't seem to detect ReactThreeFiber usage a few lines below.
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { extend, ReactThreeFiber } from "react-three-fiber";
+import { extend, ReactThreeFiber } from "@react-three/fiber";
 
-extend(meshline);
+extend({ MeshLineGeometry, MeshLineMaterial });
+
 declare global {
   // eslint-disable-next-line @typescript-eslint/no-namespace
   namespace JSX {
@@ -20,7 +19,7 @@ declare global {
   }
 }
 
-const WIDTH = 0.0045;
+const WIDTH = 0.018;
 const DASH_LEN = 0.15;
 const SMOOTHING_RATIO = 0.4;
 const Z_SHIFT = 0.005;
@@ -34,13 +33,14 @@ interface ILeveeSegmentProps {
   dashed: boolean;
   hovered: boolean;
 }
+
 export const LeveeSegment: React.FC<ILeveeSegmentProps> = ({ vertices, visible, hovered, dashed }) => (
   visible ?
+    /* eslint-disable react/no-unknown-property */
     <group>
       <mesh>
-        <meshLine attach="geometry" vertices={vertices}/>
+        <meshLineGeometry points={vertices.map(v => v.toArray())} />
         <meshLineMaterial
-          attach="material"
           opacity={hovered ? 1 : 0}
           lineWidth={WIDTH}
           color={HOVER_COLOR}
@@ -48,7 +48,7 @@ export const LeveeSegment: React.FC<ILeveeSegmentProps> = ({ vertices, visible, 
         />
       </mesh>
       <mesh>
-        <meshLine attach="geometry" vertices={vertices}/>
+        <meshLineGeometry points={vertices.map(v => v.toArray())} />
         <meshLineMaterial
           attach="material"
           opacity={visible ? 1 : 0}
@@ -62,6 +62,7 @@ export const LeveeSegment: React.FC<ILeveeSegmentProps> = ({ vertices, visible, 
     </group>
     :
     null
+    /* eslint-enable react/no-unknown-property */
 );
 
 export const Levees: React.FC = observer(function WrappedComponent() {
@@ -98,6 +99,7 @@ export const Levees: React.FC = observer(function WrappedComponent() {
     // cellsBaseStateFlag flag marks that some changes have been made to cells (for performance reasons the whole cells
     // array is not observable). The statement below is gratuitous, it just prevents eslint exhaustive-deps rule from
     // complaining about unnecessary variable in the dependencies array.
+    // eslint-disable-next-line no-unused-expressions
     simulation.cellsBaseStateFlag;
     // If one cell in the river bank segment is levee, then the whole segment is a levee. No need to check other cells.
     // Don't check first or the last one cell, as these can be shared between two segments.
@@ -116,5 +118,5 @@ export const Levees: React.FC = observer(function WrappedComponent() {
           hovered={ui.interaction === Interaction.AddRemoveLevee && idx === ui.interactionTarget}
         />
       )}
-  </>);
+          </>);
 });

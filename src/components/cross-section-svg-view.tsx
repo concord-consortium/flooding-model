@@ -15,7 +15,7 @@ import CS3Water from "../assets/Gauge 3 CS Water.svg";
 import CS1Indicator from "../assets/marker1 CS stream gauge indicator.png";
 import CS2Indicator from "../assets/marker2 CS stream gauge indicator.png";
 import CS3Indicator from "../assets/marker3 CS stream gauge indicator.png";
-import { observer } from "mobx-react-lite";
+import { observer } from "mobx-react";
 import { useStores } from "../use-stores";
 import { ICrossSectionState } from "../models/simulation";
 import { ICrossSectionConfig, MainPresetType } from "../config";

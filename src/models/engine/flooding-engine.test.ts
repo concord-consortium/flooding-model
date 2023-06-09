@@ -1,6 +1,6 @@
 import { FloodingEngine } from "./flooding-engine";
 import { Cell } from "../cell";
-import { RiverStage } from "../simulation";
+import { RiverStage } from "../../types";
 
 describe("FloodingEngine", () => {
   it("organizes Cells into arrays when initialized", () => {

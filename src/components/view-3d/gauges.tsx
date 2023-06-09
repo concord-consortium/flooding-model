@@ -1,5 +1,5 @@
 import React from "react";
-import { observer } from "mobx-react-lite";
+import { observer } from "mobx-react";
 import { useStores } from "../../use-stores";
 import { Marker } from "./marker";
 
@@ -7,7 +7,8 @@ export const Gauges: React.FC = observer(function WrappedComponent() {
   const { simulation, ui } = useStores();
   const config = simulation.config;
 
-  return <>
+  return (
+    <>
     {
       simulation.crossSections.map((csConfig, idx) => {
         const gaugeName = `gauge${idx + 1}` as "gauge1" | "gauge2" | "gauge3";
@@ -39,5 +40,6 @@ export const Gauges: React.FC = observer(function WrappedComponent() {
         />;
       })
     }
-  </>;
+    </>
+  );
 });

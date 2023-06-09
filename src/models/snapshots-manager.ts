@@ -1,4 +1,4 @@
-import { action, observable } from "mobx";
+import { action, observable, makeObservable } from "mobx";
 import { ISimulationSnapshot, SimulationModel } from "./simulation";
 
 export const SNAPSHOT_INTERVAL = 6; // h
@@ -14,6 +14,7 @@ export class SnapshotsManager {
   private simulation: SimulationModel;
 
   constructor(simulation: SimulationModel) {
+    makeObservable(this);
     this.simulation = simulation;
     simulation.on("hourChange", this.onHourChange);
     simulation.on("restart", this.reset);
