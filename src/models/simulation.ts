@@ -1,6 +1,6 @@
 import { action, computed, observable, makeObservable } from "mobx";
 import { Cell, ICellSnapshot } from "./cell";
-import { getDefaultConfig, ISimulationConfig, getUrlConfig } from "../config";
+import { getDefaultConfig, ISimulationConfig, getUrlConfig, TimePeriod } from "../config";
 import { cellAtGrid, getCellNeighbors4, getCellNeighbors8 } from "./utils/grid-utils";
 import { FloodingEngine } from "./engine/flooding-engine";
 import { FloodingEngineGPU } from "./engine/flooding-engine-gpu";
@@ -8,6 +8,7 @@ import { populateCellsData } from "./utils/load-and-initialize-cells";
 import { log } from "@concord-consortium/lara-interactive-api";
 import { EventEmitter } from "eventemitter3";
 import { RainIntensity, RiverStage } from "../types";
+import { getSilverCityPreset } from "../presets";
 
 const MIN_RAIN_DURATION_IN_DAYS = 1;
 const MAX_RAIN_DURATION_IN_DAYS = 4;
@@ -40,6 +41,7 @@ export class SimulationModel {
   public cells: Cell[] = [];
   public riverCells: Cell[] = [];
   public edgeCells: Cell[] = [];
+  public defaultTimePeriod?: TimePeriod = undefined;
 
   @observable public config: ISimulationConfig;
   @observable public riverBankSegments: Cell[][] = [];
@@ -68,6 +70,9 @@ export class SimulationModel {
 
   constructor(presetConfig: Partial<ISimulationConfig>) {
     makeObservable(this);
+    if (presetConfig.timePeriod) {
+      this.defaultTimePeriod = presetConfig.timePeriod;
+    }
     this.load(presetConfig);
     this.setDefaultInputs();
   }
@@ -339,6 +344,9 @@ export class SimulationModel {
   }
 
   @action.bound public reload() {
+    if (this.defaultTimePeriod && this.defaultTimePeriod !== this.config.timePeriod) {
+      this.load(getSilverCityPreset(this.defaultTimePeriod));
+    }
     this.setDefaultInputs();
     this.restart();
   }

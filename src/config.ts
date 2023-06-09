@@ -1,5 +1,5 @@
 // These presets are used in the curriculum and have custom cross-sections.
-export type MainPresetType = "present" | "past" | "future";
+export type TimePeriod = "present" | "past" | "future";
 
 export interface ISimulationConfig {
   timeStep: number; // model time
@@ -95,7 +95,7 @@ export interface ISimulationConfig {
   // When this option is enabled, time period buttons are visible and user can switch between present, past and future maps.
   timePeriodButtons: boolean;
   // Optional label that is used by the time period buttons.
-  timeLabel?: string;
+  timePeriod?: TimePeriod;
   // Experimental. Some features are not working. timeStep and speedMult need adjustment. Sample config:
   // - ?useGPU=true&timeStep=0.4&speedMult=40
   useGPU: boolean;
@@ -126,7 +126,7 @@ export interface ICrossSectionConfig {
     anchorY?: number,
     scale?: number
   },
-  backgroundType: MainPresetType;
+  backgroundType: TimePeriod;
 }
 
 export interface IUrlConfig extends ISimulationConfig {

@@ -2,7 +2,7 @@ import React from "react";
 import { observer } from "mobx-react";
 import { useStores } from "../use-stores";
 import { Header } from "./header";
-import { MainPresetType } from "../config";
+import { TimePeriod } from "../config";
 import { getSilverCityPreset } from "../presets";
 import clsx from "clsx";
 import Checkbox from "@material-ui/core/Checkbox";
@@ -110,7 +110,7 @@ export const MapButton: React.FC<IMapButtonProps> = observer(({ title, backgroun
   );
 });
 
-const timePeriodThumbImage: Record<MainPresetType, Record<Layer, string>> = {
+const timePeriodThumbImage: Record<TimePeriod, Record<Layer, string>> = {
   present: {
     street: presentStreetThumb,
     topo: presentTopoThumb,
@@ -131,7 +131,7 @@ const timePeriodThumbImage: Record<MainPresetType, Record<Layer, string>> = {
 interface ITimePeriodButtonProps {
   title: string;
   background: string;
-  preset: MainPresetType;
+  preset: TimePeriod;
 }
 
 export const TimePeriodButton: React.FC<ITimePeriodButtonProps> = observer(({ title, background, preset }) => {
@@ -144,11 +144,11 @@ export const TimePeriodButton: React.FC<ITimePeriodButtonProps> = observer(({ ti
     log("TimePeriodChanged", { value: preset });
   };
 
-  const active = simulation.config.timeLabel === preset;
+  const active = simulation.config.timePeriod === preset;
   const disabled = !simulation.dataReady || simulation.simulationStarted;
 
   return (
-    <div className={clsx(css.mapButton, {[css.active]: active, [css.disabled]: disabled })} onClick={handleClick}>
+    <div className={clsx(css.mapButton, {[css.active]: active, [css.disabled]: disabled })} onClick={!active && !disabled ? handleClick : undefined}>
       { active && <ViewIcon className={css.viewIcon} /> }
       <div className={css.background} style={{ background: `url("${background}")` }} />
       <div className={css.title}>{ title }</div>

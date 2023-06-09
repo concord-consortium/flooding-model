@@ -1,9 +1,9 @@
-import { ISimulationConfig, MainPresetType } from "./config";
+import { ISimulationConfig, TimePeriod } from "./config";
 
-export const getSilverCityPreset = (time: MainPresetType): Partial<ISimulationConfig> => {
+export const getSilverCityPreset = (time: TimePeriod): Partial<ISimulationConfig> => {
   const mapPrefix = `data/${time}-maps/${time}`;
   return {
-    timeLabel: time, // label for the time period button
+    timePeriod: time, // label for the time period button
     elevation: `${mapPrefix}_map_07_heightmap_MODIFIED.png`,
     riverData: `${mapPrefix}_map_riverdata.png`,
     permeability: `${mapPrefix}_map_permeability_map.png`,
