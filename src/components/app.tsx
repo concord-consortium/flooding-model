@@ -1,4 +1,5 @@
 import React, { useEffect } from "react";
+import clsx from "clsx";
 import { observer } from "mobx-react";
 import { View3d } from "./view-3d/view-3d";
 import { BottomBar } from "./bottom-bar";
@@ -14,7 +15,7 @@ import { ShareDialogContent } from "./share-dialog-content";
 import css from "./app.scss";
 
 export const AppComponent = observer(function WrappedComponent() {
-  const { simulation: { config }} = useStores();
+  const { simulation, simulation: { config }} = useStores();
 
   useEffect(() => {
     Shutterbug.enable("." + css.app);
@@ -32,6 +33,9 @@ export const AppComponent = observer(function WrappedComponent() {
       <div className={`${css.mainContent}`}>
         <div className={`${css.topView}`}>
           <View3d />
+          <div className={clsx(css.loadingMessage, { [css.active]: !simulation.dataReady })}>
+            <div className={css.message}>Loading...</div>
+          </div>
         </div>
         {
           config.tabs.length > 0 &&
