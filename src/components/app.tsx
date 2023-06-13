@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import clsx from "clsx";
+import { clsx } from "clsx";
 import { observer } from "mobx-react";
 import { View3d } from "./view-3d/view-3d";
 import { BottomBar } from "./bottom-bar";

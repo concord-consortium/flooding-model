@@ -4,7 +4,7 @@ import { useStores } from "../use-stores";
 import { Header } from "./header";
 import { TimePeriod } from "../config";
 import { getSilverCityPreset } from "../presets";
-import clsx from "clsx";
+import { clsx } from "clsx";
 import Checkbox from "@material-ui/core/Checkbox";
 import { log } from "@concord-consortium/lara-interactive-api";
 import streetThumb from "../assets/model2_map_street_thumb.png";
