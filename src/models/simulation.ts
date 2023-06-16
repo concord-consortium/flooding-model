@@ -236,12 +236,16 @@ export class SimulationModel {
 
   @action.bound public setInitialWaterSaturation(value: number) {
     this._initialRiverStage = value;
-    for (const cell of this.cells) {
-      cell.initialWaterSaturation = value;
-      cell.waterSaturation = value;
-    }
+    this.updateCellsWaterSaturation();
     // Update observable crossSectionState array, so cross-section view can re-render itself.
     this.updateCrossSectionStates();
+  }
+
+  @action.bound public updateCellsWaterSaturation() {
+    for (const cell of this.cells) {
+      cell.initialWaterSaturation = this.initialWaterSaturation;
+      cell.waterSaturation = this.initialWaterSaturation;
+    }
   }
 
   // Adds or removes levee in the provided river bank.
@@ -289,6 +293,9 @@ export class SimulationModel {
       } else {
         this.engineCPU = new FloodingEngine(this.cells, this.config);
       }
+
+      // Water saturation needs to be set using the input state variable.
+      this.updateCellsWaterSaturation();
 
       this.updateCellsBaseStateFlag();
       this.updateCellsSimulationStateFlag();
