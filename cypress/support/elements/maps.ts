@@ -9,6 +9,9 @@ class Maps{
   verifyHeader() {
     this.getMapTabSection().find("[class^='header']").should("have.text", "MapsTime Period");
   }
+  verifyMapHeader() {
+    this.getMapTabSection().find("[class^='header']").should("have.text", "Maps");
+  }
   clickMapButton(type: any) {
     const option = ["Street", "Topographic", "Permeability"];
     this.getMapTabSection().find("[class^='maps-tab--mapButton--']").eq(option.indexOf(type)).click({ force: true });
@@ -58,6 +61,33 @@ class Maps{
           .should("contain", "Points of interest");
             break;
     }
+  }
+
+  //Time period
+  getTimePeriod() {
+    return cy.get('#panel\\:r1\\:0 .maps-tab--mapButtons--__flooding-v1__').eq(1);
+  }
+  clickTimePeriod(type: any) {
+    const option = ["Past", "Present", "Future"];
+    cy.get('#panel\\:r1\\:0 .maps-tab--mapButtons--__flooding-v1__').eq(1).find("[class^='maps-tab--mapButton--']").eq(option.indexOf(type)).click({ force: true });
+  }
+  getActiveTimePeriodButton(type: any) {
+    const option = ["Past", "Present", "Future"];
+    this.getTimePeriod().find("[class^='maps-tab--mapButton--']").eq(option.indexOf(type)).invoke("attr", "class").should("contain", "active");
+    this.getTimePeriod().find("[class^='maps-tab--mapButton--']").eq(option.indexOf(type)).find("#View_ICON").should("exist");
+  }
+  VerifyTimePeriodImage(type: any, img: any) {
+    const option = ["Past", "Present", "Future"];
+    this.getTimePeriod().find(".maps-tab--background--__flooding-v1__").eq(option.indexOf(type)).invoke("attr", "style").should("contain", img);
+  }
+  verifyTimPeriodLabel() {
+    this.getTimePeriod().find('.maps-tab--title--__flooding-v1__')
+    .should("contain", "Past")
+    .should("contain", "Present")
+    .should("contain", "Future");
+  }
+  verifyTimePeriodNote() {
+    this.getMapTabSection().find('.maps-tab--note--__flooding-v1__').should("have.text", "Note: The Time Period cannot be changed once a simulation has started.")
   }
 
 }
