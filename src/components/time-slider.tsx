@@ -5,7 +5,7 @@ import { useStores } from "../use-stores";
 import { SNAPSHOT_INTERVAL } from "../models/snapshots-manager";
 import { withStyles } from "@material-ui/core/styles";
 import LinearProgress from "@material-ui/core/LinearProgress";
-import { log } from "@concord-consortium/lara-interactive-api";
+import { log } from "../log";
 import css from "./time-slider.scss";
 
 const BorderLinearProgress = withStyles(() => ({

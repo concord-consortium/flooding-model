@@ -8,7 +8,7 @@ import Marker2 from "../assets/marker2.svg";
 import Marker3 from "../assets/marker3.svg";
 import { observer } from "mobx-react";
 import { useStores } from "../use-stores";
-import { log } from "@concord-consortium/lara-interactive-api";
+import { log } from "../log";
 
 import "react-tabs/style/react-tabs.css";
 import css from "./side-container.scss";

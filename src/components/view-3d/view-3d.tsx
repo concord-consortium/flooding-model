@@ -11,6 +11,7 @@ import { Gauges } from "./gauges";
 import { InteractionHandler } from "./interaction-handler";
 import { useShowCoordsInteraction } from "./use-show-coords-interaction";
 import { useLeveeInteraction } from "./use-levee-interaction";
+import { useSimulationClickInteraction } from "./use-simulation-click-interaction";
 import { observer } from "mobx-react";
 import { ExtractWebGLRenderer } from "./webgl-renderer";
 
@@ -51,7 +52,8 @@ export const View3d = observer(() => {
 
   const terrainInteractions: InteractionHandler[] = [
     useShowCoordsInteraction(),
-    useLeveeInteraction()
+    useLeveeInteraction(),
+    useSimulationClickInteraction()
   ];
 
   let mainLayer;

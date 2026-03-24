@@ -18,6 +18,20 @@ describe("TopBar component", () => {
     });
   });
 
+  describe("onBeforeReload callback", () => {
+    it("calls onBeforeReload before reloading", async () => {
+      const onBeforeReload = jest.fn();
+      const reloadMock = jest.fn();
+      Object.defineProperty(window, "location", {
+        writable: true,
+        value: { reload: reloadMock },
+      });
+      render(<TopBar projectName="Test" onBeforeReload={onBeforeReload} />);
+      await userEvent.click(screen.getByTestId("reload"));
+      expect(onBeforeReload).toHaveBeenCalled();
+    });
+  });
+
   describe("Share button", () => {
     it("opens share dialog", async () => {
       render(<TopBar projectName="Test" />);

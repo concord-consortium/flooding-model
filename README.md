@@ -12,6 +12,10 @@ Latest **development** version:
 
 https://flood.concord.org/branch/master/index.html
 
+## Logged Events
+
+See [LOGGED-EVENTS.md](LOGGED-EVENTS.md) for a complete reference of all log events emitted by the simulation.
+
 ## Configuration
 
 Available presets:

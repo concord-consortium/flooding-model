@@ -1,20 +1,22 @@
 import * as React from "react";
 import RefreshIcon from "@material-ui/icons/Refresh";
 import { Dialog } from "./dialog";
-import { log } from "@concord-consortium/lara-interactive-api";
+import { log } from "../../log";
 import css from "./top-bar.scss";
 
 interface IProps {
   projectName: string;
   aboutContent?: JSX.Element;
   shareContent?: JSX.Element;
+  onBeforeReload?: () => void;
 }
 
-export const TopBar: React.FC<IProps> = ({ projectName, aboutContent, shareContent }: IProps) => {
+export const TopBar: React.FC<IProps> = ({ projectName, aboutContent, shareContent, onBeforeReload }: IProps) => {
   const [shareOpen, setShareOpen] = React.useState<boolean>(false);
   const [aboutOpen, setAboutOpen] = React.useState<boolean>(false);
 
   const handleReload = () => {
+    onBeforeReload?.();
     log("TopBarReloadButtonClicked");
     // Give some time for the log message to be delivered. Note it goes only to the parent window using postMessage,
     // so we don't have to wait for network request.
