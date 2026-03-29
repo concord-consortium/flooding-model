@@ -21,21 +21,17 @@ export const useSimulationClickInteraction: () => InteractionHandler = () => {
       const container = canvas?.parentElement;
       const rect = container?.getBoundingClientRect();
 
-      const position: Record<string, number | null> = {
+      const ratio = mToViewUnitRatio(simulation);
+      const position = {
         clientX: nativeEvent.clientX,
         clientY: nativeEvent.clientY,
         percentX: rect ? Math.round(((nativeEvent.clientX - rect.left) / rect.width) * 100) : null,
         percentY: rect ? Math.round(((nativeEvent.clientY - rect.top) / rect.height) * 100) : null,
-        terrainX: null,
-        terrainY: null
+        // e.point is always provided by @react-three/fiber's raycaster since
+        // onPointerUp only fires when the ray intersects the terrain mesh.
+        terrainX: Math.round(e.point.x / ratio),
+        terrainY: Math.round(e.point.y / ratio)
       };
-
-      // e.point is provided by @react-three/fiber's raycaster
-      if (e.point) {
-        const ratio = mToViewUnitRatio(simulation);
-        position.terrainX = Math.round(e.point.x / ratio);
-        position.terrainY = Math.round(e.point.y / ratio);
-      }
 
       log("SimulationClicked", position);
     }

@@ -19,9 +19,9 @@ Use `?logMonitor=true` to view events in real time via the LogMonitor sidebar.
 
 | Event | Parameters | When |
 |-------|-----------|------|
-| `SimulationMouseEnter` | `{ clientX, clientY, percentX, percentY }` | Mouse enters the 3D simulation view area |
-| `SimulationMouseLeave` | `{ clientX, clientY, percentX, percentY }` | Mouse leaves the 3D simulation view area |
-| `SimulationClicked` | `{ clientX, clientY, percentX, percentY, terrainX, terrainY }` | Mouse click on the 3D simulation view (`terrainX`/`terrainY` null if raycast misses) |
+| `SimulationMouseEnter` | `{ clientX, clientY, percentX, percentY }` | Mouse enters the application viewport (includes 3D view, side panel, and top bar) |
+| `SimulationMouseLeave` | `{ clientX, clientY, percentX, percentY }` | Mouse leaves the application viewport (includes 3D view, side panel, and top bar) |
+| `SimulationClicked` | `{ clientX, clientY, percentX, percentY, terrainX, terrainY }` | Mouse click on the 3D terrain surface (only fires when the click hits the terrain mesh) |
 
 ## Levee Events
 

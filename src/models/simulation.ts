@@ -1,6 +1,6 @@
 import { action, computed, observable, makeObservable } from "mobx";
 import { Cell, ICellSnapshot } from "./cell";
-import { getDefaultConfig, ISimulationConfig, getUrlConfig, TimePeriod } from "../config";
+import { getDefaultConfig, ISimulationConfig, IUrlConfig, getUrlConfig, TimePeriod } from "../config";
 import { cellAtGrid, getCellNeighbors4, getCellNeighbors8 } from "./utils/grid-utils";
 import { FloodingEngine } from "./engine/flooding-engine";
 import { FloodingEngineGPU } from "./engine/flooding-engine-gpu";
@@ -69,7 +69,7 @@ export class SimulationModel {
   public edgeCells: Cell[] = [];
   public defaultTimePeriod?: TimePeriod = undefined;
 
-  @observable public config: ISimulationConfig;
+  @observable public config: IUrlConfig;
   @observable public riverBankSegments: Cell[][] = [];
 
   @observable public time = 0;
@@ -463,8 +463,7 @@ export class SimulationModel {
       stormDuration: this.rainDurationInDays,
       startingWaterLevel: getWaterLevelLabel(this._initialRiverStage),
       simulationLength: this.config.simulationLength,
-      // config is typed as ISimulationConfig but runtime value is IUrlConfig which includes preset
-      presetName: (this.config as any).preset || "default",
+      presetName: this.config.preset || "default",
       activeTimePeriod: this.config.timePeriod || null,
       levees: this.riverBankSegments
         .map((segment, idx) => {
@@ -487,7 +486,7 @@ export class SimulationModel {
       riverDepth: r4(this.getRiverDepth(idx))
     }));
     return {
-      presetName: (this.config as any).preset || "default",
+      presetName: this.config.preset || "default",
       activeTimePeriod: this.config.timePeriod || null,
       timeInDays: r4(this.timeInDays),
       timeInHours: this.timeInHours,
