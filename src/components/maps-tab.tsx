@@ -6,7 +6,7 @@ import { TimePeriod } from "../config";
 import { getSilverCityPreset } from "../presets";
 import { clsx } from "clsx";
 import Checkbox from "@material-ui/core/Checkbox";
-import { log } from "@concord-consortium/lara-interactive-api";
+import { log } from "../log";
 import streetThumb from "../assets/model2_map_street_thumb.png";
 import topoThumb from "../assets/model2_map_topographic_thumb.png";
 import permeabilityThumb from "../assets/model2_map_permeability_thumb.png";

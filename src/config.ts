@@ -103,6 +103,8 @@ export interface ISimulationConfig {
   minCameraDistance: number;
   // Max zoom level.
   maxCameraDistance: number;
+  // Developer tool: enables LogMonitor sidebar for real-time event inspection.
+  logMonitor: boolean;
 }
 
 export interface ICoords {
@@ -183,7 +185,8 @@ export const getDefaultConfig: () => IUrlConfig = () => ({
   timePeriodButtons: true,
   useGPU: false,
   minCameraDistance: 1,
-  maxCameraDistance: 4
+  maxCameraDistance: 4,
+  logMonitor: false
 });
 
 const getURLParam = (name: string) => {

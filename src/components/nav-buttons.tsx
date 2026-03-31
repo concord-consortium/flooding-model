@@ -4,7 +4,7 @@ import { useStores } from "../use-stores";
 import ZoomIn from "../assets/zoom-in.svg";
 import ZoomOut from "../assets/zoom-out.svg";
 import ResetCamera from "../assets/reset-camera.svg";
-import { log } from "@concord-consortium/lara-interactive-api";
+import { log } from "../log";
 import css from "./nav-buttons.scss";
 
 export const zoomDistDiff = 0.5;

@@ -1,17 +1,43 @@
 import { action, computed, observable, makeObservable } from "mobx";
 import { Cell, ICellSnapshot } from "./cell";
-import { getDefaultConfig, ISimulationConfig, getUrlConfig, TimePeriod } from "../config";
+import { getDefaultConfig, ISimulationConfig, IUrlConfig, getUrlConfig, TimePeriod } from "../config";
 import { cellAtGrid, getCellNeighbors4, getCellNeighbors8 } from "./utils/grid-utils";
 import { FloodingEngine } from "./engine/flooding-engine";
 import { FloodingEngineGPU } from "./engine/flooding-engine-gpu";
 import { populateCellsData } from "./utils/load-and-initialize-cells";
-import { log } from "@concord-consortium/lara-interactive-api";
+import { log } from "../log";
 import { EventEmitter } from "eventemitter3";
 import { RainIntensity, RiverStage } from "../types";
 import { getSilverCityPreset } from "../presets";
 
 const MIN_RAIN_DURATION_IN_DAYS = 1;
 const MAX_RAIN_DURATION_IN_DAYS = 4;
+const SQ_METERS_TO_ACRES = 0.000247105;
+const r4 = (n: number) => Math.round(n * 10000) / 10000;
+
+interface ISerializedCrossSectionState {
+  center: { waterDepth: number; waterSaturation: number };
+  left: { waterDepth: number; waterSaturation: number };
+  right: { waterDepth: number; waterSaturation: number };
+  leftLevee: { waterDepth: number; leveeHeight: number };
+  rightLevee: { waterDepth: number; leveeHeight: number };
+}
+
+interface IBaselineSnapshot {
+  gaugeReadings: { gaugeIndex: number; riverDepth: number }[];
+  crossSectionStates: ISerializedCrossSectionState[];
+  leveeWaterDepths: Map<number, number>;
+}
+
+const rainLabels: Record<number, string> = {
+  0: "light", 1: "medium", 2: "heavy", 3: "extreme"
+};
+const getWaterLevelLabel = (stage: number): string => {
+  if (stage === RiverStage.low) return "low";
+  if (stage === RiverStage.medium) return "medium";
+  if (stage === RiverStage.high) return "high";
+  return String(stage);
+};
 
 export type Weather = "sunny" | "partlyCloudy" | "lightRain" | "mediumRain" | "heavyRain" | "extremeRain";
 
@@ -43,7 +69,7 @@ export class SimulationModel {
   public edgeCells: Cell[] = [];
   public defaultTimePeriod?: TimePeriod = undefined;
 
-  @observable public config: ISimulationConfig;
+  @observable public config: IUrlConfig;
   @observable public riverBankSegments: Cell[][] = [];
 
   @observable public time = 0;
@@ -67,6 +93,8 @@ export class SimulationModel {
   @observable public leveesCount = 0;
 
   private emitter = new EventEmitter();
+  private simulationEndedFired = false;
+  private baselineSnapshot: IBaselineSnapshot | null = null;
 
   constructor(presetConfig: Partial<ISimulationConfig>) {
     makeObservable(this);
@@ -312,6 +340,11 @@ export class SimulationModel {
     if (!this.simulationStarted) {
       this.simulationStarted = true;
     }
+    // Capture baseline only at the start of a new run, not on resume
+    if (this.time === 0) {
+      this.baselineSnapshot = this.captureBaseline();
+      this.simulationEndedFired = false;
+    }
 
     this.simulationRunning = true;
 
@@ -361,6 +394,7 @@ export class SimulationModel {
   @action.bound public rafCallback() {
     if (this.timeInDays >= this.config.simulationLength) {
       this.stop();
+      this.fireSimulationEnded("ByItself");
     }
     if (!this.simulationRunning) {
       return;
@@ -412,6 +446,97 @@ export class SimulationModel {
 
   @action.bound public updateCellsSimulationStateFlag() {
     this.cellsSimulationStateFlag += 1;
+  }
+
+  public fireSimulationEnded(reason: string) {
+    if (this.simulationEndedFired) return;
+    this.simulationEndedFired = true;
+    log("SimulationEnded", {
+      reason,
+      outcome: this.getOutcomeData()
+    });
+  }
+
+  public getStartedData() {
+    return {
+      rainIntensity: rainLabels[this.rainIntensity] || String(this.rainIntensity),
+      stormDuration: this.rainDurationInDays,
+      startingWaterLevel: getWaterLevelLabel(this._initialRiverStage),
+      simulationLength: this.config.simulationLength,
+      presetName: this.config.preset || "default",
+      activeTimePeriod: this.config.timePeriod || null,
+      levees: this.riverBankSegments
+        .map((segment, idx) => {
+          const cell = segment[1];
+          if (!cell?.isLevee) return null;
+          return {
+            segmentIndex: idx,
+            x: cell.x / this.config.gridWidth,
+            y: cell.y / this.config.gridHeight,
+            leveeHeight: cell.leveeHeight
+          };
+        })
+        .filter(Boolean)
+    };
+  }
+
+  public getOutcomeData() {
+    const currentGaugeReadings = this.crossSections.map((_, idx) => ({
+      gaugeIndex: idx,
+      riverDepth: r4(this.getRiverDepth(idx))
+    }));
+    return {
+      presetName: this.config.preset || "default",
+      activeTimePeriod: this.config.timePeriod || null,
+      timeInDays: r4(this.timeInDays),
+      timeInHours: this.timeInHours,
+      floodAreaAcres: r4(this.floodArea * SQ_METERS_TO_ACRES),
+      baselineGaugeReadings: this.baselineSnapshot?.gaugeReadings || [],
+      finalGaugeReadings: currentGaugeReadings,
+      baselineCrossSections: this.baselineSnapshot?.crossSectionStates || [],
+      finalCrossSections: this.crossSections.map((_, idx) => this.serializeCrossSectionState(this.getCrossSectionState(idx))),
+      leveeWaterLevels: this.riverBankSegments
+        .map((segment, idx) => {
+          const cell = segment[1];
+          if (!cell?.isLevee) return null;
+          return {
+            segmentIndex: idx,
+            x: r4(cell.x / this.config.gridWidth),
+            y: r4(cell.y / this.config.gridHeight),
+            baselineWaterDepth: r4(this.baselineSnapshot?.leveeWaterDepths.get(idx) ?? 0),
+            finalWaterDepth: r4(cell.waterDepth)
+          };
+        })
+        .filter(Boolean)
+    };
+  }
+
+  private captureBaseline(): IBaselineSnapshot {
+    const leveeWaterDepths = new Map<number, number>();
+    this.riverBankSegments.forEach((segment, idx) => {
+      const cell = segment[1];
+      if (cell?.isLevee) {
+        leveeWaterDepths.set(idx, r4(cell.waterDepth));
+      }
+    });
+    return {
+      gaugeReadings: this.crossSections.map((_, idx) => ({
+        gaugeIndex: idx,
+        riverDepth: r4(this.getRiverDepth(idx))
+      })),
+      crossSectionStates: this.crossSections.map((_, idx) => this.serializeCrossSectionState(this.getCrossSectionState(idx))),
+      leveeWaterDepths
+    };
+  }
+
+  private serializeCrossSectionState(state: ICrossSectionState) {
+    return {
+      center: { waterDepth: r4(state.centerCell.waterDepth), waterSaturation: r4(state.centerCell.waterSaturation) },
+      left: { waterDepth: r4(state.leftCell.waterDepth), waterSaturation: r4(state.leftCell.waterSaturation) },
+      right: { waterDepth: r4(state.rightCell.waterDepth), waterSaturation: r4(state.rightCell.waterSaturation) },
+      leftLevee: { waterDepth: r4(state.leftLeveeCell.waterDepth), leveeHeight: r4(state.leftLeveeCell.leveeHeight) },
+      rightLevee: { waterDepth: r4(state.rightLeveeCell.waterDepth), leveeHeight: r4(state.rightLeveeCell.leveeHeight) }
+    };
   }
 
   public snapshot(): ISimulationSnapshot {

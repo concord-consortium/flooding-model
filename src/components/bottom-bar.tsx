@@ -11,7 +11,7 @@ import { Interaction } from "../models/ui";
 import LeveeIcon from "../assets/levee.svg";
 import LeveeHighlightIcon from "../assets/levee_highlight.svg";
 import { TimeSlider } from "./time-slider";
-import { log } from "@concord-consortium/lara-interactive-api";
+import { log } from "../log";
 
 import css from "./bottom-bar.scss";
 
@@ -66,24 +66,26 @@ export const BottomBar: React.FC = observer(function WrappedComponent() {
   };
 
   const handleReload = () => {
+    simulation.fireSimulationEnded("SimulationReloaded");
     simulation.reload();
     ui.reload();
     log("SimulationReloaded");
   };
 
   const handleRestart = () => {
+    simulation.fireSimulationEnded("SimulationRestarted");
     simulation.restart();
     log("SimulationRestarted");
   };
 
   const handleStart = () => {
     simulation.start();
-    log("SimulationStarted");
+    log("SimulationStarted", simulation.getStartedData());
   };
 
   const handleStop = () => {
     simulation.stop();
-    log("SimulationStopped");
+    log("SimulationStopped", { outcome: simulation.getOutcomeData() });
   };
 
   const handleLeveeMode = () => {

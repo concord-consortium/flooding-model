@@ -12,7 +12,19 @@ import { useStores } from "../use-stores";
 import { TopBar } from "../geohazard-components/top-bar/top-bar";
 import { AboutDialogContent } from "./about-dialog-content";
 import { ShareDialogContent } from "./share-dialog-content";
+import { LogMonitor } from "@concord-consortium/log-monitor";
+import { log } from "../log";
 import css from "./app.scss";
+
+const getMousePosition = (e: React.MouseEvent) => {
+  const rect = e.currentTarget.getBoundingClientRect();
+  return {
+    clientX: e.clientX,
+    clientY: e.clientY,
+    percentX: Math.round(((e.clientX - rect.left) / rect.width) * 100),
+    percentY: Math.round(((e.clientY - rect.top) / rect.height) * 100)
+  };
+};
 
 export const AppComponent = observer(function WrappedComponent() {
   const { simulation, simulation: { config }} = useStores();
@@ -27,9 +39,30 @@ export const AppComponent = observer(function WrappedComponent() {
   // This will setup document cursor based on various states of UI store (interactions).
   useCustomCursor();
 
-  return (
-    <div className={css.app}>
-      <TopBar projectName="Flood Explorer" aboutContent={<AboutDialogContent />} shareContent={<ShareDialogContent />} />
+  const handleBeforeReload = () => {
+    simulation.fireSimulationEnded("TopBarReloadButtonClicked");
+  };
+
+  const handleMouseEnter = (e: React.MouseEvent) => {
+    log("SimulationMouseEnter", getMousePosition(e));
+  };
+
+  const handleMouseLeave = (e: React.MouseEvent) => {
+    log("SimulationMouseLeave", getMousePosition(e));
+  };
+
+  const content = (
+    <div
+      className={css.app}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+    >
+      <TopBar
+        projectName="Flood Explorer"
+        aboutContent={<AboutDialogContent />}
+        shareContent={<ShareDialogContent />}
+        onBeforeReload={handleBeforeReload}
+      />
       <div className={`${css.mainContent}`}>
         <div className={`${css.topView}`}>
           <View3d />
@@ -51,6 +84,18 @@ export const AppComponent = observer(function WrappedComponent() {
         <TimeDisplay />
         <NavButtons />
       </div>
+    </div>
+  );
+
+  return (
+    <div
+      style={config.logMonitor ? { display: "flex", width: "100%", height: "100%" } : { width: "100%", height: "100%" }}
+    >
+      {config.logMonitor
+        ? <div style={{ flex: 1, overflow: "hidden", position: "relative", transform: "scale(1)" }}>{content}</div>
+        : content
+      }
+      {config.logMonitor && <LogMonitor logFilePrefix="flooding-log-events" />}
     </div>
   );
 });

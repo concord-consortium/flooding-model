@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import CCLogo from "../assets/cc-logo.svg";
 import CCLogoSmall from "../assets/cc-logo-small.svg";
 import screenfull from "screenfull";
-import { log } from "@concord-consortium/lara-interactive-api";
+import { log } from "../../log";
 import css from "./bottom-bar-container.scss";
 
 const toggleFullscreen = () => {
