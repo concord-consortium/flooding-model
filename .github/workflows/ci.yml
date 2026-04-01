@@ -35,6 +35,9 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
       - uses: cypress-io/github-action@v6
         with:
           install-command: npm ci --legacy-peer-deps
