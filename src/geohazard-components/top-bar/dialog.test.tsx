@@ -9,9 +9,10 @@ describe("Dialog component", () => {
     expect(screen.getByRole("dialog")).toBeInTheDocument();
   });
 
-  it("is named by its title", () => {
+  it("is a modal dialog named by its title", () => {
     render(<Dialog open={true} onClose={jest.fn()} title="About: Test" />);
     expect(screen.getByRole("dialog")).toHaveAccessibleName("About: Test");
+    expect(screen.getByRole("dialog")).toHaveAttribute("aria-modal", "true");
     expect(screen.getByRole("heading", { name: "About: Test" })).toBeInTheDocument();
   });
 

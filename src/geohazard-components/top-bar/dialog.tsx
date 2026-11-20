@@ -17,7 +17,7 @@ export const Dialog: React.FC<IProps> = ({ onClose, open, title, children }) => 
       onClose={onClose}
       open={open}
       maxWidth="lg"
-      PaperProps={{ "aria-label": title }}
+      PaperProps={{ "aria-label": title, "aria-modal": true }}
       TransitionProps={{ onEntering: () => closeRef.current?.focus() }}
     >
       <div className={css.dialogBody}>
