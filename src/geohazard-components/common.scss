@@ -2,3 +2,10 @@ $topBarHeight: 22px;
 $bottomBarHeight: 65px;
 
 $controlLabel: #434343;
+
+@mixin focusRing($offset: 2px) {
+  &:focus-visible {
+    outline: 2px solid $controlLabel;
+    outline-offset: $offset;
+  }
+}
