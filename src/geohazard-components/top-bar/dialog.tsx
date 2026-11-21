@@ -10,16 +10,23 @@ interface IProps {
   children?: JSX.Element;
 }
 
-export const Dialog: React.FC<IProps> = ({ onClose, open, title, children }) => (
-  <MuiDialog
-    onClose={onClose}
-    open={open}
-    maxWidth="lg"
-  >
-    <div className={css.dialogBody}>
-      <div className={css.title}>{ title }</div>
-      <CloseIcon className={css.closeButton} onClick={onClose} />
-      <div className={css.content}>{ children }</div>
-    </div>
-  </MuiDialog>
-);
+export const Dialog: React.FC<IProps> = ({ onClose, open, title, children }) => {
+  const closeRef = React.useRef<HTMLButtonElement>(null);
+  return (
+    <MuiDialog
+      onClose={onClose}
+      open={open}
+      maxWidth="lg"
+      PaperProps={{ "aria-label": title, "aria-modal": true }}
+      TransitionProps={{ onEntering: () => closeRef.current?.focus() }}
+    >
+      <div className={css.dialogBody}>
+        { title && <h2 className={css.title}>{ title }</h2> }
+        <button ref={closeRef} type="button" aria-label="Close" className={css.closeButton} onClick={onClose}>
+          <CloseIcon />
+        </button>
+        <div className={css.content}>{ children }</div>
+      </div>
+    </MuiDialog>
+  );
+};
